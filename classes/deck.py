@@ -15,7 +15,7 @@ Route Card Deck (30 routes) (essential, hard)
 - Name (Draw, Discard, Faceup, Player, …)
 - Deck sprites (not yet)
 """
-
+import cards
 STARTING_NUM_CARDS = 0
 
 class Deck:
@@ -25,4 +25,15 @@ class Deck:
             self.cards = []
         
         def shuffle(self):
-              cards.random.shuffle()
+            cards.random.shuffle()
+        
+
+
+
+
+        def get_count(self, color):
+            count = 0
+            for card in self.cards:
+                if card.get_color() == color:
+                    count += 1
+            return count
