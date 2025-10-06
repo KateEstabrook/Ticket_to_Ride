@@ -3,7 +3,7 @@ Route class:
 - City1 Name
 - City2 Name
 - Color (of weight, could be colorless)
-- Weight (num) 
+- Weight (num)
 """
 class Route:
         def __init__(self, city_1, city_2, weight, color):
