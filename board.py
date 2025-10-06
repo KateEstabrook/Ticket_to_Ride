@@ -123,7 +123,7 @@ CITIES = {
     "Montreal": {
         "CITY_IMG_X": 2189, "CITY_IMG_Y": 200
     }
-          }
+}
 
 ROUTES = {
     "Vancouver": {
@@ -155,7 +155,8 @@ ROUTES = {
     "Calgary": {
         "Vancouver": 3,
         "Seattle": 4,
-        "Helena": 4
+        "Helena": 4,
+        "Winnipeg": 6
     },
     "Helena": {
         "Calgary": 4,
@@ -248,55 +249,110 @@ ROUTES = {
         "Little Rock":2
     },
     "Houston": {
-
+        "Dallas": 1,
+        "El Paso": 6,
+        "New Orleans": 2
     },
     "Sault St. Marie": {
-
+        "Winnipeg": 6,
+        "Duluth": 3,
+        "Montreal": 5,
+        "Toronto": 2
     },
     "Chicago": {
-
+        "Toronto": 4,
+        "Duluth": 3,
+        "Omaha": 4,
+        "Saint Louis": 2,
+        "Pittsburgh": 3
     },
     "Saint Louis": {
-
+        "Chicago": 2,
+        "Pittsburgh": 5,
+        "Nashville": 2,
+        "Little Rock": 2,
+        "Kansas City": 2
     },
     "Little Rock": {
-
+        "Saint Louis": 2,
+        "Nashville": 3,
+        "New Orleans": 3,
+        "Dallas": 2,
+        "Oklahoma City": 2
     },
     "New Orleans": {
-
+        "Little Rock": 3,
+        "Houston": 2,
+        "Atlanta": 4,
+        "Miami": 6
     },
     "Toronto": {
-
+        "Sault St. Marie": 2,
+        "Montreal": 3,
+        "Duluth": 6,
+        "Chicago": 4,
+        "Pittsburgh": 2,
     },
     "Pittsburgh": {
-
+        "Toronto": 2,
+        "Chicago": 3,
+        "New York": 2,
+        "Saint Louis": 5,
+        "Nashville": 4,
+        "Washington": 2,
+        "Raleigh": 2
     },
     "Nashville": {
-
+        "Saint Louis": 2,
+        "Pittsburgh": 4,
+        "Little Rock": 3,
+        "Atlanta": 1,
+        "Raleigh": 3
     },
     "Atlanta": {
-
+        "Nashville": 1,
+        "Raleigh": 2,
+        "Charleston": 2,
+        "Miami": 5,
+        "New Orleans": 4
     },
     "Charleston": {
-
+        "Raleigh": 2,
+        "Atlanta": 2,
+        "Miami": 4
     },
     "Miami": {
-
+        "Charleston": 4,
+        "Atlanta": 5,
+        "New Orleans": 6
     },
     "Raleigh": {
-
+        "Charleston": 2,
+        "Atlanta": 2,
+        "Nashville": 3,
+        "Washington": 2,
+        "Pittsburgh": 2
     },
     "Washington": {
-
+        "Raleigh": 2,
+        "Pittsburgh": 2,
+        "New York": 2
     },
     "New York": {
-
+        "Washington": 2,
+        "Pittsburgh": 2,
+        "Montreal": 3,
+        "Boston": 2
     },
     "Boston": {
-
+        "New York": 2,
+        "Montreal": 2
     },
     "Montreal": {
-
+        "Boston": 2,
+        "New York": 3,
+        "Toronto": 3,
+        "Sault St. Marie": 5
     }
 }
 
