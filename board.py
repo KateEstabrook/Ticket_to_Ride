@@ -17,6 +17,120 @@ CITY_IMG_Y = 368
 TOP_LEFT_INPUT = True
 CITY_SCALE = 0.01       # optional scale for the city sprite
 
+CITY_SCALE = 0.0111
+CITY_SCALE_YELLOW = 0.016
+
+CITIES = {
+    "Calgary" : {
+        "CITY_IMG_X" : 587, "CITY_IMG_Y" : 212
+    },
+    "Vancouver" : {
+        "CITY_IMG_X" : 266, "CITY_IMG_Y" : 255
+    },
+    "Seattle": {
+        "CITY_IMG_X" : 250, "CITY_IMG_Y" : 400
+    },
+    "Portland": {
+
+    },
+    "San Francisco": {
+
+    },
+    "Los Angeles": {
+
+    },
+    "Helena": {
+
+    },
+    "Salt Lake City": {
+
+    },
+    "Las Vegas": {
+
+    },
+    "Phoenix": {
+
+    },
+    "Winnipeg": {
+
+    },
+    "Denver": {
+
+    },
+    "Santa Fe": {
+
+    },
+    "El Paso": {
+
+    },
+    "Duluth": {
+
+    },
+    "Omaha": {
+
+    },
+    "Kansas City": {
+
+    },
+    "Oklahoma City": {
+
+    },
+    "Dallas": {
+
+    },
+    "Houston": {
+
+    },
+    "Sault St. Marie": {
+
+    },
+    "Chicago": {
+
+    },
+    "Saint Louis": {
+
+    },
+    "Little Rock": {
+
+    },
+    "New Orleans": {
+
+    },
+    "Toronto": {
+
+    },
+    "Pittsburgh": {
+
+    },
+    "Nashville": {
+
+    },
+    "Atlanta": {
+
+    },
+    "Charleston": {
+
+    },
+    "Miami": {
+
+    },
+    "Raleigh": {
+
+    },
+    "Washington": {
+
+    },
+    "New York": {
+
+    },
+    "Boston": {
+
+    },
+    "Montreal": {
+
+    }
+          }
+
 ROUTES = {
     "Vancouver": {
         "Seattle": 1,
@@ -207,15 +321,34 @@ class GameView(arcade.View):
         # Background image will be stored in this variable
         self.background = arcade.load_texture("images/board.png")
 
-        city_texture = "images/city.png"
-        self.city = arcade.Sprite(city_texture)
+        # One list for all city sprites (create it ONCE)
         self.city_list = arcade.SpriteList()
-        self.city_list.append(self.city)
-        self.place_city(CITY_IMG_X, CITY_IMG_Y, top_left=TOP_LEFT_INPUT, scale=CITY_SCALE)
 
-        # Preload the yellow version and add it as an extra texture (index 1)
-        self.city.append_texture(arcade.load_texture("images/button_yellow.png"))
-        self.city.set_texture(0)  # ensure we start with the default texture (index 0)
+        # Load textures once
+        base_tex = arcade.load_texture("images/city.png")
+        hover_tex = arcade.load_texture("images/button_yellow.png")
+
+        # Build sprites from CITIES
+        for city in CITIES:
+            # Skip cities with no coordinates yet
+            if "CITY_IMG_X" not in CITIES[city].keys() or "CITY_IMG_Y" not in CITIES[city].keys():
+                continue
+
+            # Create one sprite per city
+            self.city = arcade.Sprite()  # keep your place_city logic (uses self.city)
+            self.city.append_texture(base_tex)
+            self.city.append_texture(hover_tex)
+            self.city.set_texture(0)
+            self.city.scale = CITY_SCALE
+
+            # Position it using your helper
+            self.place_city(
+                CITIES[city]["CITY_IMG_X"], CITIES[city]["CITY_IMG_Y"],
+                top_left=True, scale=None  # scale already set above
+            )
+
+            # Add to the shared list
+            self.city_list.append(self.city)
 
         # Variables that will hold sprite lists
         self.player_sprite = arcade.Sprite(
