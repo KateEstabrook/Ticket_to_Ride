@@ -28,6 +28,7 @@ ROUTES = {
         "Vancouver": 1
     },
     "Portland": {
+        "San Francisco": 5,
 
     },
     "San Francisco": {
