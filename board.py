@@ -11,12 +11,6 @@ WINDOW_WIDTH = 1150
 WINDOW_HEIGHT = 720
 WINDOW_TITLE = "Ticket to Ride"
 
-# First city position (kansas city) on the original background image
-CITY_IMG_X = 583
-CITY_IMG_Y = 368
-TOP_LEFT_INPUT = True
-CITY_SCALE = 0.01       # optional scale for the city sprite
-
 CITY_SCALE = 0.0111
 CITY_SCALE_YELLOW = 0.016
 
@@ -28,106 +22,106 @@ CITIES = {
         "CITY_IMG_X" : 266, "CITY_IMG_Y" : 255
     },
     "Seattle": {
-        "CITY_IMG_X" : 250, "CITY_IMG_Y" : 400
+        "CITY_IMG_X" : 261, "CITY_IMG_Y" : 390
     },
     "Portland": {
-
+        "CITY_IMG_X" : 207, "CITY_IMG_Y" : 512
     },
     "San Francisco": {
-
+        "CITY_IMG_X" : 173, "CITY_IMG_Y" : 995
     },
     "Los Angeles": {
-
+        "CITY_IMG_X" : 362, "CITY_IMG_Y" : 1250
     },
     "Helena": {
-
+        "CITY_IMG_X" : 832, "CITY_IMG_Y" : 535
     },
     "Salt Lake City": {
-
+        "CITY_IMG_X" : 655, "CITY_IMG_Y" : 838
     },
     "Las Vegas": {
-
+        "CITY_IMG_X": 520, "CITY_IMG_Y": 1108
     },
     "Phoenix": {
-
+        "CITY_IMG_X": 656, "CITY_IMG_Y": 1268
     },
     "Winnipeg": {
-
+        "CITY_IMG_X": 1134, "CITY_IMG_Y": 238
     },
     "Denver": {
-
+        "CITY_IMG_X": 974, "CITY_IMG_Y": 915
     },
     "Santa Fe": {
-
+        "CITY_IMG_X": 956, "CITY_IMG_Y": 1134
     },
     "El Paso": {
-
+        "CITY_IMG_X": 944, "CITY_IMG_Y": 1355
     },
     "Duluth": {
-
+        "CITY_IMG_X": 1410, "CITY_IMG_Y": 520
     },
     "Omaha": {
-
+        "CITY_IMG_X": 1334, "CITY_IMG_Y": 747
     },
     "Kansas City": {
-
+        "CITY_IMG_X": 1385, "CITY_IMG_Y": 870
     },
     "Oklahoma City": {
-
+        "CITY_IMG_X": 1338, "CITY_IMG_Y": 1082
     },
     "Dallas": {
-
+        "CITY_IMG_X": 1385, "CITY_IMG_Y": 1297
     },
     "Houston": {
-
+        "CITY_IMG_X": 1486, "CITY_IMG_Y": 1395
     },
     "Sault St. Marie": {
-
+        "CITY_IMG_X": 1720, "CITY_IMG_Y": 364
     },
     "Chicago": {
-
+        "CITY_IMG_X": 1708, "CITY_IMG_Y": 674
     },
     "Saint Louis": {
-
+        "CITY_IMG_X": 1600, "CITY_IMG_Y": 874
     },
     "Little Rock": {
-
+        "CITY_IMG_X": 1558, "CITY_IMG_Y": 1092
     },
     "New Orleans": {
-
+        "CITY_IMG_X": 1715, "CITY_IMG_Y": 1365
     },
     "Toronto": {
-
+        "CITY_IMG_X": 1986, "CITY_IMG_Y": 411
     },
     "Pittsburgh": {
-
+        "CITY_IMG_X": 2029, "CITY_IMG_Y": 635
     },
     "Nashville": {
-
+        "CITY_IMG_X": 1828, "CITY_IMG_Y": 970
     },
     "Atlanta": {
-
+        "CITY_IMG_X": 1950, "CITY_IMG_Y": 1052
     },
     "Charleston": {
-
+        "CITY_IMG_X": 2180, "CITY_IMG_Y": 1071
     },
     "Miami": {
-
+        "CITY_IMG_X": 2259, "CITY_IMG_Y": 1459
     },
     "Raleigh": {
-
+        "CITY_IMG_X": 2112, "CITY_IMG_Y": 912
     },
     "Washington": {
-
+        "CITY_IMG_X": 2255, "CITY_IMG_Y": 747
     },
     "New York": {
-
+        "CITY_IMG_X": 2233, "CITY_IMG_Y": 526
     },
     "Boston": {
-
+        "CITY_IMG_X": 2363, "CITY_IMG_Y": 346
     },
     "Montreal": {
-
+        "CITY_IMG_X": 2189, "CITY_IMG_Y": 200
     }
           }
 
@@ -424,7 +418,12 @@ class GameView(arcade.View):
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         if button == arcade.MOUSE_BUTTON_LEFT:
             # Generate a list of all cities that collided with the cursor
-            city_hit = arcade.check_for_collision_with_list(self.player_sprite, self.city_list)
+            # fingertip = top-left corner of the cursor image
+            tip_x = self.player_sprite.center_x - self.player_sprite.width / 3
+            tip_y = self.player_sprite.center_y + self.player_sprite.height / 3
+
+            # which cities are exactly under that point?
+            city_hit = arcade.get_sprites_at_point((tip_x, tip_y), self.city_list)
 
             # Any city we’re touching -> show yellow (texture index 1)
             for city in city_hit:
