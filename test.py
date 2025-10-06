@@ -12,11 +12,11 @@ WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 WINDOW_TITLE = "Ticket to Ride"
 
-# First city position (kansas city) on the original background image
-CITY_IMG_X = 583
-CITY_IMG_Y = 368
+# First city position (calgary) on the original background image
+CITY_IMG_X = 587
+CITY_IMG_Y = 212
 TOP_LEFT_INPUT = True
-CITY_SCALE = 0.01       # optional scale for the city sprite
+CITY_SCALE = 0.0115
 
 
 class GameView(arcade.View):
