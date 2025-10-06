@@ -31,21 +31,21 @@ class GameView(arcade.View):
         super().__init__()
 
         # Background image will be stored in this variable
-        self.background = arcade.load_texture("board.png")
+        self.background = arcade.load_texture("images/board.png")
 
-        city_texture = "city.png"
+        city_texture = "images/city.png"
         self.city = arcade.Sprite(city_texture)
         self.city_list = arcade.SpriteList()
         self.city_list.append(self.city)
         self.place_city(CITY_IMG_X, CITY_IMG_Y, top_left=TOP_LEFT_INPUT, scale=CITY_SCALE)
 
         # Preload the yellow version and add it as an extra texture (index 1)
-        self.city.append_texture(arcade.load_texture("button_yellow.png"))
+        self.city.append_texture(arcade.load_texture("images/button_yellow.png"))
         self.city.set_texture(0)  # ensure we start with the default texture (index 0)
 
         # Variables that will hold sprite lists
         self.player_sprite = arcade.Sprite(
-            "cursor.png",
+            "images/cursor.png",
             scale=PLAYER_SCALING,
         )
         self.player_list = arcade.SpriteList()
