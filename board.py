@@ -400,6 +400,8 @@ class GameView(arcade.View):
             # Add to the shared list
             self.city_list.append(self.city)
 
+        self.selected_cities = []  # list of selected city sprites (max. 2)
+
         # Variables that will hold sprite lists
         self.player_sprite = arcade.Sprite(
             "images/cursor.png",
@@ -479,18 +481,27 @@ class GameView(arcade.View):
             tip_y = self.player_sprite.center_y + self.player_sprite.height / 3
 
             # which cities are exactly under that point?
-            city_hit = arcade.get_sprites_at_point((tip_x, tip_y), self.city_list)
+            hits = arcade.get_sprites_at_point((tip_x, tip_y), self.city_list)
 
-            # Any city we’re touching -> show yellow (texture index 1)
-            for city in city_hit:
-                city.set_texture(1)
-                city.scale = 0.016
+            city = hits[0]
 
-            # Any city we’re NOT touching -> revert to default (texture index 0)
-            for city in self.city_list:
-                if city not in city_hit:
-                    city.set_texture(0)
-                    city.scale = 0.01
+            # If this city is already selected -> deselect it
+            if city in self.selected_cities:
+                city.set_texture(0)
+                city.scale = CITY_SCALE
+                self.selected_cities.remove(city)
+                return
+
+            # Otherwise, select it; if already 2 selected, drop the newest first
+            if len(self.selected_cities) == 2:
+                newest = self.selected_cities.pop(1)
+                newest.set_texture(0)
+                newest.scale = CITY_SCALE
+
+            # Mark this one as selected
+            city.set_texture(1)
+            city.scale = CITY_SCALE_YELLOW
+            self.selected_cities.append(city)
 
 
     def on_key_press(self, symbol: int, modifiers: int):
