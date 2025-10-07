@@ -4,13 +4,19 @@ With dictionaries for cities including paths
 """
 
 import arcade
+import platform
 
 PLAYER_SCALING = 0.05
 
 SCREEN_WIDTH, SCREEN_HEIGHT = arcade.get_display_size()
 WINDOW_TITLE = "Ticket to Ride"
-WINDOW_WIDTH = SCREEN_WIDTH
-WINDOW_HEIGHT = SCREEN_HEIGHT - 115
+if platform.system() == "Darwin":  # macOS
+    WINDOW_WIDTH = SCREEN_WIDTH
+    WINDOW_HEIGHT = SCREEN_HEIGHT - 115
+
+else:
+    WINDOW_WIDTH = SCREEN_WIDTH - 220
+    WINDOW_HEIGHT = SCREEN_HEIGHT - 450
 
 BOARD_WIDTH = 1150
 BOARD_HEIGHT = 720
@@ -253,14 +259,11 @@ class GameView(arcade.View):
 
 def main():
     """ Main function """
-    import platform
-
     if platform.system() == "Darwin":  # macOS
         window = arcade.Window(SCREEN_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, resizable=False)
         window.set_location(0, 0)
     else:
-        window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
-        window.set_fullscreen(True)
+        window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, fullscreen=True, resizable=False)
 
     game = GameView()
     game.reset()
