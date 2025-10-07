@@ -48,3 +48,28 @@ ROUTES = {
     "Boston": {"New York": 2, "Montreal": 2},
     "Montreal": {"Boston": 2, "New York": 3, "Toronto": 3, "Sault St. Marie": 5}
 }
+
+
+def train_deck_test():
+    train_deck = deck.Deck('Test')
+    train_deck.add(cards.TrainCard('blue'))
+    train_deck.add(cards.TrainCard('red'))
+    train_deck.add(cards.TrainCard('blue'))
+    train_deck.add(cards.TrainCard('yellow'))
+    train_deck.add(cards.TrainCard('green'))
+    train_deck.sort()
+
+    print(train_deck)
+
+def destination_deck_test():
+    destination_deck = deck.Deck('Test')
+    destination_deck.add(cards.DestinationCard(('Deluth', 'Denver'), 1))
+    destination_deck.add(cards.DestinationCard(('Boston', 'New York'), 4))
+    destination_deck.add(cards.DestinationCard(('Salt Lake City', 'Montrael'), 2))
+    destination_deck.add(cards.DestinationCard(('Deluth', 'New York'), 1))
+    destination_deck.add(cards.DestinationCard(('Charleston', 'Denver'), 5))
+
+    print(destination_deck)
+
+train_deck_test()
+destination_deck_test()
