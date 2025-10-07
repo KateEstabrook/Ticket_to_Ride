@@ -29,7 +29,8 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Calgary", 3, 
           ("Duluth", "Chicago", 3, "red"), ("Duluth", "Totonto", 6, "pink"), 
           ("Omaha", "Chicago", 4, "blue"), ("Omaha", "Kansas City", 1, "colorless"), 
           ("Omaha", "Kansas City", 1, "colorless"), ("Kansas City", "Saint Louis", 2, "pink"),
-          ("Kansas City", "Saint Louis", 2, "blue"),
+          ("Kansas City", "Saint Louis", 2, "blue"), ("Kansas City", "Oklahoma City", 2, "colorless"),
+          ("Kansas City", "Oklahoma City", 2, "colorless"),
           ] 
 
 
