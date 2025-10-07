@@ -7,353 +7,96 @@ import arcade
 
 PLAYER_SCALING = 0.05
 
-WINDOW_WIDTH = 1150
-WINDOW_HEIGHT = 720
+SCREEN_WIDTH, SCREEN_HEIGHT = arcade.get_display_size()
 WINDOW_TITLE = "Ticket to Ride"
+WINDOW_WIDTH = SCREEN_WIDTH
+WINDOW_HEIGHT = SCREEN_HEIGHT - 115
+
+BOARD_WIDTH = 1150
+BOARD_HEIGHT = 720
+BOARD_LEFT = (WINDOW_WIDTH - BOARD_WIDTH) // 2
+BOARD_BOTTOM = (WINDOW_HEIGHT - BOARD_HEIGHT) // 2
 
 CITY_SCALE = 0.0111
 CITY_SCALE_YELLOW = 0.016
 
+
 CITIES = {
-    "Calgary" : {
-        "CITY_IMG_X" : 587, "CITY_IMG_Y" : 212
-    },
-    "Vancouver" : {
-        "CITY_IMG_X" : 266, "CITY_IMG_Y" : 255
-    },
-    "Seattle": {
-        "CITY_IMG_X" : 261, "CITY_IMG_Y" : 390
-    },
-    "Portland": {
-        "CITY_IMG_X" : 207, "CITY_IMG_Y" : 512
-    },
-    "San Francisco": {
-        "CITY_IMG_X" : 173, "CITY_IMG_Y" : 995
-    },
-    "Los Angeles": {
-        "CITY_IMG_X" : 362, "CITY_IMG_Y" : 1250
-    },
-    "Helena": {
-        "CITY_IMG_X" : 832, "CITY_IMG_Y" : 535
-    },
-    "Salt Lake City": {
-        "CITY_IMG_X" : 655, "CITY_IMG_Y" : 838
-    },
-    "Las Vegas": {
-        "CITY_IMG_X": 520, "CITY_IMG_Y": 1108
-    },
-    "Phoenix": {
-        "CITY_IMG_X": 656, "CITY_IMG_Y": 1268
-    },
-    "Winnipeg": {
-        "CITY_IMG_X": 1134, "CITY_IMG_Y": 238
-    },
-    "Denver": {
-        "CITY_IMG_X": 974, "CITY_IMG_Y": 915
-    },
-    "Santa Fe": {
-        "CITY_IMG_X": 956, "CITY_IMG_Y": 1134
-    },
-    "El Paso": {
-        "CITY_IMG_X": 944, "CITY_IMG_Y": 1355
-    },
-    "Duluth": {
-        "CITY_IMG_X": 1410, "CITY_IMG_Y": 520
-    },
-    "Omaha": {
-        "CITY_IMG_X": 1334, "CITY_IMG_Y": 747
-    },
-    "Kansas City": {
-        "CITY_IMG_X": 1385, "CITY_IMG_Y": 870
-    },
-    "Oklahoma City": {
-        "CITY_IMG_X": 1338, "CITY_IMG_Y": 1082
-    },
-    "Dallas": {
-        "CITY_IMG_X": 1385, "CITY_IMG_Y": 1297
-    },
-    "Houston": {
-        "CITY_IMG_X": 1486, "CITY_IMG_Y": 1395
-    },
-    "Sault St. Marie": {
-        "CITY_IMG_X": 1720, "CITY_IMG_Y": 364
-    },
-    "Chicago": {
-        "CITY_IMG_X": 1708, "CITY_IMG_Y": 674
-    },
-    "Saint Louis": {
-        "CITY_IMG_X": 1600, "CITY_IMG_Y": 874
-    },
-    "Little Rock": {
-        "CITY_IMG_X": 1558, "CITY_IMG_Y": 1092
-    },
-    "New Orleans": {
-        "CITY_IMG_X": 1715, "CITY_IMG_Y": 1365
-    },
-    "Toronto": {
-        "CITY_IMG_X": 1986, "CITY_IMG_Y": 411
-    },
-    "Pittsburgh": {
-        "CITY_IMG_X": 2029, "CITY_IMG_Y": 635
-    },
-    "Nashville": {
-        "CITY_IMG_X": 1828, "CITY_IMG_Y": 970
-    },
-    "Atlanta": {
-        "CITY_IMG_X": 1950, "CITY_IMG_Y": 1052
-    },
-    "Charleston": {
-        "CITY_IMG_X": 2180, "CITY_IMG_Y": 1071
-    },
-    "Miami": {
-        "CITY_IMG_X": 2259, "CITY_IMG_Y": 1459
-    },
-    "Raleigh": {
-        "CITY_IMG_X": 2112, "CITY_IMG_Y": 912
-    },
-    "Washington": {
-        "CITY_IMG_X": 2255, "CITY_IMG_Y": 747
-    },
-    "New York": {
-        "CITY_IMG_X": 2233, "CITY_IMG_Y": 526
-    },
-    "Boston": {
-        "CITY_IMG_X": 2363, "CITY_IMG_Y": 346
-    },
-    "Montreal": {
-        "CITY_IMG_X": 2189, "CITY_IMG_Y": 200
-    }
+    "Calgary": {"CITY_IMG_X": 587, "CITY_IMG_Y": 212},
+    "Vancouver": {"CITY_IMG_X": 266, "CITY_IMG_Y": 255},
+    "Seattle": {"CITY_IMG_X": 261, "CITY_IMG_Y": 390},
+    "Portland": {"CITY_IMG_X": 207, "CITY_IMG_Y": 512},
+    "San Francisco": {"CITY_IMG_X": 173, "CITY_IMG_Y": 995},
+    "Los Angeles": {"CITY_IMG_X": 362, "CITY_IMG_Y": 1250},
+    "Helena": {"CITY_IMG_X": 832, "CITY_IMG_Y": 535},
+    "Salt Lake City": {"CITY_IMG_X": 655, "CITY_IMG_Y": 838},
+    "Las Vegas": {"CITY_IMG_X": 520, "CITY_IMG_Y": 1108},
+    "Phoenix": {"CITY_IMG_X": 656, "CITY_IMG_Y": 1268},
+    "Winnipeg": {"CITY_IMG_X": 1134, "CITY_IMG_Y": 238},
+    "Denver": {"CITY_IMG_X": 974, "CITY_IMG_Y": 915},
+    "Santa Fe": {"CITY_IMG_X": 956, "CITY_IMG_Y": 1134},
+    "El Paso": {"CITY_IMG_X": 944, "CITY_IMG_Y": 1355},
+    "Duluth": {"CITY_IMG_X": 1410, "CITY_IMG_Y": 520},
+    "Omaha": {"CITY_IMG_X": 1334, "CITY_IMG_Y": 747},
+    "Kansas City": {"CITY_IMG_X": 1385, "CITY_IMG_Y": 870},
+    "Oklahoma City": {"CITY_IMG_X": 1338, "CITY_IMG_Y": 1082},
+    "Dallas": {"CITY_IMG_X": 1385, "CITY_IMG_Y": 1297},
+    "Houston": {"CITY_IMG_X": 1486, "CITY_IMG_Y": 1395},
+    "Sault St. Marie": {"CITY_IMG_X": 1720, "CITY_IMG_Y": 364},
+    "Chicago": {"CITY_IMG_X": 1708, "CITY_IMG_Y": 674},
+    "Saint Louis": {"CITY_IMG_X": 1600, "CITY_IMG_Y": 874},
+    "Little Rock": {"CITY_IMG_X": 1558, "CITY_IMG_Y": 1092},
+    "New Orleans": {"CITY_IMG_X": 1715, "CITY_IMG_Y": 1365},
+    "Toronto": {"CITY_IMG_X": 1986, "CITY_IMG_Y": 411},
+    "Pittsburgh": {"CITY_IMG_X": 2029, "CITY_IMG_Y": 635},
+    "Nashville": {"CITY_IMG_X": 1828, "CITY_IMG_Y": 970},
+    "Atlanta": {"CITY_IMG_X": 1950, "CITY_IMG_Y": 1052},
+    "Charleston": {"CITY_IMG_X": 2180, "CITY_IMG_Y": 1071},
+    "Miami": {"CITY_IMG_X": 2259, "CITY_IMG_Y": 1459},
+    "Raleigh": {"CITY_IMG_X": 2112, "CITY_IMG_Y": 912},
+    "Washington": {"CITY_IMG_X": 2255, "CITY_IMG_Y": 747},
+    "New York": {"CITY_IMG_X": 2233, "CITY_IMG_Y": 526},
+    "Boston": {"CITY_IMG_X": 2363, "CITY_IMG_Y": 346},
+    "Montreal": {"CITY_IMG_X": 2189, "CITY_IMG_Y": 200}
 }
 
 ROUTES = {
-    "Vancouver": {
-        "Seattle": 1,
-        "Calgary": 3
-    },
-    "Seattle": {
-        "Portland": 1,
-        "Calgary": 4,
-        "Vancouver": 1,
-        "Helena": 6
-    },
-    "Portland": {
-        "San Francisco": 5,
-        "Seattle": 1,
-        "Salt Lake City": 6
-    },
-    "San Francisco": {
-        "Portland": 5,
-        "Salt Lake City": 5,
-        "Los Angeles": 3
-    },
-    "Los Angeles": {
-        "San Francisco": 3,
-        "Las Vegas": 2,
-        "Phoenix": 3,
-        "El Paso": 6
-    },
-    "Calgary": {
-        "Vancouver": 3,
-        "Seattle": 4,
-        "Helena": 4,
-        "Winnipeg": 6
-    },
-    "Helena": {
-        "Calgary": 4,
-        "Seattle": 6,
-        "Salt Lake City": 3,
-        "Winnipeg": 4,
-        "Duluth": 6,
-        "Omaha": 5,
-        "Denver": 4
-    },
-    "Salt Lake City": {
-        "Portland": 6,
-        "San Francisco": 5,
-        "Las Vegas": 3,
-        "Denver": 3,
-        "Helena": 3
-    },
-    "Las Vegas": {
-        "Salt Lake City": 3,
-        "Los Angeles": 2
-    },
-    "Phoenix": {
-        "Los Angeles": 3,
-        "Denver": 5,
-        "Santa Fe": 3,
-        "El Paso": 3
-    },
-    "Winnipeg": {
-        "Calgary": 6,
-        "Helena": 4,
-        "Duluth": 4,
-        "Sault St. Marie": 6
-    },
-    "Denver": {
-        "Helena": 4,
-        "Salt Lake City": 3,
-        "Phoenix": 5,
-        "Omaha": 4,
-        "Oklahoma City": 4,
-        "Santa Fe": 2,
-        "Kansas City": 4
-    },
-    "Santa Fe": {
-        "Denver": 2,
-        "Phoenix": 3,
-        "El Paso": 2,
-        "Oklahoma City": 3
-    },
-    "El Paso": {
-        "Santa Fe": 2,
-        "Phoenix": 3,
-        "Los Angeles": 6,
-        "Oklahoma City": 5,
-        "Dallas": 4,
-        "Houston": 6
-    },
-    "Duluth": {
-        "Winnipeg": 4,
-        "Helena": 6,
-        "Omaha": 2,
-        "Chicago": 3,
-        "Toronto": 6,
-        "Sault St. Marie": 3
-    },
-    "Omaha": {
-        "Duluth": 2,
-        "Helena": 5,
-        "Chicago": 4,
-        "Kansas City": 1,
-        "Denver": 4
-    },
-    "Kansas City": {
-        "Omaha": 1,
-        "Denver": 4,
-        "Saint Louis": 2,
-        "Oklahoma City": 2
-    },
-    "Oklahoma City": {
-        "Kansas City": 2,
-        "Denver": 4,
-        "El Paso": 5,
-        "Dallas": 2,
-        "Little Rock": 2,
-        "Santa Fe": 3
-    },
-    "Dallas": {
-        "El Paso": 4,
-        "Houston": 1,
-        "Oklahoma City": 2,
-        "Little Rock":2
-    },
-    "Houston": {
-        "Dallas": 1,
-        "El Paso": 6,
-        "New Orleans": 2
-    },
-    "Sault St. Marie": {
-        "Winnipeg": 6,
-        "Duluth": 3,
-        "Montreal": 5,
-        "Toronto": 2
-    },
-    "Chicago": {
-        "Toronto": 4,
-        "Duluth": 3,
-        "Omaha": 4,
-        "Saint Louis": 2,
-        "Pittsburgh": 3
-    },
-    "Saint Louis": {
-        "Chicago": 2,
-        "Pittsburgh": 5,
-        "Nashville": 2,
-        "Little Rock": 2,
-        "Kansas City": 2
-    },
-    "Little Rock": {
-        "Saint Louis": 2,
-        "Nashville": 3,
-        "New Orleans": 3,
-        "Dallas": 2,
-        "Oklahoma City": 2
-    },
-    "New Orleans": {
-        "Little Rock": 3,
-        "Houston": 2,
-        "Atlanta": 4,
-        "Miami": 6
-    },
-    "Toronto": {
-        "Sault St. Marie": 2,
-        "Montreal": 3,
-        "Duluth": 6,
-        "Chicago": 4,
-        "Pittsburgh": 2,
-    },
-    "Pittsburgh": {
-        "Toronto": 2,
-        "Chicago": 3,
-        "New York": 2,
-        "Saint Louis": 5,
-        "Nashville": 4,
-        "Washington": 2,
-        "Raleigh": 2
-    },
-    "Nashville": {
-        "Saint Louis": 2,
-        "Pittsburgh": 4,
-        "Little Rock": 3,
-        "Atlanta": 1,
-        "Raleigh": 3
-    },
-    "Atlanta": {
-        "Nashville": 1,
-        "Raleigh": 2,
-        "Charleston": 2,
-        "Miami": 5,
-        "New Orleans": 4
-    },
-    "Charleston": {
-        "Raleigh": 2,
-        "Atlanta": 2,
-        "Miami": 4
-    },
-    "Miami": {
-        "Charleston": 4,
-        "Atlanta": 5,
-        "New Orleans": 6
-    },
-    "Raleigh": {
-        "Charleston": 2,
-        "Atlanta": 2,
-        "Nashville": 3,
-        "Washington": 2,
-        "Pittsburgh": 2
-    },
-    "Washington": {
-        "Raleigh": 2,
-        "Pittsburgh": 2,
-        "New York": 2
-    },
-    "New York": {
-        "Washington": 2,
-        "Pittsburgh": 2,
-        "Montreal": 3,
-        "Boston": 2
-    },
-    "Boston": {
-        "New York": 2,
-        "Montreal": 2
-    },
-    "Montreal": {
-        "Boston": 2,
-        "New York": 3,
-        "Toronto": 3,
-        "Sault St. Marie": 5
-    }
+    "Vancouver": {"Seattle": 1, "Calgary": 3},
+    "Seattle": {"Portland": 1, "Calgary": 4, "Vancouver": 1, "Helena": 6},
+    "Portland": {"San Francisco": 5, "Seattle": 1, "Salt Lake City": 6},
+    "San Francisco": {"Portland": 5, "Salt Lake City": 5, "Los Angeles": 3},
+    "Los Angeles": {"San Francisco": 3, "Las Vegas": 2, "Phoenix": 3, "El Paso": 6},
+    "Calgary": {"Vancouver": 3, "Seattle": 4, "Helena": 4, "Winnipeg": 6},
+    "Helena": {"Calgary": 4, "Seattle": 6, "Salt Lake City": 3, "Winnipeg": 4, "Duluth": 6, "Omaha": 5, "Denver": 4},
+    "Salt Lake City": {"Portland": 6, "San Francisco": 5, "Las Vegas": 3, "Denver": 3, "Helena": 3},
+    "Las Vegas": {"Salt Lake City": 3, "Los Angeles": 2},
+    "Phoenix": {"Los Angeles": 3, "Denver": 5, "Santa Fe": 3, "El Paso": 3},
+    "Winnipeg": {"Calgary": 6, "Helena": 4, "Duluth": 4, "Sault St. Marie": 6},
+    "Denver": {"Helena": 4, "Salt Lake City": 3, "Phoenix": 5, "Omaha": 4, "Oklahoma City": 4, "Santa Fe": 2, "Kansas City": 4},
+    "Santa Fe": {"Denver": 2, "Phoenix": 3, "El Paso": 2, "Oklahoma City": 3},
+    "El Paso": {"Santa Fe": 2, "Phoenix": 3, "Los Angeles": 6, "Oklahoma City": 5, "Dallas": 4, "Houston": 6},
+    "Duluth": {"Winnipeg": 4, "Helena": 6, "Omaha": 2, "Chicago": 3, "Toronto": 6, "Sault St. Marie": 3},
+    "Omaha": {"Duluth": 2, "Helena": 5, "Chicago": 4, "Kansas City": 1, "Denver": 4},
+    "Kansas City": {"Omaha": 1, "Denver": 4, "Saint Louis": 2, "Oklahoma City": 2},
+    "Oklahoma City": {"Kansas City": 2, "Denver": 4, "El Paso": 5, "Dallas": 2, "Little Rock": 2, "Santa Fe": 3},
+    "Dallas": {"El Paso": 4, "Houston": 1, "Oklahoma City": 2, "Little Rock": 2},
+    "Houston": {"Dallas": 1, "El Paso": 6, "New Orleans": 2},
+    "Sault St. Marie": {"Winnipeg": 6, "Duluth": 3, "Montreal": 5, "Toronto": 2},
+    "Chicago": {"Toronto": 4, "Duluth": 3, "Omaha": 4, "Saint Louis": 2, "Pittsburgh": 3},
+    "Saint Louis": {"Chicago": 2, "Pittsburgh": 5, "Nashville": 2, "Little Rock": 2, "Kansas City": 2},
+    "Little Rock": {"Saint Louis": 2, "Nashville": 3, "New Orleans": 3, "Dallas": 2, "Oklahoma City": 2},
+    "New Orleans": {"Little Rock": 3, "Houston": 2, "Atlanta": 4, "Miami": 6},
+    "Toronto": {"Sault St. Marie": 2, "Montreal": 3, "Duluth": 6, "Chicago": 4, "Pittsburgh": 2},
+    "Pittsburgh": {"Toronto": 2, "Chicago": 3, "New York": 2, "Saint Louis": 5, "Nashville": 4, "Washington": 2, "Raleigh": 2},
+    "Nashville": {"Saint Louis": 2, "Pittsburgh": 4, "Little Rock": 3, "Atlanta": 1, "Raleigh": 3},
+    "Atlanta": {"Nashville": 1, "Raleigh": 2, "Charleston": 2, "Miami": 5, "New Orleans": 4},
+    "Charleston": {"Raleigh": 2, "Atlanta": 2, "Miami": 4},
+    "Miami": {"Charleston": 4, "Atlanta": 5, "New Orleans": 6},
+    "Raleigh": {"Charleston": 2, "Atlanta": 2, "Nashville": 3, "Washington": 2, "Pittsburgh": 2},
+    "Washington": {"Raleigh": 2, "Pittsburgh": 2, "New York": 2},
+    "New York": {"Washington": 2, "Pittsburgh": 2, "Montreal": 3, "Boston": 2},
+    "Boston": {"New York": 2, "Montreal": 2},
+    "Montreal": {"Boston": 2, "New York": 3, "Toronto": 3, "Sault St. Marie": 5}
 }
 
 
@@ -413,8 +156,6 @@ class GameView(arcade.View):
         # Don't show the mouse cursor
         self.window.set_mouse_visible(False)
 
-        # Set the background color
-        self.background_color = arcade.color.AMAZON
 
     def reset(self):
         """Restart the game."""
@@ -431,9 +172,9 @@ class GameView(arcade.View):
         if top_left:
             iy = self.background.height - iy
 
-        sx = WINDOW_WIDTH / self.background.width
-        sy = WINDOW_HEIGHT / self.background.height
-        return ix * sx, iy * sy
+        sx = BOARD_WIDTH / self.background.width
+        sy = BOARD_HEIGHT / self.background.height
+        return ix * sx + BOARD_LEFT, iy * sy + BOARD_BOTTOM
 
     def place_city(self, ix: float, iy: float, *, top_left: bool = False, scale: float | None = None) -> None:
         """
@@ -449,14 +190,13 @@ class GameView(arcade.View):
         """
         Render the screen.
         """
-
         # This command has to happen before we start drawing
         self.clear()
 
         # Draw the background texture
         arcade.draw_texture_rect(
             self.background,
-            arcade.LBWH(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT),
+            arcade.LBWH(BOARD_LEFT, BOARD_BOTTOM,  BOARD_WIDTH, BOARD_HEIGHT),
         )
 
         # Draw all the sprites.
