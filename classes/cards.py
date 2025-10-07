@@ -10,9 +10,9 @@
 """
 
 class DestinationCard:
-    def __init__(self, city_1, city_2, points):
-        self.city_1 = city_1
-        self.city_2 = city_2
+    def __init__(self, cities, points):
+        self.city_1 = cities[0]
+        self.city_2 = cities[1]
         self.points = points
         completed = False
 
