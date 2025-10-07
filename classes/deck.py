@@ -45,3 +45,9 @@ class Deck:
 
         def sort(self):
              self.cards.sort(key=operator.attrgetter('color'))
+        
+        def __str__(self):
+            s = ""
+            for card in self.cards:
+                 s += str(card) + '\n'
+            return f"{s}"

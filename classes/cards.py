@@ -15,6 +15,9 @@ class DestinationCard:
         self.city_2 = cities[1]
         self.points = points
         completed = False
+    
+    def __str__(self):
+        return f"{self.city_1} to {self.city_2}: {self.points}"
 
 
 class TrainCard:
@@ -23,3 +26,6 @@ class TrainCard:
 
     def get_color(self):
         return self.color
+
+    def __str__(self):
+        return f"{self.color}"
