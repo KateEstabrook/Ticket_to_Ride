@@ -26,7 +26,7 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, 
           ("Denver", "Kansas City", 4, "orange"), ("Santa Fe", "El Paso", 2, "colorless"), 
           ("Santa Fe", "Oklahoma City", 3, "blue"), ("El Paso", "Oklahoma City", 5, "yellow"), 
           ("El Paso", "Dallas", 4, "red"), ("El Paso", "Houston", 6, "green"), 
-          ("Duluth", "Omaha", 2, "colorless"), ("Duluth", "Omaha", 2, "colorless")
+          ("Duluth", "Omaha", 2, "colorless"), ("Duluth", "Omaha", 2, "colorless"),
           ("Duluth", "Sault St. Marie", 3, "colorless"),
           ("Duluth", "Chicago", 3, "red"), ("Duluth", "Toronto", 6, "pink"), 
           ("Omaha", "Chicago", 4, "blue"), ("Omaha", "Kansas City", 1, "colorless"), 
@@ -101,3 +101,4 @@ def route_test():
 train_deck_test()
 destination_deck_test()
 route_test()
+print(len(ROUTES))
