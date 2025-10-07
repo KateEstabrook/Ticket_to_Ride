@@ -219,6 +219,11 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         pass
 
+    # Helper to get the name of the city sprite in self.selected_cities
+    def sprite_to_name(self, spr: arcade.Sprite) -> str:
+        idx = self.city_list.index(spr)
+        return list(CITIES.keys())[idx]
+
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         if button == arcade.MOUSE_BUTTON_LEFT:
             # Generate a list of all cities that collided with the cursor
@@ -238,20 +243,38 @@ class GameView(arcade.View):
                 self.selected_cities.remove(city)
                 return
 
-            # Otherwise, select it; if already 2 selected, drop the newest first
+            if len(self.selected_cities) == 0:
+                # If no city is already selected, select it
+                city.set_texture(1)
+                city.scale = CITY_SCALE_YELLOW
+                self.selected_cities.append(city)
+                return
+
+            # Otherwise, select it; if already 2 selected, drop both
             if len(self.selected_cities) == 2:
                 newest = self.selected_cities.pop(1)
                 newest.set_texture(0)
                 newest.scale = CITY_SCALE
 
-            # Mark this one as selected
-            city.set_texture(1)
-            city.scale = CITY_SCALE_YELLOW
-            self.selected_cities.append(city)
+                oldest = self.selected_cities.pop(0)
+                oldest.set_texture(0)
+                oldest.scale = CITY_SCALE
 
+            first_city_name = self.sprite_to_name(self.selected_cities[0])
+            second_city_name = self.sprite_to_name(city)
 
+            if second_city_name in ROUTES.get(first_city_name, {}):
+                # Mark this one as selected
+                city.set_texture(1)
+                city.scale = CITY_SCALE_YELLOW
+                self.selected_cities.append(city)
+
+            # if this point is reached it means that the second city is
+            # not adjacent to the first, so it must not be connected by a path
+
+    # Actions to make if specific buttons are pressed
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.R:
+        if symbol == arcade.key.SPACE:
             self.reset()
         elif symbol == arcade.key.ESCAPE:
             self.window.close()
@@ -263,13 +286,12 @@ def main():
         window = arcade.Window(SCREEN_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, resizable=False)
         window.set_location(0, 0)
     else:
-        window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, fullscreen=True, resizable=False)
+        window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE, fullscreen=True, resizable=False)
 
     game = GameView()
     game.reset()
     window.show_view(game)
     arcade.run()
-
 
 
 if __name__ == "__main__":
