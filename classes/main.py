@@ -26,13 +26,15 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Calgary", 3, 
           ("Santa Fe", "Oklahoma City", 3, "blue"), ("El Paso", "Oklahoma City", 5, "yellow"), 
           ("El Paso", "Dallas", 4, "red"), ("El Paso", "Houston", 6, "green"), 
           ("Duluth", "Omaha", 2, "colorless"), ("Duluth", "Sault St. Marie", 3, "colorless"),
-          ("Duluth", "Chicago", 3, "red"), ("Duluth", "Totonto", 6, "pink")
+          ("Duluth", "Chicago", 3, "red"), ("Duluth", "Totonto", 6, "pink"), 
+          ("Omaha", "Chicago", 4, "blue"), ("Omaha", "Kansas City", 1, "colorless"), 
+          ("Omaha", "Kansas City", 1, "colorless"), ("Kansas City", "Saint Louis", 2, "pink"),
+          ("Kansas City", "Saint Louis", 2, "blue"),
           ] 
 
 
 
 ROUTES = {
-    "Omaha": {"Duluth": 2, "Helena": 5, "Chicago": 4, "Kansas City": 1, "Denver": 4},
     "Kansas City": {"Omaha": 1, "Denver": 4, "Saint Louis": 2, "Oklahoma City": 2},
     "Oklahoma City": {"Kansas City": 2, "Denver": 4, "El Paso": 5, "Dallas": 2, "Little Rock": 2, "Santa Fe": 3},
     "Dallas": {"El Paso": 4, "Houston": 1, "Oklahoma City": 2, "Little Rock": 2},
