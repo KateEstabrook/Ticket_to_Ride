@@ -19,3 +19,6 @@ class Route:
         
         def get_color (self):
             return self.color
+        
+        def __str__(self):
+            return f"{self.cities[0]} to {self.cities[1]}: {self.weight} {self.color}(s)"

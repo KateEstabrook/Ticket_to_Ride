@@ -9,7 +9,7 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Calgary", 3, 
           ("Seattle", "Portland", 1, "colorless"), ("Seattle", "Calgary", 4, "colorless"),
           ("Seattle", "Helena", 6, "yellow"), ("Portland", "San Francisco", 5, "green"),
           ("Portland", "San Francisco", 5, "pink"), ("Portland", "Salt Lake City", 6, "blue"),
-          ("San Francisco", "Salt Lake City", 5, "white"), ("San Francisco", "Salt Lake City", 5, "orange")
+          ("San Francisco", "Salt Lake City", 5, "white"), ("San Francisco", "Salt Lake City", 5, "orange"),
           ("San Francisco", "Los Angeles", 3, "yellow"), ("San Francisco", "Los Angeles", 3, "pink"),
           ("Los Angeles", "Las Vegas", 2, "colorless"), ("Los Angeles", "Phoenix", 3, "colorless"), 
           ("Los Angeles", "El Paso", 6, "black"), ("Calgary", "Helena", 4, "colorless"), 
@@ -83,5 +83,22 @@ def destination_deck_test():
 
     print(destination_deck)
 
+def route_test():
+    routes = []
+    routes.append(route.Route(("Vancouver", "Seattle", 1, "colorless")))
+    routes.append(route.Route(("Vancouver", "Calgary", 3, "colorless")))
+    routes.append(route.Route(("Seattle", "Portland", 1, "colorless")))
+    routes.append(route.Route(("Seattle", "Calgary", 4, "colorless")))
+    routes.append(route.Route(("Seattle", "Helena", 6, "yellow")))
+    routes.append(route.Route(("Portland", "San Francisco", 5, "green")))
+    routes.append(route.Route(("Portland", "San Francisco", 5, "pink")))
+    routes.append(route.Route(("Portland", "Salt Lake City", 6, "blue")))
+    routes.append(route.Route(("San Francisco", "Salt Lake City", 5, "white")))
+    routes.append(route.Route(("San Francisco", "Salt Lake City", 5, "orange")))
+
+    for r in routes:
+        print(r)
+
 train_deck_test()
 destination_deck_test()
+route_test()
