@@ -17,7 +17,6 @@ Route Card Deck (30 routes) (essential, hard)
 """
 
 import operator
-
 import cards
 
 STARTING_NUM_CARDS = 0
