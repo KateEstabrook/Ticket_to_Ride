@@ -6,8 +6,16 @@ Route class:
 - Weight (num)
 """
 class Route:
-        def __init__(self, city_1, city_2, weight, color):
-            self.city_1 = city_1
-            self.city_2 = city_2
+        def __init__(self, cities, weight, color):
+            self.cities = cities
             self.weight = weight
             self.color = color
+
+        def get_cities (self):
+            return self.cities
+        
+        def get_weight (self):
+            return self.weight
+        
+        def get_color (self):
+            return self.color
