@@ -10,7 +10,7 @@ PLAYER_SCALING = 0.05
 SCREEN_WIDTH, SCREEN_HEIGHT = arcade.get_display_size()
 WINDOW_TITLE = "Ticket to Ride"
 WINDOW_WIDTH = SCREEN_WIDTH
-WINDOW_HEIGHT = SCREEN_HEIGHT
+WINDOW_HEIGHT = SCREEN_HEIGHT - 115
 
 BOARD_WIDTH = 1150
 BOARD_HEIGHT = 720
@@ -253,18 +253,19 @@ class GameView(arcade.View):
 
 def main():
     """ Main function """
-    # Create a window class. This is what actually shows up on screen
-    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
-    window.set_fullscreen(True)
-    # Create and set up the GameView
+    import platform
+
+    if platform.system() == "Darwin":  # macOS
+        window = arcade.Window(SCREEN_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, resizable=False)
+        window.set_location(0, 0)
+    else:
+        window = arcade.Window(fullscreen=True, title=WINDOW_TITLE)
+
     game = GameView()
     game.reset()
-
-    # Show GameView on screen
     window.show_view(game)
-
-    # Start the arcade game loop
     arcade.run()
+
 
 
 if __name__ == "__main__":
