@@ -5,27 +5,33 @@ import deck
 import cards
 
 
-ROUTES = [("Vancouver", "Seattle", 1, )]
-
+ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Calgary", 3, "colorless"), 
+          ("Seattle", "Portland", 1, "colorless"), ("Seattle", "Calgary", 4, "colorless"),
+          ("Seattle", "Helena", 6, "yellow"), ("Portland", "San Francisco", 5, "green"),
+          ("Portland", "San Francisco", 5, "pink"), ("Portland", "Salt Lake City", 6, "blue"),
+          ("San Francisco", "Salt Lake City", 5, "white"), ("San Francisco", "Salt Lake City", 5, "orange")
+          ("San Francisco", "Los Angeles", 3, "yellow"), ("San Francisco", "Los Angeles", 3, "pink"),
+          ("Los Angeles", "Las Vegas", 2, "colorless"), ("Los Angeles", "Phoenix", 3, "colorless"), 
+          ("Los Angeles", "El Paso", 6, "black"), ("Calgary", "Helena", 4, "colorless"), 
+          ("Calgary", "Winnipeg", 6, "white"), ("Helena", "Salt Lake City", 3, "pink"), 
+          ("Helena", "Winnipeg", 4, "blue"), ("Helena", "Duluth", 6, "orange"),
+          ("Helena", "Omaha", 5, "red"), ("Helena", "Denver", 4, "green"),  
+          ("Salt Lake City", "Denver", 3, "red"), ("Salt Lake City", "Denver", 3, "yellow"), 
+          ("Salt Lake City", "Las Vegas", 3, "orange"), ("Phoenix", "Denver", 5, "white"), 
+          ("Phoenix", "Santa Fe", 3, "colorless"), ("Phoenix", "El Paso", 3, "colorless"),
+          ("Winnipeg", "Duluth", 4, "black"), ("Winnipeg", "Sault St. Marie", 6, "colorless"), 
+          ("Denver", "Omaha", 4, "pink"), ("Denver", "Oklahoma City", 4, "red"), 
+          ("Denver", "Santa Fe", 2, "colorless"), ("Denver", "Kansas City", 4, "black"),
+          ("Denver", "Kansas City", 4, "orange"), ("Santa Fe", "El Paso", 2, "colorless"), 
+          ("Santa Fe", "Oklahoma City", 3, "blue"), ("El Paso", "Oklahoma City", 5, "yellow"), 
+          ("El Paso", "Dallas", 4, "red"), ("El Paso", "Houston", 6, "green"), 
+          ("Duluth", "Omaha", 2, "colorless"), ("Duluth", "Sault St. Marie", 3, "colorless"),
+          ("Duluth", "Chicago", 3, "red"), ("Duluth", "Totonto", 6, "pink")
+          ] 
 
 
 
 ROUTES = {
-    "Vancouver": {"Seattle": 1, "Calgary": 3},
-    "Seattle": {"Portland": 1, "Calgary": 4, "Vancouver": 1, "Helena": 6},
-    "Portland": {"San Francisco": 5, "Seattle": 1, "Salt Lake City": 6},
-    "San Francisco": {"Portland": 5, "Salt Lake City": 5, "Los Angeles": 3},
-    "Los Angeles": {"San Francisco": 3, "Las Vegas": 2, "Phoenix": 3, "El Paso": 6},
-    "Calgary": {"Vancouver": 3, "Seattle": 4, "Helena": 4, "Winnipeg": 6},
-    "Helena": {"Calgary": 4, "Seattle": 6, "Salt Lake City": 3, "Winnipeg": 4, "Duluth": 6, "Omaha": 5, "Denver": 4},
-    "Salt Lake City": {"Portland": 6, "San Francisco": 5, "Las Vegas": 3, "Denver": 3, "Helena": 3},
-    "Las Vegas": {"Salt Lake City": 3, "Los Angeles": 2},
-    "Phoenix": {"Los Angeles": 3, "Denver": 5, "Santa Fe": 3, "El Paso": 3},
-    "Winnipeg": {"Calgary": 6, "Helena": 4, "Duluth": 4, "Sault St. Marie": 6},
-    "Denver": {"Helena": 4, "Salt Lake City": 3, "Phoenix": 5, "Omaha": 4, "Oklahoma City": 4, "Santa Fe": 2, "Kansas City": 4},
-    "Santa Fe": {"Denver": 2, "Phoenix": 3, "El Paso": 2, "Oklahoma City": 3},
-    "El Paso": {"Santa Fe": 2, "Phoenix": 3, "Los Angeles": 6, "Oklahoma City": 5, "Dallas": 4, "Houston": 6},
-    "Duluth": {"Winnipeg": 4, "Helena": 6, "Omaha": 2, "Chicago": 3, "Toronto": 6, "Sault St. Marie": 3},
     "Omaha": {"Duluth": 2, "Helena": 5, "Chicago": 4, "Kansas City": 1, "Denver": 4},
     "Kansas City": {"Omaha": 1, "Denver": 4, "Saint Louis": 2, "Oklahoma City": 2},
     "Oklahoma City": {"Kansas City": 2, "Denver": 4, "El Paso": 5, "Dallas": 2, "Little Rock": 2, "Santa Fe": 3},
