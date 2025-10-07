@@ -16,7 +16,7 @@ CITY_MARKER_RADIUS = 8
 
 class FullscreenGame(arcade.Window):
     def __init__(self):
-        # Create windowed mode first (must be windowed at init on macOS)
+        # Windowed init first for macOS
         screen_width, screen_height = arcade.get_display_size()
         super().__init__(screen_width, screen_height, "Ticket to Ride", resizable=False)
 
@@ -29,17 +29,13 @@ class FullscreenGame(arcade.Window):
         arcade.set_background_color(arcade.color.ALMOND)
 
     def on_show(self):
-        """
-        Called when the window is shown. This is the safe place to switch to fullscreen on macOS.
-        """
+        """Safe fullscreen toggle on macOS"""
         self.set_fullscreen(True)
         self.win_width, self.win_height = self.get_size()
         self._update_scale_and_offset()
 
     def _update_scale_and_offset(self):
-        scale_x = self.win_width / BOARD_WIDTH
-        scale_y = self.win_height / BOARD_HEIGHT
-        self.board_scale = min(scale_x, scale_y)
+        self.board_scale = min(self.win_width / BOARD_WIDTH, self.win_height / BOARD_HEIGHT)
         self.offset_x = (self.win_width - BOARD_WIDTH * self.board_scale) / 2
         self.offset_y = (self.win_height - BOARD_HEIGHT * self.board_scale) / 2
 
@@ -50,13 +46,18 @@ class FullscreenGame(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
+
+        # LBWH style
         left = self.offset_x
         bottom = self.offset_y
-        right = left + BOARD_WIDTH * self.board_scale
-        top = bottom + BOARD_HEIGHT * self.board_scale
+        width = BOARD_WIDTH * self.board_scale
+        height = BOARD_HEIGHT * self.board_scale
 
-        arcade.draw_lrtb_rectangle_filled(left, right, top, bottom, arcade.color.LIGHT_GRAY)
-        arcade.draw_lrtb_rectangle_outline(left, right, top, bottom, arcade.color.GRAY, 4)
+        center_x = left + width / 2
+        center_y = bottom + height / 2
+
+        arcade.draw_rectangle_filled(center_x, center_y, width, height, arcade.color.LIGHT_GRAY)
+        arcade.draw_rectangle_outline(center_x, center_y, width, height, arcade.color.GRAY, border_width=4)
 
         for name, (bx, by) in CITY_POINTS.items():
             sx, sy = self.board_to_screen(bx, by)
