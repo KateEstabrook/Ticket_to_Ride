@@ -7,15 +7,10 @@ import arcade
 
 PLAYER_SCALING = 0.05
 
-SCREEN_WIDTH, SCREEN_HEIGHT = arcade.get_display_size()
+# These are just a seed size for window creation; we switch to fullscreen after.
+WINDOW_WIDTH = 1150
+WINDOW_HEIGHT = 720
 WINDOW_TITLE = "Ticket to Ride"
-WINDOW_WIDTH = SCREEN_WIDTH
-WINDOW_HEIGHT = SCREEN_HEIGHT - 115
-
-BOARD_WIDTH = 1150
-BOARD_HEIGHT = 720
-BOARD_LEFT = (WINDOW_WIDTH - BOARD_WIDTH) // 2
-BOARD_BOTTOM = (WINDOW_HEIGHT - BOARD_HEIGHT) // 2
 
 CITY_SCALE = 0.0111
 CITY_SCALE_YELLOW = 0.016
@@ -102,111 +97,114 @@ ROUTES = {
 
 class GameView(arcade.View):
     """
-    Main application class
+    Fullscreen view with letterboxed board centered on screen.
     """
 
     def __init__(self):
-        """Initializer"""
-
-        # Call the parent class initializer
         super().__init__()
 
-        # Background image will be stored in this variable
+        # Black bars around the board
+        arcade.set_background_color(arcade.color.BLACK)
+
+        # Load the board image (its intrinsic size defines the aspect ratio)
         self.background = arcade.load_texture("images/board.png")
 
-        # One list for all city sprites (create it ONCE)
-        self.city_list = arcade.SpriteList()
+        # Layout values computed from current window size
+        self.fit_scale = 1.0
+        self.board_left = 0.0
+        self.board_bottom = 0.0
 
-        # Load textures once
+        # Compute layout BEFORE placing cities
+        self._compute_layout()
+
+        # Build city sprites
+        self.city_list = arcade.SpriteList()
         base_tex = arcade.load_texture("images/city.png")
         hover_tex = arcade.load_texture("images/button_yellow.png")
 
-        # Build sprites from CITIES
-        for city in CITIES:
-            # Skip cities with no coordinates yet
-            if "CITY_IMG_X" not in CITIES[city].keys() or "CITY_IMG_Y" not in CITIES[city].keys():
+        for name, d in CITIES.items():
+            if "CITY_IMG_X" not in d or "CITY_IMG_Y" not in d:
                 continue
+            spr = arcade.Sprite()
+            spr.append_texture(base_tex)
+            spr.append_texture(hover_tex)
+            spr.set_texture(0)
+            spr.scale = CITY_SCALE
 
-            # Create one sprite per city
-            self.city = arcade.Sprite()  # keep your place_city logic (uses self.city)
-            self.city.append_texture(base_tex)
-            self.city.append_texture(hover_tex)
-            self.city.set_texture(0)
-            self.city.scale = CITY_SCALE
+            # Keep original image coords on the sprite so we can re-place on resize
+            spr._img_ix = d["CITY_IMG_X"]
+            spr._img_iy = d["CITY_IMG_Y"]
 
-            # Position it using your helper
-            self.place_city(
-                CITIES[city]["CITY_IMG_X"], CITIES[city]["CITY_IMG_Y"],
-                top_left=True, scale=None  # scale already set above
-            )
+            spr.center_x, spr.center_y = self.img_to_screen(spr._img_ix, spr._img_iy, top_left=True)
+            self.city_list.append(spr)
 
-            # Add to the shared list
-            self.city_list.append(self.city)
+        self.selected_cities = []
 
-        self.selected_cities = []  # list of selected city sprites (max. 2)
-
-        # Variables that will hold sprite lists
-        self.player_sprite = arcade.Sprite(
-            "images/cursor.png",
-            scale=PLAYER_SCALING,
-        )
+        # Cursor sprite
+        self.player_sprite = arcade.Sprite("images/cursor.png", scale=PLAYER_SCALING)
         self.player_list = arcade.SpriteList()
         self.player_list.append(self.player_sprite)
 
-        # Don't show the mouse cursor
+        # Hide system mouse
         self.window.set_mouse_visible(False)
 
+    def _compute_layout(self):
+        """Compute scale and offsets so the board is centered with black borders."""
+        w, h = self.window.get_size()
+        img_w = self.background.width
+        img_h = self.background.height
 
-    def reset(self):
-        """Restart the game."""
-        # Set up the player
-        self.player_sprite.center_x = 50
-        self.player_sprite.center_y = 50
+        # Fit scale that preserves the board aspect ratio (letterbox/pillarbox)
+        self.fit_scale = min(w / img_w, h / img_h)
+
+        render_w = img_w * self.fit_scale
+        render_h = img_h * self.fit_scale
+        self.board_left = (w - render_w) / 2
+        self.board_bottom = (h - render_h) / 2
 
     def img_to_screen(self, ix: float, iy: float, *, top_left: bool = False) -> tuple[float, float]:
         """
-        Convert a coordinate on the background image (in image pixels) to the window/screen coordinate.
-        Works because you draw the background stretched to WINDOW_*.
+        Map pixel coords on the board image -> screen coords using fit scale + offsets.
         """
-        # Flip Y if coordinates were measured from the image's top edge
         if top_left:
-            iy = self.background.height - iy
+            iy = self.background.height - iy  # convert top-left Y to bottom-left Y
+        x = self.board_left + ix * self.fit_scale
+        y = self.board_bottom + iy * self.fit_scale
+        return x, y
 
-        sx = BOARD_WIDTH / self.background.width
-        sy = BOARD_HEIGHT / self.background.height
-        return ix * sx + BOARD_LEFT, iy * sy + BOARD_BOTTOM
-
-    def place_city(self, ix: float, iy: float, *, top_left: bool = False, scale: float | None = None) -> None:
-        """
-        Position the city sprite using image-pixel coordinates.
-        """
-        x, y = self.img_to_screen(ix, iy, top_left=top_left)
-        self.city.center_x = x
-        self.city.center_y = y
-        if scale is not None:
-            self.city.scale = scale
+    def reset(self):
+        self.player_sprite.center_x = 50
+        self.player_sprite.center_y = 50
 
     def on_draw(self):
-        """
-        Render the screen.
-        """
-        # This command has to happen before we start drawing
-        self.clear()
+        self.clear()  # clears to black
 
-        # Draw the background texture
+        # Draw the board centered with preserved aspect ratio
         arcade.draw_texture_rect(
             self.background,
-            arcade.LBWH(BOARD_LEFT, BOARD_BOTTOM,  BOARD_WIDTH, BOARD_HEIGHT),
+            arcade.LBWH(
+                self.board_left,
+                self.board_bottom,
+                self.background.width * self.fit_scale,
+                self.background.height * self.fit_scale,
+            ),
         )
 
-        # Draw all the sprites.
         self.city_list.draw()
         self.player_list.draw()
 
+    def on_resize(self, width: int, height: int):
+        """
+        Recompute layout and re-place city sprites when window size changes
+        (including entering/exiting fullscreen on some platforms).
+        """
+        super().on_resize(width, height)
+        self._compute_layout()
+        for spr in self.city_list:
+            spr.center_x, spr.center_y = self.img_to_screen(spr._img_ix, spr._img_iy, top_left=True)
+
+    # ---- input ----
     def on_mouse_motion(self, x, y, dx, dy):
-        """
-        Called whenever the mouse moves.
-        """
         self.player_sprite.center_x = x
         self.player_sprite.center_y = y
 
@@ -215,34 +213,30 @@ class GameView(arcade.View):
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         if button == arcade.MOUSE_BUTTON_LEFT:
-            # Generate a list of all cities that collided with the cursor
-            # fingertip = top-left corner of the cursor image
             tip_x = self.player_sprite.center_x - self.player_sprite.width / 3
             tip_y = self.player_sprite.center_y + self.player_sprite.height / 3
 
-            # which cities are exactly under that point?
             hits = arcade.get_sprites_at_point((tip_x, tip_y), self.city_list)
+
+            if not hits:
+                return  # avoid index error if clicking empty space
 
             city = hits[0]
 
-            # If this city is already selected -> deselect it
             if city in self.selected_cities:
                 city.set_texture(0)
                 city.scale = CITY_SCALE
                 self.selected_cities.remove(city)
                 return
 
-            # Otherwise, select it; if already 2 selected, drop the newest first
             if len(self.selected_cities) == 2:
                 newest = self.selected_cities.pop(1)
                 newest.set_texture(0)
                 newest.scale = CITY_SCALE
 
-            # Mark this one as selected
             city.set_texture(1)
             city.scale = CITY_SCALE_YELLOW
             self.selected_cities.append(city)
-
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.R:
@@ -253,19 +247,19 @@ class GameView(arcade.View):
 
 def main():
     """ Main function """
-    import platform
+    # Create a window (seed size), then switch to fullscreen
+    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+    window.set_fullscreen(True)
 
-    if platform.system() == "Darwin":  # macOS
-        window = arcade.Window(SCREEN_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, resizable=False)
-        window.set_location(0, 0)
-    else:
-        window = arcade.Window(fullscreen=True, title=WINDOW_TITLE)
-
+    # Create and set up the GameView
     game = GameView()
     game.reset()
-    window.show_view(game)
-    arcade.run()
 
+    # Show GameView on screen
+    window.show_view(game)
+
+    # Start the arcade game loop
+    arcade.run()
 
 
 if __name__ == "__main__":
