@@ -5,7 +5,8 @@ import deck
 import cards
 
 
-ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Calgary", 3, "colorless"), 
+ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, "colorless"),
+          ("Vancouver", "Calgary", 3, "colorless"), ("Seattle", "Portland", 1, "colorless"),
           ("Seattle", "Portland", 1, "colorless"), ("Seattle", "Calgary", 4, "colorless"),
           ("Seattle", "Helena", 6, "yellow"), ("Portland", "San Francisco", 5, "green"),
           ("Portland", "San Francisco", 5, "pink"), ("Portland", "Salt Lake City", 6, "blue"),
@@ -25,7 +26,8 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Calgary", 3, 
           ("Denver", "Kansas City", 4, "orange"), ("Santa Fe", "El Paso", 2, "colorless"), 
           ("Santa Fe", "Oklahoma City", 3, "blue"), ("El Paso", "Oklahoma City", 5, "yellow"), 
           ("El Paso", "Dallas", 4, "red"), ("El Paso", "Houston", 6, "green"), 
-          ("Duluth", "Omaha", 2, "colorless"), ("Duluth", "Sault St. Marie", 3, "colorless"),
+          ("Duluth", "Omaha", 2, "colorless"), ("Duluth", "Omaha", 2, "colorless")
+          ("Duluth", "Sault St. Marie", 3, "colorless"),
           ("Duluth", "Chicago", 3, "red"), ("Duluth", "Toronto", 6, "pink"), 
           ("Omaha", "Chicago", 4, "blue"), ("Omaha", "Kansas City", 1, "colorless"), 
           ("Omaha", "Kansas City", 1, "colorless"), ("Kansas City", "Saint Louis", 2, "pink"),
@@ -38,28 +40,25 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Calgary", 3, 
           ("Chicaco", "Toronto", 4, "white"), ("Chicaco", "Saint Louis", 2, "white"), 
           ("Chicaco", "Saint Louis", 2, "green"), ("Chicaco", "Pittsburgh", 3, "black"),
           ("Chicaco", "Pittsburgh", 3, "orange"), ("Saint Louis", "Pittsburgh", 5, "green"),
-          ("Saint Louis", "Nashville", 2, "colorless"),
+          ("Saint Louis", "Nashville", 2, "colorless"), ("Saint Louis", "Little Rock", 2, "colorless"),
+          ("Little Rock", "Nashville", 3, "white"), ("Little Rock", "New Orleans", 3, "green"),
+          ("New Orleans", "Atlanta", 4, "yellow"), ("New Orleans", "Atlanta", 4, "orange"), 
+          ("New Orleans", "Miami", 6, "red"), ("Toronto", "Montreal", 3, "colorless"),
+          ("Toronto", "Pittsburgh", 2, "colorless"), ("Pittsburgh", "New York", 2, "white"),
+          ("Pittsburgh", "New York", 2, "green"), ("Pittsburgh", "Nashville", 4, "yellow"),
+          ("Pittsburgh", "Washington", 2, "colorless"), ("Pittsburgh", "Raleigh", 2, "colorless"), 
+          ("Nashville", "Atlanta", 1, "colorless"), ("Nashville", "Raleigh", 3, "black"), 
+          ("Atlanta", "Raleigh", 2, "colorless"),  ("Atlanta", "Raleigh", 2, "colorless"), 
+          ("Atlanta", "Charleston", 2, "colorless"), ("Atlanta", "Miami", 5, "blue"), 
+          ("Charleston", "Raleigh", 2, "colorless"), ("Charleston", "Miami", 4, "pink"), 
+          ("Raleigh", "Washington", 2, "colorless"), ("Raleigh", "Washington", 2, "colorless"),
+          ("Washington", "New York", 2, "orange"), ("Washington", "New York", 2, "black"), 
+          ("New York", "Montreal", 4, "blue"), ("New York", "Boston", 2, "red"), 
+          ("New York", "Boston", 2, "yellow"), ("Boston", "Montreal", 2, "colorless"),
+          ("Boston", "Montreal", 2, "colorless")
           ] 
            
 
-
-
-ROUTES = {
-    "Saint Louis": {"Pittsburgh": 5, "Nashville": 2, "Little Rock": 2},
-    "Little Rock": {"Saint Louis": 2, "Nashville": 3, "New Orleans": 3, "Dallas": 2, "Oklahoma City": 2},
-    "New Orleans": {"Little Rock": 3, "Houston": 2, "Atlanta": 4, "Miami": 6},
-    "Toronto": {"Sault St. Marie": 2, "Montreal": 3, "Duluth": 6, "Chicago": 4, "Pittsburgh": 2},
-    "Pittsburgh": {"Toronto": 2, "Chicago": 3, "New York": 2, "Saint Louis": 5, "Nashville": 4, "Washington": 2, "Raleigh": 2},
-    "Nashville": {"Saint Louis": 2, "Pittsburgh": 4, "Little Rock": 3, "Atlanta": 1, "Raleigh": 3},
-    "Atlanta": {"Nashville": 1, "Raleigh": 2, "Charleston": 2, "Miami": 5, "New Orleans": 4},
-    "Charleston": {"Raleigh": 2, "Atlanta": 2, "Miami": 4},
-    "Miami": {"Charleston": 4, "Atlanta": 5, "New Orleans": 6},
-    "Raleigh": {"Charleston": 2, "Atlanta": 2, "Nashville": 3, "Washington": 2, "Pittsburgh": 2},
-    "Washington": {"Raleigh": 2, "Pittsburgh": 2, "New York": 2},
-    "New York": {"Washington": 2, "Pittsburgh": 2, "Montreal": 3, "Boston": 2},
-    "Boston": {"New York": 2, "Montreal": 2},
-    "Montreal": {"Boston": 2, "New York": 3, "Toronto": 3, "Sault St. Marie": 5}
-}
 
 
 def train_deck_test():
