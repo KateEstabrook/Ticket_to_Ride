@@ -25,7 +25,7 @@ BOARD_BOTTOM = (WINDOW_HEIGHT - BOARD_HEIGHT) // 2
 
 CITY_SCALE = 0.0111
 CITY_SCALE_YELLOW = 0.016
-TRAIN_SCALE = 0.26
+TRAIN_SCALE = 0.06
 
 CITIES = {
     "Calgary": {"CITY_IMG_X": 587, "CITY_IMG_Y": 212},
@@ -66,6 +66,7 @@ CITIES = {
     "Montreal": {"CITY_IMG_X": 2189, "CITY_IMG_Y": 200}
 }
 
+# TODO: Add path colors to ROUTES dictionary
 ROUTES = {
     "Vancouver": {"Seattle": 1, "Calgary": 3},
     "Seattle": {"Portland": 1, "Calgary": 4, "Vancouver": 1, "Helena": 6},
@@ -104,11 +105,12 @@ ROUTES = {
     "Boston": {"New York": 2, "Montreal": 2},
     "Montreal": {"Boston": 2, "New York": 3, "Toronto": 3, "Sault St. Marie": 5}
 }
-
+# TODO: Add indicator if it is a double route
 TRAINS = {
-    "SeattleCalgary": [(335, 385, 0), (424, 380, 172), (503, 347, 143), (560, 278, 118)],
-    "OmahaKansas": [(500, 500, 0)]
+    ("Seattle", "Calgary"): [(335, 385, 0), (424, 380, 172), (503, 347, 143), (560, 278, 118)],
+    ("Calgary", "Vancouver"):  [(341, 238, 174), (429, 230, 174),(517,219,174)]
 }
+
 
 
 class GameView(arcade.View):
@@ -138,38 +140,21 @@ class GameView(arcade.View):
         self.train_map = {}
 
         # Build sprites from TRAINS
-        for train in TRAINS:
-            for ix, iy, angle in TRAINS.get(train, []):
-                # Create one sprite per train position
+        for train, positions in TRAINS.items():
+            self.train_map[train] = []
+            for ix, iy, angle in positions:
                 train_sprite = arcade.Sprite()
-                train_sprite.append_texture(orange_route_texture)
-                train_sprite.append_texture(grey_route_texture)
-                train_sprite.append_texture(orange_train)
-
-                if train == "SeattleCalgary":
-                    train_sprite.set_texture(1)
-                else:
-                    train_sprite.set_texture(0)
-
+                train_sprite.append_texture(orange_route_texture)  # texture 0
+                train_sprite.append_texture(grey_route_texture)  # texture 1
+                train_sprite.append_texture(orange_train)  # texture 2
+                train_sprite.set_texture(1)  # start grey (inactive)
                 train_sprite.scale = TRAIN_SCALE
                 train_sprite.angle = angle
+                train_sprite.alpha = 0  # start fully transparent
                 self.place_train_sprite(ix, iy, train_sprite, top_left=True)
 
-                # Add to the shared list
                 self.train_list.append(train_sprite)
-
-            # Map city pairs to train sprites
-            if train == "SeattleCalgary":
-                city_pair = ("Seattle", "Calgary")
-            elif train == "OmahaKansas":
-                city_pair = ("Omaha", "Kansas City")
-            else:
-                continue
-
-            if city_pair not in self.train_map:
-                self.train_map[city_pair] = []
-
-            self.train_map[city_pair].extend([sprite for sprite in self.train_list if sprite in self.train_list[len(self.train_list) - len(list(TRAINS.get(train, []))) :]])
+                self.train_map[train].append(train_sprite)
 
         # One list for all city sprites (create it ONCE)
         self.city_list = arcade.SpriteList()
@@ -326,16 +311,8 @@ class GameView(arcade.View):
                 city.scale = CITY_SCALE_YELLOW
                 self.selected_cities.append(city)
 
-                # Update train sprites between these two cities
-                city_pair = (first_city_name, second_city_name)
-
-                # Check both directions since routes can go either way
-                if city_pair in self.train_map:
-                    for train_sprite in self.train_map[city_pair]:
-                        train_sprite.set_texture(2)
-                elif (second_city_name, first_city_name) in self.train_map:
-                    for train_sprite in self.train_map[(second_city_name, first_city_name)]:
-                        train_sprite.set_texture(2)
+                # Show trains between the two selected cities
+                self.show_trains_between(first_city_name, second_city_name)
 
             # if this point is reached it means that the second city is
             # not adjacent to the first, so it must not be connected by a path
@@ -346,6 +323,21 @@ class GameView(arcade.View):
             self.reset()
         elif symbol == arcade.key.ESCAPE:
             self.window.close()
+
+    def show_trains_between(self, city1, city2):
+        """Show train sprites for a route between two connected cities."""
+        city_pair = (city1, city2)
+        reverse_pair = (city2, city1)
+
+        # Check both directions
+        if city_pair in self.train_map:
+            for train_sprite in self.train_map[city_pair]:
+                train_sprite.set_texture(2)
+                train_sprite.alpha = 255  # make visible
+        elif reverse_pair in self.train_map:
+            for train_sprite in self.train_map[reverse_pair]:
+                train_sprite.set_texture(2)
+                train_sprite.alpha = 255  # make visible
 
 
 def main():
