@@ -66,7 +66,6 @@ CITIES = {
     "Montreal": {"CITY_IMG_X": 2189, "CITY_IMG_Y": 200}
 }
 
-# TODO: Add path colors to ROUTES dictionary
 ROUTES = {
     "Vancouver": {"Seattle": 1, "Calgary": 3},
     "Seattle": {"Portland": 1, "Calgary": 4, "Vancouver": 1, "Helena": 6},
@@ -105,12 +104,14 @@ ROUTES = {
     "Boston": {"New York": 2, "Montreal": 2},
     "Montreal": {"Boston": 2, "New York": 3, "Toronto": 3, "Sault St. Marie": 5}
 }
-# TODO: Add indicator if it is a double route
-TRAINS = {
-    ("Seattle", "Calgary"): [(335, 385, 0), (424, 380, 172), (503, 347, 143), (560, 278, 118)],
-    ("Calgary", "Vancouver"):  [(341, 238, 174), (429, 230, 174),(517,219,174)]
-}
 
+# For double routes, use list of lists
+TRAINS = {
+    ("Seattle", "Calgary"): [[(335, 385, 0), (424, 380, 172), (503, 347, 143), (560, 278, 118)]],
+    ("Calgary", "Vancouver"): [[(341, 238, 174), (429, 230, 174), (517, 219, 174)]],
+    ("Helena", "Duluth"): [[(905, 533, 0), (992, 533, 0), (1079, 532, 0), (1167, 531, 0), (1255, 530, 0), (1343, 529, 0)]],
+    ("Seattle", "Vancouver"): [[(278, 320, 90)], [(246, 320, 90)]]
+}
 
 
 class GameView(arcade.View):
@@ -132,29 +133,35 @@ class GameView(arcade.View):
         self.train_list = arcade.SpriteList()
 
         # Load textures once
-        orange_route_texture = arcade.load_texture("images/train_route_orange.png")
-        grey_route_texture = arcade.load_texture("images/train_route_grey.png")
         orange_train = arcade.load_texture("images/train_piece.png")
 
         # Create a mapping of city pairs to train sprites
+        # Structure: {(city1, city2): [[sprites for route 1], [sprites for route 2]]}
         self.train_map = {}
 
-        # Build sprites from TRAINS
-        for train, positions in TRAINS.items():
-            self.train_map[train] = []
-            for ix, iy, angle in positions:
-                train_sprite = arcade.Sprite()
-                train_sprite.append_texture(orange_route_texture)  # texture 0
-                train_sprite.append_texture(grey_route_texture)  # texture 1
-                train_sprite.append_texture(orange_train)  # texture 2
-                train_sprite.set_texture(1)  # start grey (inactive)
-                train_sprite.scale = TRAIN_SCALE
-                train_sprite.angle = angle
-                train_sprite.alpha = 0  # start fully transparent
-                self.place_train_sprite(ix, iy, train_sprite, top_left=True)
+        # Track which routes are taken
+        # Structure: {(city1, city2): [False, False]} for double routes
+        self.route_taken = {}
 
-                self.train_list.append(train_sprite)
-                self.train_map[train].append(train_sprite)
+        # Build sprites from TRAINS
+        for train, routes in TRAINS.items():
+            self.train_map[train] = []
+            self.route_taken[train] = [False] * len(routes)
+
+            for route_positions in routes:
+                route_sprites = []
+                for ix, iy, angle in route_positions:
+                    train_sprite = arcade.Sprite()
+                    train_sprite.append_texture(orange_train)
+                    train_sprite.scale = TRAIN_SCALE
+                    train_sprite.angle = angle
+                    #train_sprite.alpha = 0  # start fully transparent
+                    self.place_train_sprite(ix, iy, train_sprite, top_left=True)
+
+                    self.train_list.append(train_sprite)
+                    route_sprites.append(train_sprite)
+
+                self.train_map[train].append(route_sprites)
 
         # One list for all city sprites (create it ONCE)
         self.city_list = arcade.SpriteList()
@@ -170,7 +177,7 @@ class GameView(arcade.View):
                 continue
 
             # Create one sprite per city
-            self.city = arcade.Sprite()  # keep your place_city logic (uses self.city)
+            self.city = arcade.Sprite()
             self.city.append_texture(base_tex)
             self.city.append_texture(hover_tex)
             self.city.set_texture(0)
@@ -179,7 +186,7 @@ class GameView(arcade.View):
             # Position it using your helper
             self.place_city(
                 CITIES[city]["CITY_IMG_X"], CITIES[city]["CITY_IMG_Y"],
-                top_left=True, scale=None  # scale already set above
+                top_left=True, scale=None
             )
 
             # Add to the shared list
@@ -329,15 +336,25 @@ class GameView(arcade.View):
         city_pair = (city1, city2)
         reverse_pair = (city2, city1)
 
-        # Check both directions
+        # Determine which pair exists
         if city_pair in self.train_map:
-            for train_sprite in self.train_map[city_pair]:
-                train_sprite.set_texture(2)
-                train_sprite.alpha = 255  # make visible
+            pair = city_pair
         elif reverse_pair in self.train_map:
-            for train_sprite in self.train_map[reverse_pair]:
-                train_sprite.set_texture(2)
-                train_sprite.alpha = 255  # make visible
+            pair = reverse_pair
+        else:
+            return
+
+        # Find first available route (not taken)
+        for i, taken in enumerate(self.route_taken[pair]):
+            if not taken:
+                # Mark this route as taken
+                self.route_taken[pair][i] = True
+
+                # Make all sprites for this route visible
+                for train_sprite in self.train_map[pair][i]:
+                    train_sprite.set_texture(0)
+                    train_sprite.alpha = 255
+                break
 
 
 def main():
