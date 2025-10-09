@@ -4,6 +4,6 @@ Graph class:
 - List of paths (routes)
 """
 
-class graph:
+class Graph:
     def __innit__(self, cities, routes):
         self
