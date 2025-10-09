@@ -4,6 +4,19 @@ Graph class:
 - List of paths (routes)
 """
 
+import route
+
 class Graph:
-    def __innit__(self, cities, routes):
-        self
+    # Constructor
+    def __innit__(self, city_list, route_list):
+        self.nodes = city_list
+        self.paths = []
+        for path in route_list:
+            self.paths.append(route.Route(path))
+
+    # To string
+    def __str__(self):
+        s = "Routes:\n"
+        for path in self.paths:
+            s += str(path) + '\n'
+        return f"{s}"

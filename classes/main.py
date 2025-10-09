@@ -7,6 +7,7 @@ Main / testing
 import route
 import deck
 import cards
+import graph
 
 
 ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, "colorless"),
@@ -101,21 +102,18 @@ def route_test():
     route test
     """
     routes = []
-    routes.append(route.Route(("Vancouver", "Seattle", 1, "colorless")))
-    routes.append(route.Route(("Vancouver", "Calgary", 3, "colorless")))
-    routes.append(route.Route(("Seattle", "Portland", 1, "colorless")))
-    routes.append(route.Route(("Seattle", "Calgary", 4, "colorless")))
-    routes.append(route.Route(("Seattle", "Helena", 6, "yellow")))
-    routes.append(route.Route(("Portland", "San Francisco", 5, "green")))
-    routes.append(route.Route(("Portland", "San Francisco", 5, "pink")))
-    routes.append(route.Route(("Portland", "Salt Lake City", 6, "blue")))
-    routes.append(route.Route(("San Francisco", "Salt Lake City", 5, "white")))
-    routes.append(route.Route(("San Francisco", "Salt Lake City", 5, "orange")))
+    for rt in ROUTES:
+        routes.append(route.Route((rt)))
 
     for r in routes:
         print(r)
+
+
+map = graph.Graph("", ROUTES)
 
 train_deck_test()
 destination_deck_test()
 route_test()
 print(len(ROUTES))
+print(map)
+
