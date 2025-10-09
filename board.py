@@ -189,6 +189,7 @@ class GameView(arcade.View):
                 for ix, iy, angle in route_positions:
                     train_sprite = arcade.Sprite()
                     train_sprite.append_texture(orange_train)
+                    train_sprite.set_texture(0)
                     train_sprite.scale = TRAIN_SCALE
                     train_sprite.angle = angle
                     train_sprite.alpha = 255  # start fully transparent
