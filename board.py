@@ -2,6 +2,7 @@
 Ticket to Ride Board
 With dictionaries for cities including paths
 """
+import time
 
 import arcade
 import platform
@@ -112,6 +113,7 @@ TRAINS = {
     ("Helena", "Duluth"): [[(905, 533, 0), (992, 533, 0), (1079, 532, 0), (1167, 531, 0), (1255, 530, 0), (1343, 529, 0)]],
     ("Seattle", "Vancouver"): [[(278, 320, 90)], [(246, 320, 90)]],
     ("Portland", "Salt Lake City"): [[(276, 526, 192), (360, 550, 197), (440, 590, 202), (508, 640, 207), (574, 698, 220), (625, 776, 234)]],
+    ("San Francisco", "Salt Lake City"): [[(220, 900, 163), (300, 950, 163), (400, 900, 163), (500, 870, 163), (600, 820, 163)]],
     ("Seattle", "Helena"): [[(328, 433, 190), (416, 454, 190), (498, 470, 190), (586, 489, 190), (670, 508, 190), (758, 528, 190)]],
     ("Seattle", "Portland"): [[(216,445, 110)], [(248, 453, 110)]],
     ("Montreal", "Boston"):[[(2252, 230, 220), (2320, 288, 220)], [(2232, 256, 220), (2301, 313, 220)]],
@@ -123,7 +125,18 @@ TRAINS = {
     ("Charleston", "Miami"): [[(2183, 1137, 85), (2192, 1223, 80), (2211, 1309, 70), (2247, 1390, 60)]],
     ("Miami", "Atlanta"): [[(2211, 1402, 48), (2152, 1335, 48), (2100, 1267, 48), (2042, 1198, 48), (1990, 1130, 48)]],
     ("Miami", "New Orleans"): [[(2193, 1438, 45), (2130, 1377, 38), (2060, 1327, 30), (1973, 1306, 0), (1887, 1317, -11), (1805, 1350, -28)]],
-    ("Atlanta", "Charleston"): [[(2028, 1080, 0), (2114, 1084, 0)]]
+    ("Atlanta", "Charleston"): [[(2028, 1080, 0), (2114, 1084, 0)]],
+    ("Salt Lake City", "Denver"): [[(723, 862, 11), (808, 878, 11), (891, 894, 11)], [(729, 833, 11), (814, 849, 11), (897, 865, 11)]],
+    ("El Paso", "Dallas"): [[(1020, 1360, 18), (1115, 1358, 10), (1210, 1348, 4), (1295, 1330, 0)]],
+    ("Helena", "Salt Lake City"): [[(775, 610, 72), (735, 695, 76), (695, 775, 78)]],
+    ("San Francisco", "Los Angeles"): [[(215, 1060, 65), (275, 1145, 58), (330, 1220, 52)]],
+    ("Santa Fe", "El Paso"): [[(952, 1195, 82), (950, 1275, 84)]],
+    ("Santa Fe", "Denver"): [[(960, 1040, 160), (968, 975, 163)]],
+    ("Phoenix", "El Paso"): [[(730, 1295, 12), (815, 1320, 8), (890, 1340, 5)]],
+    ("Helena", "Winnipeg"): [[(910, 430, 172), (975, 370, 176), (1040, 315, 179), (1095, 268, 181)]],
+    ("Helena", "Omaha"): [[(910, 595, 28), (1005, 635, 24), (1100, 672, 20), (1195, 707, 16), (1275, 738, 12)]],
+    ("Calgary", "Helena"): [[(630, 285, 112), (690, 355, 118), (745, 425, 122), (795, 490, 126)]],
+    ("Portland", "San Francisco"): [[(149, 443, 75), (144, 518, 78), (140, 592, 82), (136, 668, 85), (132, 731, 87)]]
 }
 
 
@@ -333,6 +346,11 @@ class GameView(arcade.View):
 
                 # Show trains between the two selected cities
                 self.show_trains_between(first_city_name, second_city_name)
+                city.scale = CITY_SCALE
+                self.selected_cities[0].scale = CITY_SCALE
+                self.selected_cities[0].set_texture(0)
+                city.set_texture(0)
+                self.selected_cities.clear()
 
             # if this point is reached it means that the second city is
             # not adjacent to the first, so it must not be connected by a path
