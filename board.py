@@ -136,7 +136,17 @@ TRAINS = {
     ("Helena", "Winnipeg"): [[(910, 430, 172), (975, 370, 176), (1040, 315, 179), (1095, 268, 181)]],
     ("Helena", "Omaha"): [[(910, 595, 28), (1005, 635, 24), (1100, 672, 20), (1195, 707, 16), (1275, 738, 12)]],
     ("Calgary", "Helena"): [[(630, 285, 112), (690, 355, 118), (745, 425, 122), (795, 490, 126)]],
-    ("Portland", "San Francisco"): [[(149, 443, 75), (144, 518, 78), (140, 592, 82), (136, 668, 85), (132, 731, 87)]]
+    ("Portland", "San Francisco"): [[(149, 443, 75), (144, 518, 78), (140, 592, 82), (136, 668, 85), (132, 731, 87)]],
+    ("New Orleans", "Atlanta"): [[(1760, 1324, 109), (1801, 1246, 119), (1853, 1174, 47), (1912, 1113, 47)], [(1736, 1300, 109), (1779, 1217, 125), (1830, 1150, 47), (1888, 1089, 47)]],
+    ("Atlanta", "Raleigh"): [[(2006, 1033, 47), (2074, 973, 47)], [(1989, 1006, 47), (2055, 948, 47)]],
+    ("Montreal", "Toronto"): [[(2123, 234, 65), (2052, 279, 50), (1994, 352, 115)]],
+    ("Toronto", "Pittsburgh"): [[(2007, 475, 87), (2014, 565, 87)]],
+    ("Pittsburgh", "New York"): [[(2160, 534, 58), (2080, 582, 58)], [(2094, 610, 58), (2170, 565, 58)]],
+    ("Pittsburgh", "Washington"): [[(2101, 678, 28), (2180, 720, 28)]],
+    ("Raleigh", "Pittsburgh"): [[(2058, 730, 75), (2078, 817, 75)]],
+    ("Raleigh", "Nashville"): [[(1878, 932, 57), (1962, 895, 74), (2047, 885, 0)]],
+    ("Nashville", "Atlanta"): [[(1881, 1008, 35)]],
+    ("Montreal", "Sault St. Marie"): [[(2100, 193, 0), (2013, 202, -10), (1927, 226, -13), (1846, 262, 66), (1773, 312, 56)]]
 }
 
 
@@ -181,7 +191,7 @@ class GameView(arcade.View):
                     train_sprite.append_texture(orange_train)
                     train_sprite.scale = TRAIN_SCALE
                     train_sprite.angle = angle
-                    train_sprite.alpha = 0  # start fully transparent
+                    train_sprite.alpha = 255  # start fully transparent
                     self.place_train_sprite(ix, iy, train_sprite, top_left=True)
 
                     self.train_list.append(train_sprite)
