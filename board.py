@@ -181,7 +181,7 @@ class GameView(arcade.View):
                     train_sprite.append_texture(orange_train)
                     train_sprite.scale = TRAIN_SCALE
                     train_sprite.angle = angle
-                    #train_sprite.alpha = 0  # start fully transparent
+                    train_sprite.alpha = 0  # start fully transparent
                     self.place_train_sprite(ix, iy, train_sprite, top_left=True)
 
                     self.train_list.append(train_sprite)
