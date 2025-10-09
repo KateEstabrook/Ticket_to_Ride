@@ -8,7 +8,7 @@ import route
 
 class Graph:
     # Constructor
-    def __innit__(self, city_list, route_list):
+    def __init__(self, city_list, route_list):
         self.nodes = city_list
         self.paths = []
         for path in route_list:

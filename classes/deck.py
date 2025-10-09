@@ -18,6 +18,7 @@ Route Card Deck (30 routes) (essential, hard)
 
 import operator
 import cards
+import random
 
 STARTING_NUM_CARDS = 0
 
@@ -30,7 +31,7 @@ class Deck:
         
         # Randomizes order of cards in deck
         def shuffle(self):
-            self.cards.random.shuffle()
+            random.shuffle(self.cards)
 
         # Removes a card from the deck at a certian index and return it
         def remove(self, index):
@@ -38,12 +39,12 @@ class Deck:
         
         # Adds a card
         def add(self, card):
-             self.cards.append(card)
+            self.cards.append(card)
 
         # Sorts the deck
         def sort(self):
-             self.cards.sort(key=operator.attrgetter('color'))
-        
+            self.cards.sort(key=operator.attrgetter('color'))
+
         # Getter
         def get_count(self, color):
             count = 0
@@ -58,3 +59,11 @@ class Deck:
             for card in self.cards:
                  s += str(card) + '\n'
             return f"{s}"
+        
+        def __eq__(self, other):
+            # It's good practice to first check if 'other' is an instance of the same class
+            if not isinstance(other, Deck):
+                return NotImplemented  # Or raise TypeError("Can only compare with MyClass instances")
+
+            # Define the equality logic based on the attributes
+            return self.cards == other.cards

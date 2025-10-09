@@ -3,7 +3,7 @@ Main / testing
 """
 
 #import city
-#import player
+import player
 import route
 import deck
 import cards
@@ -69,20 +69,32 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, 
           ("New York", "Boston", 2, "yellow"), ("Boston", "Montreal", 2, "colorless"),
           ("Boston", "Montreal", 2, "colorless")]
 
-
 def train_deck_test():
     """
     train test
     """
-    train_deck = deck.Deck('Test')
-    train_deck.add(cards.TrainCard('blue'))
-    train_deck.add(cards.TrainCard('red'))
-    train_deck.add(cards.TrainCard('blue'))
-    train_deck.add(cards.TrainCard('yellow'))
-    train_deck.add(cards.TrainCard('green'))
-    train_deck.sort()
+    train_deck = deck.Deck('Draw')
+    
+    colors = ["purple", "blue", "orange", "white", "green", "yellow", "black", "red"]
+    
+    # Add color cards 
+    for color in colors:
+        i = 0
+        while i < 12:
+            train_deck.add(cards.TrainCard(color))
+            i += 1
 
-    print(train_deck)
+    # Add wild cards
+    i = 0
+    while i < 14:
+        train_deck.add(cards.TrainCard("wild"))
+        i += 1
+
+    
+    #print(train_deck)
+    train_deck.shuffle()
+    
+    #print(train_deck)
 
 def destination_deck_test():
     """
@@ -108,12 +120,65 @@ def route_test():
     for r in routes:
         print(r)
 
+def graph_test():
+    map = graph.Graph("", ROUTES)
+    
+    print(map)
 
-map = graph.Graph("", ROUTES)
+def player_test(deck1):
+    players = []
 
-train_deck_test()
-destination_deck_test()
-route_test()
-print(len(ROUTES))
-print(map)
+    red = player.Player("Red")
+    players.append(red)
+    yellow = player.Player("Yellow")
+    players.append(yellow)
+    green = player.Player("Green")
+    players.append(green)
+    blue = player.Player("Blue")
+    players.append(blue)
+    
+    red.add_points(23)
+    red.remove_points(3)
 
+    blue.remove_trains(5)
+
+    for p in players:
+        i = 0
+        while i < 4:
+            p.get_train_cards().add(train_deck.remove(0))
+            i += 1
+        print(f"{p} has {p.get_points()} points and {p.get_trains()} train pieces")
+        print(p.get_train_cards())
+
+
+if __name__ == "__main__":
+
+    train_deck = deck.Deck('Draw')
+    
+    colors = ["purple", "blue", "orange", "white", "green", "yellow", "black", "red"]
+    
+    # Add color cards 
+    for color in colors:
+        i = 0
+        while i < 12:
+            train_deck.add(cards.TrainCard(color))
+            i += 1
+
+    # Add wild cards
+    i = 0
+    while i < 14:
+        train_deck.add(cards.TrainCard("wild"))
+        i += 1
+
+
+    train_deck.shuffle()
+
+    train_deck_test()
+    #destination_deck_test()
+    #route_test()
+    #graph_test()
+    player_test(train_deck)
+    colors = ["purple", "blue", "orange", "white", "green", "yellow", "black", "red", "wild"]
+
+    for color in colors:
+        print(f"{color} is {train_deck.get_count(color)}")

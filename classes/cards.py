@@ -47,3 +47,11 @@ class TrainCard:
     # To string 
     def __str__(self):
         return f"{self.color}"
+    
+    def __eq__(self, other):
+            # It's good practice to first check if 'other' is an instance of the same class
+            if not isinstance(other, TrainCard):
+                return NotImplemented  # Or raise TypeError("Can only compare with MyClass instances")
+
+            # Define the equality logic based on the attributes
+            return self.color == other.color
