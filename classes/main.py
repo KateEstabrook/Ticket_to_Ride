@@ -55,8 +55,7 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, 
           ("Washington", "New York", 2, "orange"), ("Washington", "New York", 2, "black"), 
           ("New York", "Montreal", 4, "blue"), ("New York", "Boston", 2, "red"), 
           ("New York", "Boston", 2, "yellow"), ("Boston", "Montreal", 2, "colorless"),
-          ("Boston", "Montreal", 2, "colorless")
-          ] 
+          ("Boston", "Montreal", 2, "colorless")] 
            
 
 

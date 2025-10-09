@@ -22,30 +22,37 @@ import cards
 STARTING_NUM_CARDS = 0
 
 class Deck:
+        # Constructor
         def __init__(self, name):
             self.num_cards = STARTING_NUM_CARDS
             self.name = name
             self.cards = []
         
+        # Randomizes order of cards in deck
         def shuffle(self):
             self.cards.random.shuffle()
+
+        # Removes a card from the deck at a certian index and return it
+        def remove(self, index):
+            return self.cards.pop(index)
         
+        # Adds a card
+        def add(self, card):
+             self.cards.append(card)
+
+        # Sorts the deck
+        def sort(self):
+             self.cards.sort(key=operator.attrgetter('color'))
+        
+        # Getter
         def get_count(self, color):
             count = 0
             for card in self.cards:
                 if card.get_color() == color:
                     count += 1
             return count
-
-        def remove(self, index):
-            return self.cards.pop(index)
         
-        def add(self, card):
-             self.cards.append(card)
-
-        def sort(self):
-             self.cards.sort(key=operator.attrgetter('color'))
-        
+        # To string
         def __str__(self):
             s = ""
             for card in self.cards:

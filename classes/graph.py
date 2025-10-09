@@ -6,4 +6,4 @@ Graph class:
 
 class graph:
     def __innit__(self, cities, routes):
-        
+        self
