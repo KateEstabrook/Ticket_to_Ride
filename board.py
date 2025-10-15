@@ -172,7 +172,7 @@ TRAINS = {
     ("Toronto", "Chicago"): [[(1948, 465, 145), (1870, 505, 162), (1791, 543, 148), (1720, 602, 135)]],
     ("Chicago", "Saint Louis"): [[(1653, 728, 125), (1605, 804, 125)], [(1681, 742, 125), (1635, 815, 125)]],
     ("Duluth", "Omaha"): [[(1371, 588, 113), (1338, 674, 113)], [(1399, 601, 113), (1368, 682, 113)]],
-    ("Chicago", "Omaha"): [[(1637, 665, 8), (1553, 652, 8)], [(1470, 673, 148), (1396, 722, 148)]],
+    ("Chicago", "Omaha"): [[(1637, 665, 8), (1553, 652, 8), (1470, 673, 148), (1396, 722, 148)]],
     ("Chicago", "Duluth"): [[(1630, 625, 13), (1543, 601, 20), (1462, 566, 25)]],
     ("Omaha", "Kansas City"): [[(1384, 802, 64), (1355, 820, 64)]],
     ("Kansas City", "Saint Louis"): [[(1537, 885, 0), (1450, 886, 0)], [(1539, 849, 0), (1450, 853, 0)]],
@@ -394,6 +394,11 @@ class GameView(arcade.View):
 
                 # Show trains between the two selected cities
                 self.show_trains_between(first_city_name, second_city_name)
+                self.selected_cities[0].set_texture(0)
+                city.set_texture(0)
+                self.selected_cities[0].scale = CITY_SCALE
+                city.scale = CITY_SCALE
+                self.selected_cities.clear()
 
 
             # if this point is reached it means that the second city is
