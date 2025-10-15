@@ -358,8 +358,6 @@ class GameView(arcade.View):
             hits = arcade.get_sprites_at_point((tip_x, tip_y), self.city_list)
 
             city = hits[0]
-            if len(self.selected_cities) == 2:
-                return
 
             # If this city is already selected -> deselect it
             if city in self.selected_cities:
@@ -368,14 +366,22 @@ class GameView(arcade.View):
                 self.selected_cities.remove(city)
                 return
 
-
-
             if len(self.selected_cities) == 0:
                 # If no city is already selected, select it
                 city.set_texture(1)
                 city.scale = CITY_SCALE_YELLOW
                 self.selected_cities.append(city)
                 return
+
+            # Otherwise, select it; if already 2 selected, drop both
+            if len(self.selected_cities) == 2:
+                newest = self.selected_cities.pop(1)
+                newest.set_texture(0)
+                newest.scale = CITY_SCALE
+
+                oldest = self.selected_cities.pop(0)
+                oldest.set_texture(0)
+                oldest.scale = CITY_SCALE
 
             first_city_name = self.sprite_to_name(self.selected_cities[0])
             second_city_name = self.sprite_to_name(city)
@@ -389,7 +395,6 @@ class GameView(arcade.View):
                 # Show trains between the two selected cities
                 self.show_trains_between(first_city_name, second_city_name)
 
-                #self.selected_cities.clear()
 
             # if this point is reached it means that the second city is
             # not adjacent to the first, so it must not be connected by a path
