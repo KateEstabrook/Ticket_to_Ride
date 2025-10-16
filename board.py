@@ -402,8 +402,6 @@ class GameView(arcade.View):
         self.player_sprite.center_x = x
         self.player_sprite.center_y = y
 
-    def on_update(self, delta_time):
-        pass
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
         """
@@ -413,6 +411,9 @@ class GameView(arcade.View):
         return list(CITIES.keys())[idx]
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
+        """
+        Actions for when the cities are clicked.
+        """
         if button == arcade.MOUSE_BUTTON_LEFT:
             # Generate a list of all cities that collided with the cursor
             # fingertip = top-left corner of the cursor image
@@ -469,8 +470,11 @@ class GameView(arcade.View):
             # if this point is reached it means that the second city is
             # not adjacent to the first, so it must not be connected by a path
 
-    # Actions to make if specific buttons are pressed
+
     def on_key_press(self, symbol: int, modifiers: int):
+        """
+        Actions to make if specific buttons are pressed
+        """
         if symbol == arcade.key.SPACE:
             self.reset()
         elif symbol == arcade.key.ESCAPE:
