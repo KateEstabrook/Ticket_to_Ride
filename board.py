@@ -308,20 +308,20 @@ class GameView(arcade.View):
                 continue
 
             # Create one sprite per city
-            self.city = arcade.Sprite()
-            self.city.append_texture(base_tex)
-            self.city.append_texture(hover_tex)
-            self.city.set_texture(0)
-            self.city.scale = CITY_SCALE
+            city = arcade.Sprite()
+            city.append_texture(base_tex)
+            city.append_texture(hover_tex)
+            city.set_texture(0)
+            city.scale = CITY_SCALE
 
             # Position it using your helper
             self.place_city(
-                info["CITY_IMG_X"], info["CITY_IMG_Y"],
+                city, info["CITY_IMG_X"], info["CITY_IMG_Y"],
                 top_left=True, scale=None
             )
 
             # Add to the shared list
-            self.city_list.append(self.city)
+            self.city_list.append(city)
 
         self.selected_cities = []  # list of selected city sprites (max. 2)
 
@@ -330,8 +330,6 @@ class GameView(arcade.View):
             "images/cursor.png",
             scale=PLAYER_SCALING,
         )
-        self.player_list = arcade.SpriteList()
-        self.player_list.append(self.player_sprite)
 
         # Don't show the mouse cursor
         self.window.set_mouse_visible(False)
@@ -357,16 +355,16 @@ class GameView(arcade.View):
         sy = BOARD_HEIGHT / self.background.height
         return ix * sx + BOARD_LEFT, iy * sy + BOARD_BOTTOM
 
-    def place_city(self, ix: float, iy: float, *,
+    def place_city(self, city, ix: float, iy: float, *,
                    top_left: bool = False, scale: float | None = None) -> None:
         """
         Position the city sprite using image-pixel coordinates.
         """
         x, y = self.img_to_screen(ix, iy, top_left=top_left)
-        self.city.center_x = x
-        self.city.center_y = y
+        city.center_x = x
+        city.center_y = y
         if scale is not None:
-            self.city.scale = scale
+            city.scale = scale
 
     def place_train_sprite(self, ix: float, iy: float,
                            train_sprite: arcade.Sprite, *, top_left: bool = False) -> None:
@@ -393,7 +391,9 @@ class GameView(arcade.View):
         # Draw all the sprites.
         self.train_list.draw()
         self.city_list.draw()
-        self.player_list.draw()
+        tmp = arcade.SpriteList()
+        tmp.append(self.player_sprite)
+        tmp.draw()
 
     def on_mouse_motion(self, x, y, dx, dy):
         """
