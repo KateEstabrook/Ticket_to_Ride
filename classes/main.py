@@ -89,12 +89,13 @@ def train_deck_test():
     while i < 14:
         train_deck.add(cards.TrainCard("wild"))
         i += 1
-
-    
-    #print(train_deck)
+    print("--------------------------")
+    print("Unshuffled:")
+    print(train_deck)
     train_deck.shuffle()
-    
-    #print(train_deck)
+    print("--------------------------")
+    print("Shuffled:")
+    print(train_deck)
 
 def destination_deck_test():
     """
@@ -137,9 +138,11 @@ def player_test(deck1):
     blue = player.Player("Blue")
     players.append(blue)
     
-    red.add_points(23)
-    red.remove_points(3)
+    # Test add and remove points
+    red.add_points(20)
+    red.remove_points(5)
 
+    # Test remove trains
     blue.remove_trains(5)
 
     for p in players:
@@ -173,12 +176,18 @@ if __name__ == "__main__":
 
     train_deck.shuffle()
 
-    train_deck_test()
+    """
+    Tests
+    """
     #destination_deck_test()
     #route_test()
     #graph_test()
-    player_test(train_deck)
-    colors = ["purple", "blue", "orange", "white", "green", "yellow", "black", "red", "wild"]
+    #train_deck_test()
+    #player_test(train_deck)
+    
 
+    # Prints number of each color card in the deck, when used with player_test it shows the number of each color
+    # minus the cards in each players hand
+    colors = ["purple", "blue", "orange", "white", "green", "yellow", "black", "red", "wild"]
     for color in colors:
-        print(f"{color} is {train_deck.get_count(color)}")
+        print(f"{color} has {train_deck.get_count(color)} in deck")
