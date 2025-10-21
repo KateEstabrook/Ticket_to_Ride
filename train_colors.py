@@ -519,6 +519,7 @@ class GameView(arcade.View):
         self.popup_city1 = None
         self.popup_city2 = None
         self.popup_route_length = 0
+        self.color_buttons = []
 
     def reset(self):
         """Restart the game."""
@@ -591,14 +592,15 @@ class GameView(arcade.View):
         for line in self.leaderboard_lines:
             line.draw()
 
+        if self.showing_popup:
+            self.show_pop_up(self.popup_city1, self.popup_city2)
+
         tmp = arcade.SpriteList()
         tmp.append(self.card_banner)
         tmp.append(self.leaderboard_banner)
         tmp.append(self.player_sprite)
         tmp.draw()
 
-        if self.showing_popup:
-            self.show_pop_up(self.popup_city1, self.popup_city2)
 
     def on_mouse_motion(self, x, y, dx, dy):
         """
@@ -739,12 +741,11 @@ class GameView(arcade.View):
             city.scale = CITY_SCALE
         self.selected_cities.clear()
 
-
     def show_pop_up(self, city1, city2):
         """
-        Show a white rectangle pop-up in the middle of the screen
+        Show a white rectangle pop-up with color selection buttons
         """
-        # Calculate pop-up dimensions (60% of screen width, 40% of screen height)
+        # Calculate pop-up dimensions
         popup_width = WINDOW_WIDTH * 0.4
         popup_height = WINDOW_HEIGHT * 0.4
 
@@ -758,12 +759,80 @@ class GameView(arcade.View):
         arcade.draw_texture_rect(
             white_texture,
             arcade.LBWH(
-                popup_x - popup_width // 2,  # left
-                popup_y - popup_height // 2,  # bottom
-                popup_width,  # width
-                popup_height  # height
+                popup_x - popup_width // 2,
+                popup_y - popup_height // 2,
+                popup_width,
+                popup_height
             )
         )
+
+        # Define colors for the buttons
+        colors = [
+            arcade.color.RED,
+            arcade.color.BLUE,
+            arcade.color.GREEN,
+            arcade.color.YELLOW,
+            arcade.color.ORANGE,
+            arcade.color.PINK,
+            arcade.color.BLACK,
+            arcade.color.WHITE,
+            arcade.color.PURPLE  # or any other color for the single button
+        ]
+
+        # Button dimensions and layout
+        button_width = popup_width * 0.18
+        button_height = popup_height * 0.15
+        horizontal_spacing = popup_width * 0.05
+        vertical_spacing = popup_height * 0.05
+
+        # Starting position for the grid
+        start_x = popup_x - popup_width * 0.4
+        start_y = popup_y - popup_height * -0.2
+
+        # Store button positions for click detection
+        self.color_buttons = []
+
+        # Draw 4-4-1 grid of color buttons
+        for row in range(3):  # 3 rows
+            if row == 2:  # Last row - only 1 button
+                cols = 1
+                row_x = start_x
+            else:  # First two rows - 4 buttons each
+                cols = 4
+                row_x = start_x
+
+            for col in range(cols):
+                # Calculate button position
+                button_x = row_x + col * (button_width + horizontal_spacing)
+                button_y = start_y - row * (button_height + vertical_spacing)
+
+                # Draw texture rectangle (button background)
+                color_texture = arcade.make_soft_square_texture(2, colors[row * 4 + col], outer_alpha=255)
+                rect = arcade.LBWH(
+                    button_x - button_width // 2,
+                    button_y - button_height // 2,
+                    button_width,
+                    button_height
+                )
+                arcade.draw_texture_rect(color_texture, rect)
+
+                # Draw border using the same rect
+                arcade.draw_rect_outline(
+                    rect,
+                    arcade.color.BLACK,
+                    border_width=2
+                )
+
+                # Store button info for click detection
+                self.color_buttons.append({
+                    'color': colors[row * 4 + col],
+                    'bounds': (
+                        button_x - button_width // 2,  # left
+                        button_x + button_width // 2,  # right
+                        button_y - button_height // 2,  # bottom
+                        button_y + button_height // 2  # top
+                    )
+                })
 
         # Add route information text
         route_length = self.popup_route_length
@@ -816,6 +885,22 @@ class GameView(arcade.View):
                     train_sprite.set_texture(0)
                     train_sprite.alpha = 255
                 break
+
+
+    def is_point_in_button(self, x, y, button_bounds):
+        """Check if a point is inside a button's bounds"""
+        left, right, bottom, top = button_bounds
+        return left <= x <= right and bottom <= y <= top
+
+    def handle_color_selection(self, x, y):
+        """Handle color button clicks"""
+        if not hasattr(self, 'color_buttons'):
+            return None
+
+        for button in self.color_buttons:
+            if self.is_point_in_button(x, y, button['bounds']):
+                return button['color']
+        return None
 
 
 def main():
