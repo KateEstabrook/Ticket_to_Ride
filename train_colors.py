@@ -456,6 +456,7 @@ class GameView(arcade.View):
         # Load textures once
         base_tex = arcade.load_texture("images/city.png")
         hover_tex = arcade.load_texture("images/button_yellow.png")
+        self.rainbow_texture = arcade.load_texture("images/rainbow.jpg")
 
         # Build sprites from CITIES
         for _, info in CITIES.items():
@@ -745,17 +746,16 @@ class GameView(arcade.View):
         """
         Show a white rectangle pop-up with color selection buttons
         """
-        # Calculate pop-up dimensions
+        # Calculate dimensions
         popup_width = WINDOW_WIDTH * 0.4
         popup_height = WINDOW_HEIGHT * 0.4
 
-        # Calculate position (centered)
+        # Calculate position
         popup_x = WINDOW_WIDTH // 2
         popup_y = WINDOW_HEIGHT // 2
 
+        # Draw white rectangle
         white_texture = arcade.make_soft_square_texture(2, arcade.color.WHITE, outer_alpha=255)
-
-        # Draw white rectangle using texture_rect
         arcade.draw_texture_rect(
             white_texture,
             arcade.LBWH(
@@ -766,17 +766,16 @@ class GameView(arcade.View):
             )
         )
 
-        # Define colors for the buttons
+        # Define colors and their labels for the buttons
         colors = [
-            arcade.color.RED,
-            arcade.color.BLUE,
-            arcade.color.GREEN,
-            arcade.color.YELLOW,
-            arcade.color.ORANGE,
-            arcade.color.PINK,
-            arcade.color.BLACK,
-            arcade.color.WHITE,
-            arcade.color.PURPLE  # or any other color for the single button
+            (arcade.color.RED, "RED"),
+            (arcade.color.BLUE, "BLUE"),
+            (arcade.color.GREEN, "GREEN"),
+            (arcade.color.YELLOW, "YELLOW"),
+            (arcade.color.ORANGE, "ORANGE"),
+            (arcade.color.PINK, "PINK"),
+            (arcade.color.BLACK, "BLACK"),
+            (arcade.color.WHITE, "WHITE"),
         ]
 
         # Button dimensions and layout
@@ -792,22 +791,21 @@ class GameView(arcade.View):
         # Store button positions for click detection
         self.color_buttons = []
 
-        # Draw 4-4-1 grid of color buttons
-        for row in range(3):  # 3 rows
-            if row == 2:  # Last row - only 1 button
-                cols = 1
-                row_x = start_x
-            else:  # First two rows - 4 buttons each
-                cols = 4
-                row_x = start_x
+        # Draw first two rows (4 buttons each)
+        for row in range(2):
+            cols = 4
+            row_x = start_x
 
             for col in range(cols):
                 # Calculate button position
                 button_x = row_x + col * (button_width + horizontal_spacing)
                 button_y = start_y - row * (button_height + vertical_spacing)
 
-                # Draw texture rectangle (button background)
-                color_texture = arcade.make_soft_square_texture(2, colors[row * 4 + col], outer_alpha=255)
+                # Get color and label
+                color, label = colors[row * 4 + col]
+
+                # Draw texture rectangle
+                color_texture = arcade.make_soft_square_texture(2, color, outer_alpha=255)
                 rect = arcade.LBWH(
                     button_x - button_width // 2,
                     button_y - button_height // 2,
@@ -815,17 +813,32 @@ class GameView(arcade.View):
                     button_height
                 )
                 arcade.draw_texture_rect(color_texture, rect)
-
-                # Draw border using the same rect
+                # Draw border
                 arcade.draw_rect_outline(
                     rect,
                     arcade.color.BLACK,
                     border_width=2
                 )
 
+                # Add text label
+                text_color = arcade.color.WHITE
+                # Black text if the color is white or yellow
+                if color in [arcade.color.WHITE, arcade.color.YELLOW]:
+                    text_color = arcade.color.BLACK
+
+                arcade.draw_text(
+                    label,
+                    button_x, button_y,
+                    text_color,
+                    font_size=10,
+                    anchor_x="center",
+                    anchor_y="center",
+                    bold=True
+                )
+
                 # Store button info for click detection
                 self.color_buttons.append({
-                    'color': colors[row * 4 + col],
+                    'color': color,
                     'bounds': (
                         button_x - button_width // 2,  # left
                         button_x + button_width // 2,  # right
@@ -833,6 +846,53 @@ class GameView(arcade.View):
                         button_y + button_height // 2  # top
                     )
                 })
+
+        # Draw third row
+        row = 2
+        cols = 1
+        row_x = start_x
+
+        # Calculate rainbow button position
+        button_x = row_x
+        button_y = start_y - row * (button_height + vertical_spacing)
+
+        # Draw rainbow texture rectangle
+        rect = arcade.LBWH(
+            button_x - button_width // 2,
+            button_y - button_height // 2,
+            button_width,
+            button_height
+        )
+        arcade.draw_texture_rect(self.rainbow_texture, rect)
+
+        # Draw border around rainbow button
+        arcade.draw_rect_outline(
+            rect,
+            arcade.color.BLACK,
+            border_width=2
+        )
+
+        # Add text label for locomotive button
+        arcade.draw_text(
+            "LOCOMOTIVE",
+            button_x, button_y,
+            arcade.color.BLACK,
+            font_size=10,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True
+        )
+
+        # Store locomotive button info for click detection
+        self.color_buttons.append({
+            'color': "rainbow",
+            'bounds': (
+                button_x - button_width // 2,  # left
+                button_x + button_width // 2,  # right
+                button_y - button_height // 2,  # bottom
+                button_y + button_height // 2  # top
+            )
+        })
 
         # Add route information text
         route_length = self.popup_route_length
