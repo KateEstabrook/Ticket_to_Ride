@@ -374,6 +374,16 @@ TRAINS = {
     ]
 }
 
+CARDS = {
+    "Orange" : [2600, 1070, "orange.png"],
+    "Black" : [2900, 1070, "black.png"],
+    "Blue" : [3200, 1070, "blue.png"],
+    "Green" : [2600, 1290, "green.png"],
+    "Purple" : [2900, 1290, "purple.png"],
+    "Red" : [3200, 1290, "red.png"],
+    "White" : [2600, 1510, "white.png"],
+    "Yellow" : [2900, 1510, "yellow.png"]
+}
 
 class GameView(arcade.View):
     """
@@ -387,7 +397,14 @@ class GameView(arcade.View):
         super().__init__()
 
         # Background image will be stored in this variable
-        self.background = arcade.load_texture("images/board.png")
+        self.background = arcade.load_texture("images/board_borders.png")
+
+        self.leaderboard_lines = [
+            arcade.Text("You - ", 1188, 660, arcade.color.WHITE, 15, anchor_x="center"),
+            arcade.Text("Player 1 - ", 1188, 640, arcade.color.WHITE, 15, anchor_x="center"),
+            arcade.Text("Player 2 - ", 1188, 620, arcade.color.WHITE, 15, anchor_x="center"),
+            arcade.Text("Player 3 - ", 1188, 600, arcade.color.WHITE, 15, anchor_x="center"),
+        ]
 
         # Train pieces
         # One list for all train sprites (create it ONCE)
@@ -470,9 +487,38 @@ class GameView(arcade.View):
             scale=PLAYER_SCALING,
         )
 
+        self.card_textures = {
+            name : arcade.load_texture(f"images/{filename}")
+            for name, (_, _, filename) in CARDS.items()
+        }
+
+        self.card_list = arcade.SpriteList()
+
+        for name, (sx, sy, filename) in CARDS.items():
+            card = arcade.Sprite()
+            card.texture = self.card_textures[name]
+
+            self.place_card(card, sx, sy, top_left=True, scale=0.4)
+
+            self.card_list.append(card)
+
+        self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.4)
+        cx, cy = self.img_to_screen(2950, 850, top_left=True)
+        self.card_banner.center_x = cx
+        self.card_banner.center_y = cy
+
+        self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
+        lx, ly = self.img_to_screen(2950, 180, top_left=True)
+        self.leaderboard_banner.center_x = lx
+        self.leaderboard_banner.center_y = ly
+
         # Don't show the mouse cursor
         self.window.set_mouse_visible(False)
 
+        self.showing_popup = False
+        self.popup_city1 = None
+        self.popup_city2 = None
+        self.popup_route_length = 0
 
     def reset(self):
         """Restart the game."""
@@ -505,6 +551,17 @@ class GameView(arcade.View):
         if scale is not None:
             city.scale = scale
 
+    def place_card(self, card, ix: float, iy: float, *,
+                   top_left: bool = False, scale: float | None = None) -> None:
+        """
+        Position the city sprite using image-pixel coordinates.
+        """
+        x, y = self.img_to_screen(ix, iy, top_left=top_left)
+        card.center_x = x
+        card.center_y = y
+        if scale is not None:
+            card.scale = scale
+
     def place_train_sprite(self, ix: float, iy: float,
                            train_sprite: arcade.Sprite, *, top_left: bool = False) -> None:
         """
@@ -530,9 +587,18 @@ class GameView(arcade.View):
         # Draw all the sprites.
         self.train_list.draw()
         self.city_list.draw()
+        self.card_list.draw()
+        for line in self.leaderboard_lines:
+            line.draw()
+
         tmp = arcade.SpriteList()
+        tmp.append(self.card_banner)
+        tmp.append(self.leaderboard_banner)
         tmp.append(self.player_sprite)
         tmp.draw()
+
+        if self.showing_popup:
+            self.show_pop_up(self.popup_city1, self.popup_city2)
 
     def on_mouse_motion(self, x, y, dx, dy):
         """
@@ -541,6 +607,8 @@ class GameView(arcade.View):
         self.player_sprite.center_x = x
         self.player_sprite.center_y = y
 
+    def on_update(self, delta_time):
+        pass
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
         """
@@ -550,9 +618,13 @@ class GameView(arcade.View):
         return list(CITIES.keys())[idx]
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
-        """
-        Actions for when the cities are clicked.
-        """
+        if self.showing_popup:
+            # Close the pop-up on any click and claim the route
+            self.showing_popup = False
+            self.claim_route(self.popup_city1, self.popup_city2)
+            self.deselect_all_cities()
+            return
+
         if button == arcade.MOUSE_BUTTON_LEFT:
             # Generate a list of all cities that collided with the cursor
             # fingertip = top-left corner of the cursor image
@@ -561,6 +633,9 @@ class GameView(arcade.View):
 
             # which cities are exactly under that point?
             hits = arcade.get_sprites_at_point((tip_x, tip_y), self.city_list)
+
+            if not hits:
+                return
 
             city = hits[0]
 
@@ -592,28 +667,41 @@ class GameView(arcade.View):
             second_city_name = self.sprite_to_name(city)
 
             if second_city_name in ROUTES.get(first_city_name, {}):
-                # Mark this one as selected
-                city.set_texture(1)
-                city.scale = CITY_SCALE_YELLOW
-                self.selected_cities.append(city)
+                # Check if there are any available routes
+                city_pair = (first_city_name, second_city_name)
+                reverse_pair = (second_city_name, first_city_name)
 
-                # Show trains between the two selected cities
-                self.show_trains_between(first_city_name, second_city_name)
-                self.selected_cities[0].set_texture(0)
-                city.set_texture(0)
-                self.selected_cities[0].scale = CITY_SCALE
-                city.scale = CITY_SCALE
-                self.selected_cities.clear()
+                # Determine which pair exists in TRAINS
+                if city_pair in TRAINS:
+                    pair = city_pair
+                elif reverse_pair in TRAINS:
+                    pair = reverse_pair
+                else:
+                    # Cities are connected but no train routes defined (shouldn't happen)
+                    self.deselect_all_cities()
+                    return
 
+                # Check if any routes are available
+                available_count = sum(1 for taken in self.route_taken[pair] if not taken)
 
-            # if this point is reached it means that the second city is
-            # not adjacent to the first, so it must not be connected by a path
+                if available_count > 0:
+                    # Mark this one as selected temporarily
+                    city.set_texture(1)
+                    city.scale = CITY_SCALE_YELLOW
+                    self.selected_cities.append(city)
 
+                    # Show pop-up with route information
+                    self.showing_popup = True
+                    self.popup_city1 = first_city_name
+                    self.popup_city2 = second_city_name
+                    self.popup_route_length = ROUTES[first_city_name][second_city_name]
+                    return
 
+            # If we get here, either cities aren't connected or all routes are claimed
+            self.deselect_all_cities()
+
+    # Actions to make if specific buttons are pressed
     def on_key_press(self, symbol: int, modifiers: int):
-        """
-        Actions to make if specific buttons are pressed
-        """
         if symbol == arcade.key.SPACE:
             self.reset()
         elif symbol == arcade.key.ESCAPE:
@@ -633,6 +721,91 @@ class GameView(arcade.View):
             return
 
         # Find first available route (not taken)
+        for i, taken in enumerate(self.route_taken[pair]):
+            if not taken:
+                # Mark this route as taken
+                self.route_taken[pair][i] = True
+
+                # Make all sprites for this route visible
+                for train_sprite in self.train_map[pair][i]:
+                    train_sprite.set_texture(0)
+                    train_sprite.alpha = 255
+                break
+
+    def deselect_all_cities(self):
+        """Deselect all currently selected cities"""
+        for city in self.selected_cities:
+            city.set_texture(0)
+            city.scale = CITY_SCALE
+        self.selected_cities.clear()
+
+
+    def show_pop_up(self, city1, city2):
+        """
+        Show a white rectangle pop-up in the middle of the screen
+        """
+        # Calculate pop-up dimensions (60% of screen width, 40% of screen height)
+        popup_width = WINDOW_WIDTH * 0.4
+        popup_height = WINDOW_HEIGHT * 0.4
+
+        # Calculate position (centered)
+        popup_x = WINDOW_WIDTH // 2
+        popup_y = WINDOW_HEIGHT // 2
+
+        white_texture = arcade.make_soft_square_texture(2, arcade.color.WHITE, outer_alpha=255)
+
+        # Draw white rectangle using texture_rect
+        arcade.draw_texture_rect(
+            white_texture,
+            arcade.LBWH(
+                popup_x - popup_width // 2,  # left
+                popup_y - popup_height // 2,  # bottom
+                popup_width,  # width
+                popup_height  # height
+            )
+        )
+
+        # Add route information text
+        route_length = self.popup_route_length
+        text = f"You have selected {city1} to {city2} route (length: {route_length})"
+        arcade.draw_text(
+            text,
+            popup_x, popup_y + popup_height * 0.45,
+            arcade.color.BLACK,
+            font_size=14,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True,
+            align="center",
+            width=popup_width * 0.8
+        )
+
+        # Add color selection prompt
+        color_text = "Which color would you like to use?"
+        arcade.draw_text(
+            color_text,
+            popup_x, popup_y + popup_height * 0.35,
+            arcade.color.BLACK,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center"
+        )
+
+
+    def claim_route(self, city1, city2):
+        """Actually claim the route after pop-up interaction"""
+        city_pair = (city1, city2)
+        reverse_pair = (city2, city1)
+
+        # Determine which pair exists
+        if city_pair in self.train_map:
+            pair = city_pair
+        elif reverse_pair in self.train_map:
+            pair = reverse_pair
+        else:
+            return
+
+        # Find first available route and claim it
         for i, taken in enumerate(self.route_taken[pair]):
             if not taken:
                 # Mark this route as taken
