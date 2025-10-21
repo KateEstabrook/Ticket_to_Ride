@@ -376,13 +376,13 @@ TRAINS = {
 
 CARDS = {
     "Orange" : [2600, 1070, "orange.png"],
-    "Black" : [2950, 1070, "black.png"],
-    "Blue" : [3300, 1070, "blue.png"],
+    "Black" : [2900, 1070, "black.png"],
+    "Blue" : [3200, 1070, "blue.png"],
     "Green" : [2600, 1290, "green.png"],
-    "Purple" : [2950, 1290, "purple.png"],
-    "Red" : [3300, 1290, "red.png"],
+    "Purple" : [2900, 1290, "purple.png"],
+    "Red" : [3200, 1290, "red.png"],
     "White" : [2600, 1510, "white.png"],
-    "Yellow" : [2950, 1510, "yellow.png"]
+    "Yellow" : [2900, 1510, "yellow.png"]
 }
 
 class GameView(arcade.View):
