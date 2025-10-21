@@ -1,15 +1,10 @@
 """
-Main / testing
+Game Logic
 """
 
-#import city
-import player
-import route
-import deck
-import cards
-import graph
+from classes import cards, deck, player, route, graph
 
-
+# Constants
 ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, "colorless"),
           ("Vancouver", "Calgary", 3, "colorless"), ("Seattle", "Portland", 1, "colorless"),
           ("Seattle", "Portland", 1, "colorless"), ("Seattle", "Calgary", 4, "colorless"),
@@ -69,13 +64,24 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, 
           ("New York", "Boston", 2, "yellow"), ("Boston", "Montreal", 2, "colorless"),
           ("Boston", "Montreal", 2, "colorless")]
 
-def train_deck_test():
-    """
-    train test
-    """
+DESTINATIONS = [("Boston", "Miami", 12), ("Calgary", "Phoenix", 13), ("Calgary", "Salt Lake City", 7),
+                ("Chicago", "New Orleans", 7), ("Chicago", "Santa Fe", 9), ("Dallas", "New York", 11),
+                ("Denver", "El Paso", 4), ("Denver", "Pittsburgh", 11), ("Duluth", "El Paso", 10), 
+                ("Duluth", "Houston", 8), ("Helena", "Los Angeles", 8), ("Kansas City", "Houston", 5),
+                ("Los Angeles", "Chicago", 16), ("Los Angeles", "Miami", 20), ("Los Angeles", "New York", 21),
+                ("Montréal", "Atlanta", 9), ("Montréal", "New Orleans", 13), ("New York", "Atlanta", 6),
+                ("Portland", "Nashville", 17), ("Portland", "Phoenix", 11), ("San Francisco", "Atlanta", 17),
+                ("Sault St. Marie", "Nashville", 8), ("Sault St. Marie", "Oklahoma City", 9), 
+                ("Seattle", "Los Angeles", 9), ("Seattle", "New York", 22), ("Toronto", "Miami", 10),
+                ("Vancouver", "Montreal", 20), ("Vancouver", "Santa Fe", 13), 
+                ("Winnipeg", "Houston", 12), ("Winnipeg", "Little Rock", 11)]
+
+def initialize():
+
+    # Initailize Train Card Deck
     train_deck = deck.Deck('Draw')
     
-    colors = ["purple", "blue", "orange", "white", "green", "yellow", "black", "red"]
+    colors = ["pink", "blue", "orange", "white", "green", "yellow", "black", "red"]
     
     # Add color cards 
     for color in colors:
@@ -89,44 +95,11 @@ def train_deck_test():
     while i < 14:
         train_deck.add(cards.TrainCard("wild"))
         i += 1
-    print("--------------------------")
-    print("Unshuffled:")
-    print(train_deck)
+        
     train_deck.shuffle()
-    print("--------------------------")
-    print("Shuffled:")
-    print(train_deck)
 
-def destination_deck_test():
-    """
-    destination deck test
-    """
-    destination_deck = deck.Deck('Test')
-    destination_deck.add(cards.DestinationCard(('Deluth', 'Denver'), 1))
-    destination_deck.add(cards.DestinationCard(('Boston', 'New York'), 4))
-    destination_deck.add(cards.DestinationCard(('Salt Lake City', 'Montrael'), 2))
-    destination_deck.add(cards.DestinationCard(('Deluth', 'New York'), 1))
-    destination_deck.add(cards.DestinationCard(('Charleston', 'Denver'), 5))
 
-    print(destination_deck)
-
-def route_test():
-    """
-    route test
-    """
-    routes = []
-    for rt in ROUTES:
-        routes.append(route.Route((rt)))
-
-    for r in routes:
-        print(r)
-
-def graph_test():
-    map = graph.Graph("", ROUTES)
-    
-    print(map)
-
-def player_test(deck1):
+    # Initailize players
     players = []
 
     red = player.Player("Red")
@@ -138,13 +111,11 @@ def player_test(deck1):
     blue = player.Player("Blue")
     players.append(blue)
     
-    # Test add and remove points
-    red.add_points(20)
-    red.remove_points(5)
+    # TODO Have player choose color
+    
+    # TODO Initialize Destination Card Deck
 
-    # Test remove trains
-    blue.remove_trains(5)
-
+    # Draw first hand of train cards, 4 each
     for p in players:
         i = 0
         while i < 4:
@@ -153,41 +124,17 @@ def player_test(deck1):
         print(f"{p} has {p.get_points()} points and {p.get_trains()} train pieces")
         print(p.get_train_cards())
 
+    # TODO Deal Destination Cards
+
+    # Initalize routes
+    routes = []
+    for rt in ROUTES:
+        routes.append(route.Route((rt)))
+
+    # Initalize graph
+
+    map = graph.Graph("", ROUTES)
 
 if __name__ == "__main__":
-
-    train_deck = deck.Deck('Draw')
-    
-    colors = ["purple", "blue", "orange", "white", "green", "yellow", "black", "red"]
-    
-    # Add color cards 
-    for color in colors:
-        i = 0
-        while i < 12:
-            train_deck.add(cards.TrainCard(color))
-            i += 1
-
-    # Add wild cards
-    i = 0
-    while i < 14:
-        train_deck.add(cards.TrainCard("wild"))
-        i += 1
-
-
-    train_deck.shuffle()
-
-    """
-    Tests
-    """
-    #destination_deck_test()
-    #route_test()
-    #graph_test()
-    #train_deck_test()
-    #player_test(train_deck)
-    
-
-    # Prints number of each color card in the deck, when used with player_test it shows the number of each color
-    # minus the cards in each players hand
-    colors = ["purple", "blue", "orange", "white", "green", "yellow", "black", "red", "wild"]
-    for color in colors:
-        print(f"{color} has {train_deck.get_count(color)} in deck")
+    initialize()
+    print(train_deck)

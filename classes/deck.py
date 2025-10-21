@@ -37,9 +37,30 @@ class Deck:
         def remove(self, index):
             return self.cards.pop(index)
         
+        # Remove a list of cards of a color + wild cards to make up for the count
+        def remove_cards(self, color, count):
+            if (self.has_cards(color, count)):
+                i = 0
+                while i < count:
+                    try:
+                        self.remove(self.get_card_index(color))
+                    except TypeError:
+                        self.remove(self.get_card_index("wild"))
+                    i += 1
+                
         # Adds a card
         def add(self, card):
             self.cards.append(card)
+
+        # Checks if the passed cards are in the deck
+        def has_cards(self, color, count):
+            cards = []
+            if self.get_count(color) >= count:
+                return True
+            elif self.get_count("wild") + self.get_count(color) >= count:
+                return True
+            else:
+                return False
 
         # Sorts the deck
         def sort(self):
@@ -52,6 +73,12 @@ class Deck:
                 if card.get_color() == color:
                     count += 1
             return count
+        
+        # returns the index of a train card of a certain color
+        def get_card_index(self, color):
+            for card in self.cards:
+                if card.get_color() == color:
+                    return int(self.cards.index(card))
         
         # To string
         def __str__(self):
