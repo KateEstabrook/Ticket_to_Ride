@@ -139,42 +139,52 @@ TRAINS = {
         {"positions": [(2163, 954, 35), (2205, 1014, 116)], "color": "colorless"}
     ],
     ("Charleston", "Miami"): [
-        {"positions": [(2183, 1137, 85), (2192, 1223, 80), (2211, 1309, 70), (2247, 1390, 60)], "color": "pink"}
+        {"positions": [(2183, 1137, 85), (2192, 1223, 80),
+                       (2211, 1309, 70), (2247, 1390, 60)], "color": "pink"}
     ],
     ("Miami", "Atlanta"): [
-        {"positions": [(2211, 1402, 48), (2152, 1335, 48), (2100, 1267, 48), (2042, 1198, 48), (1990, 1130, 48)], "color": "blue"}
+        {"positions": [(2211, 1402, 48), (2152, 1335, 48), (2100, 1267, 48),
+                       (2042, 1198, 48), (1990, 1130, 48)], "color": "blue"}
     ],
     ("Miami", "New Orleans"): [
-        {"positions": [(2193, 1438, 45), (2130, 1377, 38), (2060, 1327, 30), (1973, 1306, 0), (1887, 1317, -11), (1805, 1350, -28)], "color": "red"}
+        {"positions": [(2193, 1438, 45), (2130, 1377, 38), (2060, 1327, 30),
+                       (1973, 1306, 0), (1887, 1317, -11), (1805, 1350, -28)], "color": "red"}
     ],
     ("Atlanta", "Charleston"): [
         {"positions": [(2028, 1080, 0), (2114, 1084, 0)], "color": "colorless"}
     ],
     ("Seattle", "Calgary"): [
-        {"positions": [(335, 385, 0), (424, 380, 172), (503, 347, 143), (560, 278, 118)], "color": "colorless"}
+        {"positions": [(335, 385, 0), (424, 380, 172), (503, 347, 143),
+                       (560, 278, 118)], "color": "colorless"}
     ],
     ("Calgary", "Vancouver"): [
         {"positions": [(341, 238, 174), (429, 230, 174), (517, 219, 174)], "color": "colorless"}
     ],
     ("Calgary", "Winnipeg"): [
-        {"positions": [(652, 191, 159), (734, 165, 168), (821, 153, 175), (910, 155, 184), (998, 170, 194), (1080, 201, 202)], "color": "white"}
+        {"positions": [(652, 191, 159), (734, 165, 168), (821, 153, 175),
+                       (910, 155, 184), (998, 170, 194), (1080, 201, 202)], "color": "white"}
     ],
     ("Helena", "Duluth"): [
-        {"positions": [(903, 534, 0), (990, 533, 0), (1079, 531, 0), (1167, 530, 0), (1255, 528, 0), (1343, 528, 0)], "color": "orange"}
+        {"positions": [(903, 534, 0), (990, 533, 0), (1079, 531, 0),
+                       (1167, 530, 0), (1255, 528, 0), (1343, 528, 0)], "color": "orange"}
     ],
     ("Seattle", "Vancouver"): [
         {"positions": [(278, 320, 90)], "color": "colorless"},
         {"positions": [(246, 320, 90)], "color": "colorless"}
     ],
     ("Portland", "Salt Lake City"): [
-        {"positions": [(276, 526, 192), (360, 550, 197), (440, 590, 210), (510, 641, 215), (576, 700, 228), (625, 776, 236)], "color": "blue"}
+        {"positions": [(276, 526, 192), (360, 550, 197), (440, 590, 210), (510, 641, 215),
+                       (576, 700, 228), (625, 776, 236)], "color": "blue"}
     ],
     ("San Francisco", "Salt Lake City"): [
-        {"positions": [(248, 955, 163), (332, 927, 163), (412, 899, 163), (495, 873, 163), (576, 846, 163)], "color": "orange"},
-        {"positions": [(261, 982, 163), (343, 955, 163), (424, 928, 163), (504, 902, 163), (587, 874, 163)], "color": "white"}
+        {"positions": [(248, 955, 163), (332, 927, 163), (412, 899, 163),
+                       (495, 873, 163), (576, 846, 163)], "color": "orange"},
+        {"positions": [(261, 982, 163), (343, 955, 163), (424, 928, 163),
+                       (504, 902, 163), (587, 874, 163)], "color": "white"}
     ],
     ("Seattle", "Helena"): [
-        {"positions": [(328, 433, 190), (416, 454, 190), (498, 470, 190), (586, 489, 190), (670, 508, 190), (758, 528, 190)], "color": "yellow"}
+        {"positions": [(328, 433, 190), (416, 454, 190), (498, 470, 190),
+                       (586, 489, 190), (670, 508, 190), (758, 528, 190)], "color": "yellow"}
     ],
     ("Seattle", "Portland"): [
         {"positions": [(216, 445, 110)], "color": "colorless"},
@@ -188,7 +198,8 @@ TRAINS = {
         {"positions": [(577, 1071, 138), (627, 996, 113), (649, 912, 99)], "color": "orange"}
     ],
     ("El Paso", "Dallas"): [
-        {"positions": [(1054, 1358, 174), (1141, 1344, 174), (1228, 1332, 174), (1314, 1319, 174)], "color": "red"}
+        {"positions": [(1054, 1358, 174), (1141, 1344, 174),
+                       (1228, 1332, 174), (1314, 1319, 174)], "color": "red"}
     ],
     ("Helena", "Salt Lake City"): [
         {"positions": [(701, 752, 120), (745, 678, 120), (789, 603, 120)], "color": "pink"}
@@ -204,10 +215,12 @@ TRAINS = {
         {"positions": [(956, 1073, 95), (962, 983, 95)], "color": "colorless"}
     ],
     ("Denver", "Omaha"): [
-        {"positions": [(1024, 863, 141), (1100, 816, 153), (1180, 785, 165), (1267, 765, 173)], "color": "pink"}
+        {"positions": [(1024, 863, 141), (1100, 816, 153), (1180, 785, 165),
+                       (1267, 765, 173)], "color": "pink"}
     ],
     ("Denver", "Oklahoma City"): [
-        {"positions": [(1015, 988, 42), (1089, 1039, 26), (1173, 1062, 11), (1262, 1072, 2)], "color": "red"}
+        {"positions": [(1015, 988, 42), (1089, 1039, 26), (1173, 1062, 11),
+                       (1262, 1072, 2)], "color": "red"}
     ],
     ("Los Angeles", "Las Vegas"): [
         {"positions": [(384, 1174, 117), (452, 1117, 170)], "color": "colorless"}
@@ -216,7 +229,8 @@ TRAINS = {
         {"positions": [(423, 1230, 173), (509, 1225, 0), (598, 1236, 193)], "color": "colorless"}
     ],
     ("Los Angeles", "El Paso"): [
-        {"positions": [(424, 1296, 37), (499, 1340, 27), (582, 1369, 17), (669, 1385, 10), (759, 1390, 178), (844, 1376, 173)], "color": "black"}
+        {"positions": [(424, 1296, 37), (499, 1340, 27), (582, 1369, 17),
+                       (669, 1385, 10), (759, 1390, 178), (844, 1376, 173)], "color": "black"}
     ],
     ("Santa Fe", "Oklahoma City"): [
         {"positions": [(1027, 1133, 170), (1115, 1123, 170), (1202, 1112, 170)], "color": "blue"}
@@ -225,33 +239,43 @@ TRAINS = {
         {"positions": [(715, 1288, 15), (798, 1312, 15), (883, 1337, 15)], "color": "colorless"}
     ],
     ("Phoenix", "Denver"): [
-        {"positions": [(680, 1202, 112), (719, 1127, 121), (765, 1051, 126), (823, 988, 141), (901, 943, 158)], "color": "white"}
+        {"positions": [(680, 1202, 112), (719, 1127, 121), (765, 1051, 126),
+                       (823, 988, 141), (901, 943, 158)], "color": "white"}
     ],
     ("Phoenix", "Santa Fe"): [
         {"positions": [(731, 1230, 160), (812, 1195, 160), (893, 1159, 160)], "color": "colorless"}
     ],
     ("Helena", "Winnipeg"): [
-        {"positions": [(891, 474, 135), (952, 413, 135), (1013, 350, 135), (1075, 287, 135)], "color": "blue"}
+        {"positions": [(891, 474, 135), (952, 413, 135), (1013, 350, 135),
+                       (1075, 287, 135)], "color": "blue"}
     ],
     ("Duluth", "Winnipeg"): [
-        {"positions": [(1178, 290, 223), (1243, 352, 223), (1305, 412, 223), (1367, 473, 223)], "color": "black"}
+        {"positions": [(1178, 290, 223), (1243, 352, 223),
+                       (1305, 412, 223), (1367, 473, 223)], "color": "black"}
     ],
     ("Helena", "Omaha"): [
-        {"positions": [(924, 583, 25), (1004, 616, 25), (1086, 649, 25), (1168, 682, 25), (1248, 716, 25)], "color": "red"}
+        {"positions": [(924, 583, 25), (1004, 616, 25), (1086, 649, 25),
+                       (1168, 682, 25), (1248, 716, 25)], "color": "red"}
     ],
     ("Calgary", "Helena"): [
-        {"positions": [(634, 273, 50), (688, 342, 50), (746, 408, 50), (802, 476, 50)], "color": "colorless"}
+        {"positions": [(634, 273, 50), (688, 342, 50),
+                       (746, 408, 50), (802, 476, 50)], "color": "colorless"}
     ],
     ("Helena", "Denver"): [
-        {"positions": [(861, 600, 67), (893, 679, 67), (925, 760, 67), (958, 841, 67)], "color": "green"}
+        {"positions": [(861, 600, 67), (893, 679, 67),
+                       (925, 760, 67), (958, 841, 67)], "color": "green"}
     ],
     ("Portland", "San Francisco"): [
-        {"positions": [(198, 579, 116), (171, 664, 103), (161, 752, 90), (163, 840, 85), (178, 926, 76)], "color": "pink"},
-        {"positions": [(165, 574, 116), (139, 659, 103), (128, 747, 90), (129, 835, 85), (146, 921, 76)], "color": "green"}
+        {"positions": [(198, 579, 116), (171, 664, 103), (161, 752, 90),
+                       (163, 840, 85), (178, 926, 76)], "color": "pink"},
+        {"positions": [(165, 574, 116), (139, 659, 103), (128, 747, 90),
+                       (129, 835, 85), (146, 921, 76)], "color": "green"}
     ],
     ("New Orleans", "Atlanta"): [
-        {"positions": [(1760, 1324, 109), (1801, 1246, 119), (1853, 1174, 137), (1912, 1113, 137)], "color": "orange"},
-        {"positions": [(1736, 1300, 109), (1779, 1217, 125), (1830, 1150, 137), (1888, 1089, 137)], "color": "yellow"}
+        {"positions": [(1760, 1324, 109), (1801, 1246, 119),
+                       (1853, 1174, 137), (1912, 1113, 137)], "color": "orange"},
+        {"positions": [(1736, 1300, 109), (1779, 1217, 125),
+                       (1830, 1150, 137), (1888, 1089, 137)], "color": "yellow"}
     ],
     ("Atlanta", "Raleigh"): [
         {"positions": [(2006, 1033, 137), (2074, 973, 137)], "color": "colorless"},
@@ -280,7 +304,8 @@ TRAINS = {
         {"positions": [(1881, 1008, 35)], "color": "colorless"}
     ],
     ("Montreal", "Sault St. Marie"): [
-        {"positions": [(2100, 193, 0), (2013, 202, -10), (1927, 226, -13), (1846, 262, 156), (1773, 312, 146)], "color": "black"}
+        {"positions": [(2100, 193, 0), (2013, 202, -10), (1927, 226, -13),
+                       (1846, 262, 156), (1773, 312, 146)], "color": "black"}
     ],
     ("New Orleans", "Little Rock"): [
         {"positions": [(1675, 1310, 60), (1632, 1231, 60), (1592, 1152, 60)], "color": "green"}
@@ -289,10 +314,12 @@ TRAINS = {
         {"positions": [(1623, 1085, -5), (1708, 1062, -22), (1785, 1014, -40)], "color": "white"}
     ],
     ("Nashville", "Pittsburgh"): [
-        {"positions": [(1819, 913, 120), (1863, 842, 132), (1935, 782, 148), (1999, 718, 125)], "color": "yellow"}
+        {"positions": [(1819, 913, 120), (1863, 842, 132), (1935, 782, 148),
+                       (1999, 718, 125)], "color": "yellow"}
     ],
     ("Pittsburgh", "Saint Louis"): [
-        {"positions": [(1966, 685, 150), (1890, 730, 150), (1813, 772, 150), (1737, 817, 150), (1660, 862, 150)], "color": "green"}
+        {"positions": [(1966, 685, 150), (1890, 730, 150), (1813, 772, 150),
+                       (1737, 817, 150), (1660, 862, 150)], "color": "green"}
     ],
     ("Saint Louis", "Nashville"): [
         {"positions": [(1661, 926, 18), (1744, 952, 18)], "color": "colorless"}
@@ -308,16 +335,19 @@ TRAINS = {
         {"positions": [(1885, 392, 13), (1800, 373, 13)], "color": "colorless"}
     ],
     ("Toronto", "Duluth"): [
-        {"positions": [(1909, 439, -11), (1824, 451, -11), (1737, 465, -11), (1650, 481, -11), (1564, 498, -11), (1476, 513, -11)], "color": "pink"}
+        {"positions": [(1909, 439, -11), (1824, 451, -11), (1737, 465, -11),
+                       (1650, 481, -11), (1564, 498, -11), (1476, 513, -11)], "color": "pink"}
     ],
     ("Sault St. Marie", "Winnipeg"): [
-        {"positions": [(1653, 334, 13), (1566, 316, 13), (1482, 298, 13), (1395, 280, 13), (1311, 262, 13), (1222, 244, 13)], "color": "colorless"}
+        {"positions": [(1653, 334, 13), (1566, 316, 13), (1482, 298, 13), (1395, 280, 13),
+                       (1311, 262, 13), (1222, 244, 13)], "color": "colorless"}
     ],
     ("Sault St. Marie", "Duluth"): [
         {"positions": [(1656, 395, -22), (1575, 433, -22), (1494, 466, -22)], "color": "colorless"}
     ],
     ("Toronto", "Chicago"): [
-        {"positions": [(1948, 465, 145), (1870, 505, 162), (1791, 543, 148), (1720, 602, 135)], "color": "white"}
+        {"positions": [(1948, 465, 145), (1870, 505, 162), (1791, 543, 148),
+                       (1720, 602, 135)], "color": "white"}
     ],
     ("Chicago", "Saint Louis"): [
         {"positions": [(1653, 728, 125), (1605, 804, 125)], "color": "green"},
@@ -328,7 +358,8 @@ TRAINS = {
         {"positions": [(1399, 601, 113), (1368, 682, 113)], "color": "colorless"}
     ],
     ("Chicago", "Omaha"): [
-        {"positions": [(1637, 665, 8), (1553, 652, 8), (1470, 673, 148), (1396, 722, 148)], "color": "blue"}
+        {"positions": [(1637, 665, 8), (1553, 652, 8), (1470, 673, 148),
+                       (1396, 722, 148)], "color": "blue"}
     ],
     ("Chicago", "Duluth"): [
         {"positions": [(1630, 625, 13), (1543, 601, 20), (1462, 566, 25)], "color": "red"}
@@ -342,8 +373,10 @@ TRAINS = {
         {"positions": [(1539, 849, 0), (1450, 853, 0)], "color": "blue"}
     ],
     ("Kansas City", "Denver"): [
-        {"positions": [(1315, 878, 160), (1233, 906, 170), (1146, 916, -5), (1057, 915, 5)], "color": "black"},
-        {"positions": [(1317, 912, 160), (1233, 937, 170), (1144, 949, -5), (1057, 951, 5)], "color": "orange"}
+        {"positions": [(1315, 878, 160), (1233, 906, 170),
+                       (1146, 916, -5), (1057, 915, 5)], "color": "black"},
+        {"positions": [(1317, 912, 160), (1233, 937, 170), (1144, 949, -5),
+                       (1057, 951, 5)], "color": "orange"}
     ],
     ("Kansas City", "Oklahoma City"): [
         {"positions": [(1369, 934, 109), (1344, 1017, 109)], "color": "colorless"},
@@ -363,10 +396,12 @@ TRAINS = {
         {"positions": [(1425, 1354, 47)], "color": "colorless"}
     ],
     ("Houston", "El Paso"): [
-        {"positions": [(1425, 1434, -17), (1338, 1456, -10), (1251, 1462, 2), (1164, 1452, 7), (1078, 1435, 17), (996, 1399, 30)], "color": "green"}
+        {"positions": [(1425, 1434, -17), (1338, 1456, -10), (1251, 1462, 2),
+                       (1164, 1452, 7), (1078, 1435, 17), (996, 1399, 30)], "color": "green"}
     ],
     ("El Paso", "Oklahoma City"): [
-        {"positions": [(1010, 1330, 165), (1092, 1296, 155), (1168, 1252, 150), (1237, 1197, 136), (1294, 1131, 128)], "color": "yellow"}
+        {"positions": [(1010, 1330, 165), (1092, 1296, 155), (1168, 1252, 150),
+                       (1237, 1197, 136), (1294, 1131, 128)], "color": "yellow"}
     ],
     ("Oklahoma City", "Dallas"): [
         {"positions": [(1352, 1149, 82), (1362, 1234, 82)], "color": "colorless"},
@@ -384,6 +419,8 @@ CARDS = {
     "White" : [2600, 1510, "white.png"],
     "Yellow" : [2900, 1510, "yellow.png"]
 }
+
+EXIT_BUTTON = (128, 0, 0)
 
 class GameView(arcade.View):
     """
@@ -409,8 +446,6 @@ class GameView(arcade.View):
         # Train pieces
         # One list for all train sprites (create it ONCE)
         self.train_list = arcade.SpriteList()
-
-        # Load textures once
         orange_train = arcade.load_texture("images/train_piece.png")
 
         # Create a mapping of city pairs to train sprites
@@ -449,11 +484,9 @@ class GameView(arcade.View):
                         route_sprites.append(train_sprite)
 
                 self.train_map[train].append(route_sprites)
-
-        # One list for all city sprites (create it ONCE)
         self.city_list = arcade.SpriteList()
 
-        # Load textures once
+        # Load textures
         base_tex = arcade.load_texture("images/city.png")
         hover_tex = arcade.load_texture("images/button_yellow.png")
         self.rainbow_texture = arcade.load_texture("images/rainbow.jpg")
@@ -476,11 +509,9 @@ class GameView(arcade.View):
                 city, info["CITY_IMG_X"], info["CITY_IMG_Y"],
                 top_left=True, scale=None
             )
-
-            # Add to the shared list
             self.city_list.append(city)
 
-        self.selected_cities = []  # list of selected city sprites (max. 2)
+        self.selected_cities = []
 
         # Variables that will hold sprite lists
         self.player_sprite = arcade.Sprite(
@@ -500,7 +531,6 @@ class GameView(arcade.View):
             card.texture = self.card_textures[name]
 
             self.place_card(card, sx, sy, top_left=True, scale=0.4)
-
             self.card_list.append(card)
 
         self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.4)
@@ -586,7 +616,7 @@ class GameView(arcade.View):
             arcade.LBWH(BOARD_LEFT, BOARD_BOTTOM,  BOARD_WIDTH, BOARD_HEIGHT),
         )
 
-        # Draw all the sprites.
+        # Draw all the sprites
         self.train_list.draw()
         self.city_list.draw()
         self.card_list.draw()
@@ -620,12 +650,26 @@ class GameView(arcade.View):
         idx = self.city_list.index(spr)
         return list(CITIES.keys())[idx]
 
+
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         if self.showing_popup:
-            # Close the pop-up on any click and claim the route
-            self.showing_popup = False
-            self.claim_route(self.popup_city1, self.popup_city2)
-            self.deselect_all_cities()
+            # Check if exit button was clicked
+            if hasattr(self, 'exit_button_bounds'):
+                left, right, bottom, top = self.exit_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    self.showing_popup = False
+                    self.deselect_all_cities()
+                    return
+
+            # Check if color button was clicked
+            selected_color = self.handle_color_selection(x, y)
+            if selected_color:
+                # Color was selected, claim the route and close popup
+                self.showing_popup = False
+                self.claim_route(self.popup_city1, self.popup_city2)
+                self.deselect_all_cities()
+                return
+            # If neither button was pressed keep going
             return
 
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -641,7 +685,6 @@ class GameView(arcade.View):
                 return
 
             city = hits[0]
-
             # If this city is already selected -> deselect it
             if city in self.selected_cities:
                 city.set_texture(0)
@@ -746,11 +789,9 @@ class GameView(arcade.View):
         """
         Show a white rectangle pop-up with color selection buttons
         """
-        # Calculate dimensions
+        # Calculate dimensions and positions
         popup_width = WINDOW_WIDTH * 0.4
         popup_height = WINDOW_HEIGHT * 0.4
-
-        # Calculate position
         popup_x = WINDOW_WIDTH // 2
         popup_y = WINDOW_HEIGHT // 2
 
@@ -800,11 +841,9 @@ class GameView(arcade.View):
                 # Calculate button position
                 button_x = row_x + col * (button_width + horizontal_spacing)
                 button_y = start_y - row * (button_height + vertical_spacing)
-
-                # Get color and label
                 color, label = colors[row * 4 + col]
 
-                # Draw texture rectangle
+                # Draw rectangle for train color buttons
                 color_texture = arcade.make_soft_square_texture(2, color, outer_alpha=255)
                 rect = arcade.LBWH(
                     button_x - button_width // 2,
@@ -813,7 +852,6 @@ class GameView(arcade.View):
                     button_height
                 )
                 arcade.draw_texture_rect(color_texture, rect)
-                # Draw border
                 arcade.draw_rect_outline(
                     rect,
                     arcade.color.BLACK,
@@ -849,14 +887,13 @@ class GameView(arcade.View):
 
         # Draw third row
         row = 2
-        cols = 1
         row_x = start_x
 
-        # Calculate rainbow button position
+        # Calculate locomotive button position
         button_x = row_x
         button_y = start_y - row * (button_height + vertical_spacing)
 
-        # Draw rainbow texture rectangle
+        # Draw locomotive rectangle
         rect = arcade.LBWH(
             button_x - button_width // 2,
             button_y - button_height // 2,
@@ -864,8 +901,6 @@ class GameView(arcade.View):
             button_height
         )
         arcade.draw_texture_rect(self.rainbow_texture, rect)
-
-        # Draw border around rainbow button
         arcade.draw_rect_outline(
             rect,
             arcade.color.BLACK,
@@ -893,6 +928,44 @@ class GameView(arcade.View):
                 button_y + button_height // 2  # top
             )
         })
+
+        # Add exit button in lower right corner
+        exit_button_width = popup_width * 0.2
+        exit_button_height = popup_height * 0.1
+        exit_button_x = popup_x + popup_width * 0.48 - exit_button_width // 2
+        exit_button_y = popup_y - popup_height * 0.45 + exit_button_height // 2
+
+        exit_texture = arcade.make_soft_square_texture(2, EXIT_BUTTON, outer_alpha=255)
+        exit_rect = arcade.LBWH(
+            exit_button_x - exit_button_width // 2,
+            exit_button_y - exit_button_height // 2,
+            exit_button_width,
+            exit_button_height
+        )
+
+        arcade.draw_texture_rect(exit_texture, exit_rect)
+        arcade.draw_rect_outline(
+            exit_rect,
+            arcade.color.BLACK,
+            border_width=2
+        )
+
+        arcade.draw_text(
+            "EXIT",
+            exit_button_x, exit_button_y,
+            arcade.color.WHITE,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True
+        )
+
+        self.exit_button_bounds = (
+            exit_button_x - exit_button_width // 2,  # left
+            exit_button_x + exit_button_width // 2,  # right
+            exit_button_y - exit_button_height // 2,  # bottom
+            exit_button_y + exit_button_height // 2  # top
+        )
 
         # Add route information text
         route_length = self.popup_route_length
@@ -922,7 +995,7 @@ class GameView(arcade.View):
 
 
     def claim_route(self, city1, city2):
-        """Actually claim the route after pop-up interaction"""
+        """Claim the route after pop-up interaction"""
         city_pair = (city1, city2)
         reverse_pair = (city2, city1)
 
