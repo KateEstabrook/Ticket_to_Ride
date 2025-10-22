@@ -11,10 +11,10 @@
 
 class DestinationCard:
     # Constructor
-    def __init__(self, cities, points):
-        self.city_1 = cities[0]
-        self.city_2 = cities[1]
-        self.points = points
+    def __init__(self, card_info):
+        self.city_1 = card_info[0]
+        self.city_2 = card_info[1]
+        self.points = card_info[2]
         self.completed = False
 
     # Getters

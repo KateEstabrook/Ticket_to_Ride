@@ -2,7 +2,7 @@
 Game Logic
 """
 
-from classes import cards, deck, player, route, graph
+import deck, cards, graph, route, player
 
 # Constants
 ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, "colorless"),
@@ -69,15 +69,14 @@ DESTINATIONS = [("Boston", "Miami", 12), ("Calgary", "Phoenix", 13), ("Calgary",
                 ("Denver", "El Paso", 4), ("Denver", "Pittsburgh", 11), ("Duluth", "El Paso", 10), 
                 ("Duluth", "Houston", 8), ("Helena", "Los Angeles", 8), ("Kansas City", "Houston", 5),
                 ("Los Angeles", "Chicago", 16), ("Los Angeles", "Miami", 20), ("Los Angeles", "New York", 21),
-                ("Montréal", "Atlanta", 9), ("Montréal", "New Orleans", 13), ("New York", "Atlanta", 6),
+                ("Montreal", "Atlanta", 9), ("Montreal", "New Orleans", 13), ("New York", "Atlanta", 6),
                 ("Portland", "Nashville", 17), ("Portland", "Phoenix", 11), ("San Francisco", "Atlanta", 17),
                 ("Sault St. Marie", "Nashville", 8), ("Sault St. Marie", "Oklahoma City", 9), 
                 ("Seattle", "Los Angeles", 9), ("Seattle", "New York", 22), ("Toronto", "Miami", 10),
                 ("Vancouver", "Montreal", 20), ("Vancouver", "Santa Fe", 13), 
                 ("Winnipeg", "Houston", 12), ("Winnipeg", "Little Rock", 11)]
 
-def initialize():
-
+if __name__ == "__main__":
     # Initailize Train Card Deck
     train_deck = deck.Deck('Draw')
     
@@ -113,7 +112,13 @@ def initialize():
     
     # TODO Have player choose color
     
-    # TODO Initialize Destination Card Deck
+    # Initialize Destination Card Deck
+    dest_deck = deck.Deck("Destination")
+
+    for dest in DESTINATIONS:
+        dest_deck.add(cards.DestinationCard(dest))
+
+    dest_deck.shuffle()
 
     # Draw first hand of train cards, 4 each
     for p in players:
@@ -126,15 +131,12 @@ def initialize():
 
     # TODO Deal Destination Cards
 
+
     # Initalize routes
     routes = []
     for rt in ROUTES:
         routes.append(route.Route((rt)))
 
     # Initalize graph
-
     map = graph.Graph("", ROUTES)
 
-if __name__ == "__main__":
-    initialize()
-    print(train_deck)
