@@ -1,5 +1,10 @@
-import arcade
+"""
+Constants for front end
+"""
+
+
 import platform
+import arcade
 
 
 PLAYER_SCALING = 0.05

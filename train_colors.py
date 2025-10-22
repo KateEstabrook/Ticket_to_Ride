@@ -1,6 +1,5 @@
 """
 Ticket to Ride Board
-With dictionaries for cities including paths
 """
 
 import platform
@@ -74,7 +73,7 @@ class GameView(arcade.View):
         # Load textures
         base_tex = arcade.load_texture("images/city.png")
         hover_tex = arcade.load_texture("images/button_yellow.png")
-        self.rainbow_texture = arcade.load_texture("images/rainbow.jpg")
+        self.selected_color = None
 
         # Build sprites from CITIES
         for _, info in c.CITIES.items():
@@ -244,23 +243,22 @@ class GameView(arcade.View):
                 if left <= x <= right and bottom <= y <= top:
                     self.showing_popup = False
                     self.deselect_all_cities()
-                    # Clear selected color when closing popup
-                    if hasattr(self, 'selected_color'):
-                        del self.selected_color
+                    self.selected_color = None
                     return
 
             # Check if save button was clicked
             if hasattr(self, 'save_button_bounds') and self.save_button_bounds:
                 left, right, bottom, top = self.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    # Save button clicked - claim the route and close popup
-                    self.showing_popup = False
-                    self.claim_route(self.popup_city1, self.popup_city2)
-                    self.deselect_all_cities()
-                    # Clear selected color after saving
-                    if hasattr(self, 'selected_color'):
-                        del self.selected_color
+                    if (self.selected_color and self.valid_route_colors(
+                            self.selected_color, self.popup_city1, self.popup_city2)):
+
+                        self.showing_popup = False
+                        self.claim_route(self.popup_city1, self.popup_city2)
+                        self.deselect_all_cities()
+                        self.selected_color = None
                     return
+
 
             # Check if color button was clicked
             selected_color = self.handle_color_selection(x, y)
@@ -329,7 +327,7 @@ class GameView(arcade.View):
                 available_count = sum(1 for taken in self.route_taken[pair] if not taken)
 
                 if available_count > 0:
-                    # Mark this one as selected temporarily
+                    # Mark this one as selected
                     city.set_texture(1)
                     city.scale = c.CITY_SCALE_YELLOW
                     self.selected_cities.append(city)
@@ -339,6 +337,7 @@ class GameView(arcade.View):
                     self.popup_city1 = first_city_name
                     self.popup_city2 = second_city_name
                     self.popup_route_length = c.ROUTES[first_city_name][second_city_name]
+                    self.selected_color = None
                     return
 
             # If we get here, either cities aren't connected or all routes are claimed
@@ -405,20 +404,20 @@ class GameView(arcade.View):
             )
         )
 
-        # Define colors and their filenames - now including locomotive in the main list
+        # Define colors
         color_cards = [
             ("RED", "red.png"),
             ("BLUE", "blue.png"),
             ("GREEN", "green.png"),
             ("YELLOW", "yellow.png"),
             ("ORANGE", "orange.png"),
-            ("PURPLE", "purple.png"),
+            ("PINK", "purple.png"),
             ("BLACK", "black.png"),
             ("WHITE", "white.png"),
-            ("LOCOMOTIVE", "rainbow.jpg")  # Locomotive is now part of the main list
+            ("LOCOMOTIVE", "rainbow.jpg")
         ]
 
-        # Pre-load card textures
+        # Card textures (images)
         card_textures = {}
         for color_name, filename in color_cards:
             card_textures[color_name] = arcade.load_texture(f"images/{filename}")
@@ -436,14 +435,12 @@ class GameView(arcade.View):
         # Store button positions for click detection
         self.color_buttons = []
 
-        # Draw all cards in a 3x3 grid
+        # Draw cards
         for row in range(3):
-            cols = 3  # 3 columns for 9 total cards
             row_x = start_x
 
-            for col in range(cols):
+            for col in range(3):
                 index = row * 3 + col
-
                 # Calculate button position
                 button_x = row_x + col * (button_width + horizontal_spacing)
                 button_y = start_y - row * (button_height + vertical_spacing)
@@ -459,10 +456,13 @@ class GameView(arcade.View):
                 )
                 arcade.draw_texture_rect(texture, rect)
 
-                # Border - yellow when selected, black otherwise
-                border_color = arcade.color.YELLOW if hasattr(self,
-                                                              'selected_color') and self.selected_color == color_name.lower() else arcade.color.BLACK
-                border_width = 4 if border_color == arcade.color.YELLOW else 2
+                # draw border
+                if self.selected_color == color_name.lower():
+                    border_color = arcade.color.YELLOW
+                    border_width = 4
+                else:
+                    border_color = arcade.color.BLACK
+                    border_width = 2
 
                 arcade.draw_rect_outline(
                     rect,
@@ -536,8 +536,9 @@ class GameView(arcade.View):
         )
 
         # Only show save button if a color has been selected
-        if hasattr(self, 'selected_color') and self.selected_color:
-            # Add save button
+        if (self.selected_color and
+                self.valid_route_colors(self.selected_color, city1, city2)):
+
             save_button_width = popup_width * 0.2
             save_button_height = popup_height * 0.1
             save_button_x = popup_x + popup_width * 0.25 - save_button_width // 2
@@ -575,7 +576,6 @@ class GameView(arcade.View):
                 save_button_y + save_button_height // 2  # top
             )
         else:
-            # No save button bounds if no color selected
             self.save_button_bounds = None
 
         # Add route information text
@@ -605,7 +605,7 @@ class GameView(arcade.View):
         )
 
         # Add selection status text
-        if hasattr(self, 'selected_color') and self.selected_color:
+        if self.selected_color:
             status_text = f"Selected: {self.selected_color.upper()}"
             arcade.draw_text(
                 status_text,
@@ -613,6 +613,20 @@ class GameView(arcade.View):
                 arcade.color.BLACK,
                 font_size=12,
                 anchor_x="center",
+                anchor_y="center",
+                bold=True
+            )
+        # invalid color
+        if (self.selected_color and
+                not self.valid_route_colors(self.selected_color, city1, city2)):
+            error_text = f"Cannot use {self.selected_color.upper()} card on this route!"
+            arcade.draw_text(
+                error_text,
+                popup_x - popup_width * 0.4,
+                popup_y - popup_height * 0.4,
+                arcade.color.RED,
+                font_size=14,
+                anchor_x="left",
                 anchor_y="center",
                 bold=True
             )
@@ -658,6 +672,18 @@ class GameView(arcade.View):
             if self.is_point_in_button(x, y, button['bounds']):
                 return button['color']
         return None
+
+    # Color validation
+    def valid_route_colors(self, selected_color, city1, city2):
+        """Get available colors for the route"""
+        for city_pair in [(city1, city2), (city2, city1)]:
+            if city_pair in c.TRAINS:
+                available_colors = {route_data["color"] for route_data in c.TRAINS[city_pair]}
+                if selected_color == "locomotive":
+                    return True
+                return (selected_color in available_colors or
+                        "colorless" in available_colors)
+        return False
 
 
 def main():
