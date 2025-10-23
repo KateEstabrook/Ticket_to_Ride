@@ -39,10 +39,14 @@ class TrainCard:
     # Constructor
     def __init__(self, color):
         self.color = color
+        self.sprite = f"images/{color}.png"
 
     # Getter
     def get_color(self):
         return self.color
+
+    def get_sprite(self):
+        return self.sprite
 
     # To string 
     def __str__(self):
