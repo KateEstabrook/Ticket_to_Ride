@@ -134,7 +134,7 @@ class GameView(arcade.View):
         self.card_banner.center_y = cy
 
         self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
-        lx, ly = self.img_to_screen(475, -30, top_left=True)
+        lx, ly = self.img_to_screen(1250, -30, top_left=True)
         self.leaderboard_banner.center_x = lx
         self.leaderboard_banner.center_y = ly
 
@@ -226,6 +226,9 @@ class GameView(arcade.View):
         tmp.append(self.leaderboard_banner)
         tmp.append(self.player_sprite)
         tmp.draw()
+
+        for line in self.leaderboard_lines:
+            line.draw()
 
 
     def on_mouse_motion(self, x, y, dx, dy):
