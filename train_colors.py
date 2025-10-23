@@ -414,7 +414,7 @@ class GameView(arcade.View):
             ("PINK", "purple.png"),
             ("BLACK", "black.png"),
             ("WHITE", "white.png"),
-            ("LOCOMOTIVE", "rainbow.jpg")
+            ("LOCOMOTIVE", "locomotive.png")
         ]
 
         # Card textures (images)
@@ -473,7 +473,7 @@ class GameView(arcade.View):
                 # Add text label
                 text_color = arcade.color.WHITE
                 # Black text for light-colored cards
-                if color_name in ["WHITE", "YELLOW", "LOCOMOTIVE"]:
+                if color_name in ["WHITE", "YELLOW"]:
                     text_color = arcade.color.BLACK
 
                 arcade.draw_text(
