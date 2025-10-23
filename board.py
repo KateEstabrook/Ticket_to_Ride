@@ -434,7 +434,7 @@ class GameView(arcade.View):
             ("PINK", "purple.png"),
             ("BLACK", "black.png"),
             ("WHITE", "white.png"),
-            ("LOCOMOTIVE", "locomotive.png")
+            ("LOCOMOTIVE", "wild.png")
         ]
 
         # Card textures (images)

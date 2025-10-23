@@ -417,7 +417,7 @@ CARDS =  [
     "red.png",
     "white.png",
     "yellow.png",
-    "locomotive.png"
+    "wild.png"
 ]
 
 PLAYER_CARDS = {
