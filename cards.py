@@ -5,6 +5,7 @@ With dictionaries for cities including paths
 
 import platform
 import arcade
+import random
 
 PLAYER_SCALING = 0.05
 
@@ -374,15 +375,36 @@ TRAINS = {
     ]
 }
 
-CARDS = {
-    "Orange" : [2600, 1070, "orange.png"],
-    "Black" : [2950, 1070, "black.png"],
-    "Blue" : [3300, 1070, "blue.png"],
-    "Green" : [2600, 1290, "green.png"],
-    "Purple" : [2950, 1290, "purple.png"],
-    "Red" : [3300, 1290, "red.png"],
-    "White" : [2600, 1510, "white.png"],
-    "Yellow" : [2950, 1510, "yellow.png"]
+CARDS =  [
+    "orange.png",
+    "black.png",
+    "blue.png",
+    "green.png",
+    "purple.png",
+    "red.png",
+    "white.png",
+    "yellow.png",
+    "locomotive.png"
+]
+
+PLAYER_CARDS = {
+    "Orange" : [2600, 1070, CARDS[0]],
+    "Black" : [2900, 1070, CARDS[1]],
+    "Blue" : [3200, 1070, CARDS[2]],
+    "Green" : [2600, 1290, CARDS[3]],
+    "Purple" : [2900, 1290, CARDS[4]],
+    "Red" : [3200, 1290, CARDS[5]],
+    "White" : [2600, 1510, CARDS[6]],
+    "Yellow" : [2900, 1510, CARDS[7]],
+    "Locomotive" : [3200, 1510, CARDS[8]]
+}
+
+FACEUP_CARDS = {
+    "First" : [-100, 400],
+    "Second" : [-100, 620],
+    "Third" : [-100, 840],
+    "Fourth" : [-100, 1060],
+    "Fifth" : [-100, 1280]
 }
 
 class GameView(arcade.View):
@@ -400,10 +422,10 @@ class GameView(arcade.View):
         self.background = arcade.load_texture("images/board_borders.png")
 
         self.leaderboard_lines = [
-            arcade.Text("You - ", 1188, 660, arcade.color.WHITE, 15, anchor_x="center"),
-            arcade.Text("Player 1 - ", 1188, 640, arcade.color.WHITE, 15, anchor_x="center"),
-            arcade.Text("Player 2 - ", 1188, 620, arcade.color.WHITE, 15, anchor_x="center"),
-            arcade.Text("Player 3 - ", 1188, 600, arcade.color.WHITE, 15, anchor_x="center"),
+            arcade.Text("Player 0 - 312", 600, 830, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text("Player 1 - 343", 600, 800, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text("Player 2 - 232", 800, 830, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text("Player 3 - 123", 800, 800, arcade.color.WHITE, 15, anchor_x="left"),
         ]
 
         # Train pieces
@@ -489,12 +511,21 @@ class GameView(arcade.View):
 
         self.card_textures = {
             name : arcade.load_texture(f"images/{filename}")
-            for name, (_, _, filename) in CARDS.items()
+            for name, (_, _, filename) in PLAYER_CARDS.items()
         }
 
         self.card_list = arcade.SpriteList()
 
-        for name, (sx, sy, filename) in CARDS.items():
+        for name, (sx, sy) in FACEUP_CARDS.items():
+            card = arcade.Sprite()
+            random_name = random.choice(list(self.card_textures))
+            card.texture = self.card_textures[random_name]
+
+            self.place_card(card, sx, sy, top_left=True, scale = 0.4)
+
+            self.card_list.append(card)
+
+        for name, (sx, sy, filename) in PLAYER_CARDS.items():
             card = arcade.Sprite()
             card.texture = self.card_textures[name]
 
@@ -503,12 +534,12 @@ class GameView(arcade.View):
             self.card_list.append(card)
 
         self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.4)
-        cx, cy = self.img_to_screen(2950, 850, top_left=True)
+        cx, cy = self.img_to_screen(2850, 850, top_left=True)
         self.card_banner.center_x = cx
         self.card_banner.center_y = cy
 
         self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
-        lx, ly = self.img_to_screen(2950, 180, top_left=True)
+        lx, ly = self.img_to_screen(475, -30, top_left=True)
         self.leaderboard_banner.center_x = lx
         self.leaderboard_banner.center_y = ly
 
