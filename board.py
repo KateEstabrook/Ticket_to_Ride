@@ -133,7 +133,6 @@ class GameView(arcade.View):
         self.card_banner.center_x = cx
         self.card_banner.center_y = cy
 
-
         self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
         lx, ly = self.img_to_screen(1250, -30, top_left=True)
         self.leaderboard_banner.center_x = lx
