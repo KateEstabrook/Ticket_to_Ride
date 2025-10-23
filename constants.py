@@ -410,15 +410,36 @@ TRAINS = {
     ]
 }
 
-CARDS = {
-    "Orange" : [2600, 1070, "orange.png"],
-    "Black" : [2900, 1070, "black.png"],
-    "Blue" : [3200, 1070, "blue.png"],
-    "Green" : [2600, 1290, "green.png"],
-    "Purple" : [2900, 1290, "purple.png"],
-    "Red" : [3200, 1290, "red.png"],
-    "White" : [2600, 1510, "white.png"],
-    "Yellow" : [2900, 1510, "yellow.png"]
+CARDS =  [
+    "orange.png",
+    "black.png",
+    "blue.png",
+    "green.png",
+    "purple.png",
+    "red.png",
+    "white.png",
+    "yellow.png",
+    "locomotive.png"
+]
+
+PLAYER_CARDS = {
+    "Orange" : [2600, 1070, CARDS[0]],
+    "Black" : [2900, 1070, CARDS[1]],
+    "Blue" : [3200, 1070, CARDS[2]],
+    "Green" : [2600, 1290, CARDS[3]],
+    "Purple" : [2900, 1290, CARDS[4]],
+    "Red" : [3200, 1290, CARDS[5]],
+    "White" : [2600, 1510, CARDS[6]],
+    "Yellow" : [2900, 1510, CARDS[7]],
+    "Locomotive" : [3200, 1510, CARDS[8]]
+}
+
+FACEUP_CARDS = {
+    "First" : [-100, 400],
+    "Second" : [-100, 620],
+    "Third" : [-100, 840],
+    "Fourth" : [-100, 1060],
+    "Fifth" : [-100, 1280]
 }
 
 EXIT_BUTTON = (128, 0, 0)
