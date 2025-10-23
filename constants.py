@@ -435,11 +435,11 @@ PLAYER_CARDS = {
 }
 
 FACEUP_CARDS = {
-    "First" : [-100, 400],
-    "Second" : [-100, 620],
-    "Third" : [-100, 840],
-    "Fourth" : [-100, 1060],
-    "Fifth" : [-100, 1280]
+    "First" : [-100, 550],
+    "Second" : [-100, 770],
+    "Third" : [-100, 990],
+    "Fourth" : [-100, 1210],
+    "Fifth" : [-100, 1430]
 }
 
 EXIT_BUTTON = (128, 0, 0)

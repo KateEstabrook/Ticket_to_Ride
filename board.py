@@ -138,6 +138,11 @@ class GameView(arcade.View):
         self.leaderboard_banner.center_x = lx
         self.leaderboard_banner.center_y = ly
 
+        self.deck = arcade.Sprite("images/deck.png", scale=0.40)
+        sx, sy = self.img_to_screen(-100, 280, top_left=True)
+        self.deck.center_x = sx
+        self.deck.center_y = sy
+
         # Don't show the mouse cursor
         self.window.set_mouse_visible(False)
 
@@ -224,6 +229,7 @@ class GameView(arcade.View):
         tmp = arcade.SpriteList()
         tmp.append(self.card_banner)
         tmp.append(self.leaderboard_banner)
+        tmp.append(self.deck)
         tmp.append(self.player_sprite)
         tmp.draw()
 
