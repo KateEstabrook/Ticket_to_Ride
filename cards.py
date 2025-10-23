@@ -611,6 +611,7 @@ class GameView(arcade.View):
             arcade.LBWH(BOARD_LEFT, BOARD_BOTTOM,  BOARD_WIDTH, BOARD_HEIGHT),
         )
 
+
         # Draw all the sprites.
         self.train_list.draw()
         self.city_list.draw()
