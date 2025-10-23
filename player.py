@@ -21,6 +21,7 @@ class Player:
         self.points = STARTING_POINTS
         self.train_cards = deck.Deck('train_cards')
         self.destination_cards = deck.Deck('destination_cards')
+        self.sprite = f"images/train_piece_{color}.png"
         # TODO Destinations deck
         # TODO Train cards deck
 
@@ -59,6 +60,9 @@ class Player:
 
     def get_destination_cards(self):
         return self.destination_cards
+    
+    def get_sprite(self):
+        return self.sprite
     
     # To string
     def __str__(self):
