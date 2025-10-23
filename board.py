@@ -407,7 +407,7 @@ class GameView(arcade.View):
         popup_y = c.WINDOW_HEIGHT // 2
 
         # Draw white rectangle
-        white_texture = arcade.make_soft_square_texture(2, arcade.color.WHITE, outer_alpha=255)
+        white_texture = arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255)
         arcade.draw_texture_rect(
             white_texture,
             arcade.LBWH(
