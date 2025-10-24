@@ -7,8 +7,9 @@ import deck, cards, graph, route, player
 # Constants
 from constants import ROUTES_LST, DESTINATIONS
 
-if __name__ == "__main__":
+def initialize():
     # Initailize Train Card Deck
+    global train_deck
     train_deck = deck.Deck('Draw')
     
     colors = ["pink", "blue", "orange", "white", "green", "yellow", "black", "red"]
@@ -30,6 +31,7 @@ if __name__ == "__main__":
 
 
     # Initailize players
+    global players
     players = []
 
     red = player.Player("Red")
@@ -44,6 +46,7 @@ if __name__ == "__main__":
     # TODO Have player choose color
     
     # Initialize Destination Card Deck
+    global dest_deck
     dest_deck = deck.Deck("Destination")
 
     for dest in DESTINATIONS:
@@ -57,13 +60,12 @@ if __name__ == "__main__":
         while i < 4:
             p.get_train_cards().add(train_deck.remove(0))
             i += 1
-        print(f"{p} has {p.get_points()} points and {p.get_trains()} train pieces")
-        print(p.get_train_cards())
 
     # TODO Deal Destination Cards
 
 
     # Initalize routes
+    global routes 
     routes = []
     for rt in ROUTES_LST:
         routes.append(route.Route((rt)))
@@ -71,3 +73,8 @@ if __name__ == "__main__":
     # Initalize graph
     map = graph.Graph("", ROUTES_LST)
 
+if __name__ == "__main__":
+    initialize()
+    for p in players:
+        print(f"{p} has {p.get_points()} points and {p.get_trains()} train pieces")
+        print(p.get_train_cards())

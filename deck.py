@@ -80,6 +80,20 @@ class Deck:
                 if card.get_color() == color:
                     return int(self.cards.index(card))
         
+        # Returns the card at a certain index in the deck
+        def get_card_at_index(self, index):
+            lst = []
+            for card in self.cards:
+                lst.append(card)
+            return lst[index]
+        
+        # Returns length of deck
+        def get_len(self):
+            count = 0
+            for _ in self.cards:
+                count += 1
+            return count
+
         # To string
         def __str__(self):
             s = ""

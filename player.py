@@ -22,8 +22,6 @@ class Player:
         self.train_cards = deck.Deck('train_cards')
         self.destination_cards = deck.Deck('destination_cards')
         self.sprite = f"images/train_piece_{color}.png"
-        # TODO Destinations deck
-        # TODO Train cards deck
 
     # Add points to player
     def add_points(self, points):

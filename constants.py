@@ -26,6 +26,8 @@ CITY_SCALE = 0.0111
 CITY_SCALE_YELLOW = 0.016
 TRAIN_SCALE = 0.06
 
+COLORS = ["pink", "blue", "orange", "white", "green", "yellow", "black", "red"]
+
 CITIES = {
     "Calgary": {"CITY_IMG_X": 587, "CITY_IMG_Y": 212},
     "Vancouver": {"CITY_IMG_X": 266, "CITY_IMG_Y": 255},
@@ -413,7 +415,7 @@ CARDS =  [
     "black.png",
     "blue.png",
     "green.png",
-    "purple.png",
+    "pink.png",
     "red.png",
     "white.png",
     "yellow.png",
@@ -425,7 +427,7 @@ PLAYER_CARDS = {
     "Black" : [2900, 1070, CARDS[1]],
     "Blue" : [3200, 1070, CARDS[2]],
     "Green" : [2600, 1290, CARDS[3]],
-    "Purple" : [2900, 1290, CARDS[4]],
+    "Pink" : [2900, 1290, CARDS[4]],
     "Red" : [3200, 1290, CARDS[5]],
     "White" : [2600, 1510, CARDS[6]],
     "Yellow" : [2900, 1510, CARDS[7]],
