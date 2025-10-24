@@ -738,14 +738,21 @@ def initialize_game():
     global players
     players = []
 
-    red = player.Player("Red")
-    players.append(red)
-    yellow = player.Player("Yellow")
-    players.append(yellow)
-    green = player.Player("Green")
-    players.append(green)
-    blue = player.Player("Blue")
-    players.append(blue)
+    global curr_player
+    curr_player = player.Player(player_color)
+
+    for color in c.PLAYER_COLORS:
+        if color != player_color:
+            players.append(player.Player(color))
+
+    # red = player.Player("Red")
+    # players.append(red)
+    # yellow = player.Player("Yellow")
+    # players.append(yellow)
+    # green = player.Player("Green")
+    # players.append(green)
+    # blue = player.Player("Blue")
+    # players.append(blue)
     
     # TODO Have player choose color
     
@@ -796,21 +803,16 @@ def main():
                                fullscreen=True, resizable=False)
    
     # TODO popup for player color
+    global player_color 
     player_color = "Blue"
     initialize_game()
-    for p in players:
-        if p.get_color() == player_color:
-            player_idx = players.index(p)
-            player_obj = p
 
-    game = GameView(player_obj, train_deck)
+    game = GameView(curr_player, train_deck)
     print(faceup_deck)
     game.reset()
     window.show_view(game)
     arcade.run()
-
-
-
+    
 
 if __name__ == "__main__":
     main()

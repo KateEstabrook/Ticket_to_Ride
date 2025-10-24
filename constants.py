@@ -28,6 +28,8 @@ TRAIN_SCALE = 0.06
 
 COLORS = ["pink", "blue", "orange", "white", "green", "yellow", "black", "red"]
 
+PLAYER_COLORS = ["red", "yellow", "green", "blue"]
+
 CITIES = {
     "Calgary": {"CITY_IMG_X": 587, "CITY_IMG_Y": 212},
     "Vancouver": {"CITY_IMG_X": 266, "CITY_IMG_Y": 255},
