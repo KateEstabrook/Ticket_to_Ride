@@ -804,7 +804,7 @@ def main():
    
     # TODO popup for player color
     global player_color 
-    player_color = "Blue"
+    player_color = "Yellow"
     initialize_game()
 
     game = GameView(curr_player, train_deck)
