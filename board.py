@@ -12,11 +12,13 @@ class GameView(arcade.View):
     Main application class
     """
 
-    def __init__(self):
+    def __init__(self, player_color = None):
         """Initializer"""
 
         # Call the parent class initializer
         super().__init__()
+
+        self.player_color = player_color
 
         # Background image will be stored in this variable
         self.background = arcade.load_texture("images/board_borders.png")
@@ -31,7 +33,10 @@ class GameView(arcade.View):
         # Train pieces
         # One list for all train sprites (create it ONCE)
         self.train_list = arcade.SpriteList()
-        orange_train = arcade.load_texture("images/train_piece.png")
+        blue_train = arcade.load_texture("images/train_piece_blue.png")
+        green_train = arcade.load_texture("images/train_piece_green.png")
+        red_train = arcade.load_texture("images/train_piece_red.png")
+        yellow_train = arcade.load_texture("images/train_piece_yellow.png")
 
         # Create a mapping of city pairs to train sprites
         # Structure: {(city1, city2): [[sprites for route 1], [sprites for route 2]]}
@@ -55,8 +60,18 @@ class GameView(arcade.View):
                     if isinstance(position, tuple) and len(position) == 3:
                         ix, iy, angle = position
                         train_sprite = arcade.Sprite()
-                        train_sprite.append_texture(orange_train)
-                        train_sprite.set_texture(0)
+                        train_sprite.append_texture(blue_train)
+                        train_sprite.append_texture(green_train)
+                        train_sprite.append_texture(red_train)
+                        train_sprite.append_texture(yellow_train)
+                        if self.player_color == 'BLUE':
+                            train_sprite.set_texture(0)
+                        elif self.player_color == 'GREEN':
+                            train_sprite.set_texture(1)
+                        elif self.player_color == 'RED':
+                            train_sprite.set_texture(2)
+                        elif self.player_color == 'YELLOW':
+                            train_sprite.set_texture(3)
                         train_sprite.scale = c.TRAIN_SCALE
                         train_sprite.angle = angle
                         train_sprite.alpha = 0  # start fully transparent
@@ -431,7 +446,7 @@ class GameView(arcade.View):
             ("GREEN", "green.png"),
             ("YELLOW", "yellow.png"),
             ("ORANGE", "orange.png"),
-            ("PINK", "purple.png"),
+            ("PINK", "pink.png"),
             ("BLACK", "black.png"),
             ("WHITE", "white.png"),
             ("LOCOMOTIVE", "wild.png")
@@ -715,9 +730,12 @@ def main():
         window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.WINDOW_TITLE,
                                fullscreen=True, resizable=False)
 
-    game = GameView()
-    game.reset()
-    window.show_view(game)
+    # Import StartMenuView here
+    from start_menu import StartMenuView  # Or whatever file you put StartMenuView in
+
+    # Show the start menu first instead of going directly to game
+    start_menu = StartMenuView()
+    window.show_view(start_menu)
     arcade.run()
 
 
