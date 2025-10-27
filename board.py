@@ -30,6 +30,28 @@ class GameView(arcade.View):
             arcade.Text("Player 3 - 123", 800, 800, arcade.color.WHITE, 15, anchor_x="left"),
         ]
 
+        text_x1, text_y1 = self.img_to_screen(2730, 1000, top_left=True)
+        text_x2, text_y2 = self.img_to_screen(3030, 1000, top_left=True)
+        text_x3, text_y3 = self.img_to_screen(3330, 1000, top_left=True)
+        text_x4, text_y4 = self.img_to_screen(2730, 1220, top_left=True)
+        text_x5, text_y5 = self.img_to_screen(3030, 1220, top_left=True)
+        text_x6, text_y6 = self.img_to_screen(3330, 1220, top_left=True)
+        text_x7, text_y7 = self.img_to_screen(2730, 1440, top_left=True)
+        text_x8, text_y8 = self.img_to_screen(3030, 1440, top_left=True)
+        text_x9, text_y9 = self.img_to_screen(3330, 1440, top_left=True)
+
+        self.index_cards = [
+            arcade.Text("2", text_x1, text_y1, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", text_x2, text_y2, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("3", text_x3, text_y3, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("1", text_x4, text_y4, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("1", text_x5, text_y5, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("2", text_x6, text_y6, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("3", text_x7, text_y7, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("2", text_x8, text_y8, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", text_x9, text_y9, arcade.color.WHITE, 13, anchor_x="left"),
+        ]
+
         # Train pieces
         # One list for all train sprites (create it ONCE)
         self.train_list = arcade.SpriteList()
@@ -236,6 +258,9 @@ class GameView(arcade.View):
         self.city_list.draw()
         self.card_list.draw()
         for line in self.leaderboard_lines:
+            line.draw()
+
+        for line in self.index_cards:
             line.draw()
 
         if self.showing_popup:
