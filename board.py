@@ -31,10 +31,10 @@ class GameView(arcade.View):
         text_x3, text_y3 = self.img_to_screen(1700, -50, top_left=True)
         text_x4, text_y4 = self.img_to_screen(1700, 20, top_left=True)
         self.leaderboard_lines = [
-            arcade.Text(f"Player blue - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"Player green - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"Player red - 232", text_x3, text_y3, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"Player yellow - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player 0 - 312", 600, 830, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player 1 - 343", 600, 800, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player 2 - 232", 800, 830, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player 3 - 123", 800, 800, arcade.color.WHITE, 15, anchor_x="left"),
         ]
 
         orange_num_x, orange_num_y = self.img_to_screen(2350, 1000, top_left=True)
@@ -782,7 +782,6 @@ def main():
     else:
         window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.WINDOW_TITLE,
                                fullscreen=True, resizable=False)
-        window.set_location(0, 0)
 
     # Import StartMenuView here
     from start_menu import StartMenuView  # Or whatever file you put StartMenuView in
