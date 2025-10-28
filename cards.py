@@ -20,10 +20,10 @@ class DestinationCard:
     # Getters
     def get_points(self):
         return self.points
-    
+
     def get_city_1(self):
         return self.city_1
-    
+
     def get_city_2(self):
         return self.city_2
 
@@ -48,14 +48,14 @@ class TrainCard:
     def get_sprite(self):
         return self.sprite
 
-    # To string 
+    # To string
     def __str__(self):
         return f"{self.color}"
-    
-    def __eq__(self, other):
-            # It's good practice to first check if 'other' is an instance of the same class
-            if not isinstance(other, TrainCard):
-                return NotImplemented  # Or raise TypeError("Can only compare with MyClass instances")
 
-            # Define the equality logic based on the attributes
-            return self.color == other.color
+    def __eq__(self, other):
+        # It's good practice to first check if 'other' is an instance of the same class
+        if not isinstance(other, TrainCard):
+            return NotImplemented  # Or raise TypeError("Can only compare with MyClass instances")
+
+        # Define the equality logic based on the attributes
+        return self.color == other.color

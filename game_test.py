@@ -13,7 +13,7 @@ class GameView(arcade.View):
     Main application class
     """
 
-    def __init__(self, player_obj, draw_deck):
+    def __init__(self, player_obj):
         """Initializer"""
 
         # Call the parent class initializer
@@ -117,8 +117,8 @@ class GameView(arcade.View):
         for name, (sx, sy) in c.FACEUP_CARDS.items():
             card = arcade.Sprite()
             
+            # Grab cards from the faceup deck
             card.texture = arcade.load_texture(faceup_deck.get_card_at_index(i).get_sprite())
-            # random_name = random.choice(list(self.card_textures))
 
             self.place_card(card, sx, sy, top_left=True, scale = 0.4)
 
@@ -807,7 +807,7 @@ def main():
     player_color = "Yellow"
     initialize_game()
 
-    game = GameView(curr_player, train_deck)
+    game = GameView(curr_player)
     print(faceup_deck)
     game.reset()
     window.show_view(game)
