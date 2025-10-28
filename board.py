@@ -28,32 +28,32 @@ class GameView(arcade.View):
         text_x3, text_y3 = self.img_to_screen(1700, -50, top_left=True)
         text_x4, text_y4 = self.img_to_screen(1700, 20, top_left=True)
         self.leaderboard_lines = [
-            arcade.Text("Player blue - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text("Player green - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text("Player red - 232", text_x3, text_y3, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text("Player yellow - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player blue - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player green - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player red - 232", text_x3, text_y3, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player yellow - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
         ]
 
-        text_x1, text_y1 = self.img_to_screen(2730, 1000, top_left=True)
-        text_x2, text_y2 = self.img_to_screen(3030, 1000, top_left=True)
-        text_x3, text_y3 = self.img_to_screen(3330, 1000, top_left=True)
-        text_x4, text_y4 = self.img_to_screen(2730, 1220, top_left=True)
-        text_x5, text_y5 = self.img_to_screen(3030, 1220, top_left=True)
-        text_x6, text_y6 = self.img_to_screen(3330, 1220, top_left=True)
-        text_x7, text_y7 = self.img_to_screen(2730, 1440, top_left=True)
-        text_x8, text_y8 = self.img_to_screen(3030, 1440, top_left=True)
-        text_x9, text_y9 = self.img_to_screen(3330, 1440, top_left=True)
+        orange_num_x, orange_num_y = self.img_to_screen(2730, 1000, top_left=True)
+        black_num_x, black_num_y = self.img_to_screen(3030, 1000, top_left=True)
+        blue_num_x, blue_num_y = self.img_to_screen(3330, 1000, top_left=True)
+        green_num_x, green_num_y = self.img_to_screen(2730, 1220, top_left=True)
+        pink_num_x, pink_num_y = self.img_to_screen(3030, 1220, top_left=True)
+        red_num_x, red_num_y = self.img_to_screen(3330, 1220, top_left=True)
+        white_num_x, white_num_y = self.img_to_screen(2730, 1440, top_left=True)
+        yellow_num_x, yellow_num_y = self.img_to_screen(3030, 1440, top_left=True)
+        wild_num_x, wild_num_y = self.img_to_screen(3330, 1440, top_left=True)
 
         self.index_cards = [
-            arcade.Text("0", text_x1, text_y1, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text("0", text_x2, text_y2, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text("0", text_x3, text_y3, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text("0", text_x4, text_y4, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text("0", text_x5, text_y5, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text("0", text_x6, text_y6, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text("0", text_x7, text_y7, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text("0", text_x8, text_y8, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text("0", text_x9, text_y9, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"1", orange_num_x, orange_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"2", black_num_x, black_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"3", blue_num_x, blue_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"4", green_num_x, green_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"5", pink_num_x, pink_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"6", red_num_x, red_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"7", white_num_x, white_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"8", yellow_num_x, yellow_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"9", wild_num_x, wild_num_y, arcade.color.WHITE, 13, anchor_x="left"),
         ]
 
         # Train pieces
