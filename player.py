@@ -34,7 +34,7 @@ class Player:
     # Remove points from player
     def remove_points(self, points):
         self.points -= points
-    
+
     # Remove train pieces from player
     def remove_trains(self, trains):
         self.train_peices -= trains
@@ -46,22 +46,23 @@ class Player:
     # Getters
     def get_points(self):
         return self.points
-    
+
     def get_trains(self):
         return self.train_peices
-    
+
     def get_color(self):
         return self.color
-    
+
     def get_train_cards(self):
         return self.train_cards
 
     def get_destination_cards(self):
         return self.destination_cards
-    
+
     def get_sprite(self):
         return self.sprite
-    
+
     # To string
     def __str__(self):
         return f"{self.color} Player"
+    

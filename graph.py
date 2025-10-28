@@ -14,6 +14,13 @@ class Graph:
         for path in route_list:
             self.paths.append(route.Route(path))
 
+    # Getters
+    def get_nodes(self):
+        return self.nodes
+
+    def get_paths(self):
+        return self.paths
+
     # To string
     def __str__(self):
         s = "Routes:\n"
