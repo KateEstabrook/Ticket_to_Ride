@@ -5,7 +5,6 @@ Add this class to your main game file, before the GameView class
 
 import arcade
 from arcade import SpriteList
-import globals
 import constants as c
 import player
 
