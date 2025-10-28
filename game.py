@@ -61,8 +61,12 @@ def initialize():
             p.get_train_cards().add(train_deck.remove(0))
             i += 1
 
-    # TODO Deal Destination Cards
-
+    # Deal Destination Cards
+    for p in players:
+        i = 0
+        while i < 4:
+            p.get_destination_cards().add(dest_deck.remove(0))
+            i += 1
 
     # Initalize routes
     global routes 
