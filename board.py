@@ -23,6 +23,13 @@ class GameView(arcade.View):
         # Background image will be stored in this variable
         self.background = arcade.load_texture("images/board_borders.png")
 
+        self.board_rect = None
+        self._update_board_rect()  # compute once before placing sprites
+
+        text_x1, text_y1 = self.img_to_screen(1150, -50, top_left=True)
+        text_x2, text_y2 = self.img_to_screen(1150, 20, top_left=True)
+        text_x3, text_y3 = self.img_to_screen(1700, -50, top_left=True)
+        text_x4, text_y4 = self.img_to_screen(1700, 20, top_left=True)
         self.leaderboard_lines = [
             arcade.Text(f"Player 0 - 312", 600, 830, arcade.color.WHITE, 15, anchor_x="left"),
             arcade.Text(f"Player 1 - 343", 600, 800, arcade.color.WHITE, 15, anchor_x="left"),
@@ -195,19 +202,41 @@ class GameView(arcade.View):
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 50
 
+    def _contain_rect(self, tex_w: float, tex_h: float, view_w: float, view_h: float):
+        """
+        Scale the texture to *contain* within the view while preserving aspect,
+        and return an LBWH rect centered in the view.
+        """
+        scale = min(view_w / tex_w, view_h / tex_h)
+        draw_w = tex_w * scale
+        draw_h = tex_h * scale
+        left = (view_w - draw_w) / 2
+        bottom = (view_h - draw_h) / 2
+        return arcade.LBWH(left, bottom, draw_w, draw_h)
+
+    def _update_board_rect(self):
+        """Recompute the board rect from the current window size."""
+        # Fall back to constants if window isn’t ready yet
+        W = getattr(self.window, "width", c.SCREEN_WIDTH)
+        H = getattr(self.window, "height", c.SCREEN_HEIGHT)
+        self.board_rect = self._contain_rect(self.background.width, self.background.height, W, H)
+
     def img_to_screen(self, ix: float, iy: float, *, top_left: bool = False) -> tuple[float, float]:
         """
-        Convert a coordinate on the background image (in image pixels)
-        to the window/screen coordinate.
-        Works because you draw the background stretched to WINDOW_*.
+        Convert image pixel coords to screen coords using the current board rect.
         """
-        # Flip Y if coordinates were measured from the image's top edge
         if top_left:
             iy = self.background.height - iy
 
-        sx = c.BOARD_WIDTH / self.background.width
-        sy = c.BOARD_HEIGHT / self.background.height
-        return ix * sx + c.BOARD_LEFT, iy * sy + c.BOARD_BOTTOM
+        # Use the dynamic board rect, not constants
+        left = self.board_rect.left
+        bottom = self.board_rect.bottom
+        bw = self.board_rect.width
+        bh = self.board_rect.height
+
+        sx = bw / self.background.width
+        sy = bh / self.background.height
+        return ix * sx + left, iy * sy + bottom
 
     def place_city(self, city, ix: float, iy: float, *,
                    top_left: bool = False, scale: float | None = None) -> None:
@@ -250,7 +279,7 @@ class GameView(arcade.View):
         # Draw the background texture
         arcade.draw_texture_rect(
             self.background,
-            arcade.LBWH(c.BOARD_LEFT, c.BOARD_BOTTOM,  c.BOARD_WIDTH, c.BOARD_HEIGHT),
+            self.board_rect
         )
 
         # Draw all the sprites
@@ -275,7 +304,6 @@ class GameView(arcade.View):
 
         for line in self.leaderboard_lines:
             line.draw()
-
 
     def on_mouse_motion(self, x, y, dx, dy):
         """
