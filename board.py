@@ -23,11 +23,15 @@ class GameView(arcade.View):
         # Background image will be stored in this variable
         self.background = arcade.load_texture("images/board_borders.png")
 
+        text_x1, text_y1 = self.img_to_screen(1150, -50, top_left=True)
+        text_x2, text_y2 = self.img_to_screen(1150, 20, top_left=True)
+        text_x3, text_y3 = self.img_to_screen(1700, -50, top_left=True)
+        text_x4, text_y4 = self.img_to_screen(1700, 20, top_left=True)
         self.leaderboard_lines = [
-            arcade.Text(f"Player 0 - 312", 600, 830, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"Player 1 - 343", 600, 800, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"Player 2 - 232", 800, 830, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"Player 3 - 123", 800, 800, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player blue - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player green - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player red - 232", text_x3, text_y3, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"Player yellow - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
         ]
 
         orange_num_x, orange_num_y = self.img_to_screen(2730, 1000, top_left=True)
