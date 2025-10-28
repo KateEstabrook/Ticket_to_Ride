@@ -127,7 +127,7 @@ class StartMenuView(arcade.View):
         arcade.draw_rect_outline(rect, arcade.color.WHITE, border_width=4)
         arcade.draw_text(
             "CHOOSE YOUR COLOR", cx, cy,
-            arcade.color.WHITE, font_size=int(H * 0.035),
+            arcade.color.WHITE, font_size=int(H * 0.03),
             anchor_x="center", anchor_y="center", bold=True
         )
         self.choose_color_button_bounds = (rect.left, rect.left + rect.width,

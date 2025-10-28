@@ -425,23 +425,23 @@ CARDS =  [
 ]
 
 PLAYER_CARDS = {
-    "Orange" : [2600, 1070, CARDS[0]],
-    "Black" : [2900, 1070, CARDS[1]],
-    "Blue" : [3200, 1070, CARDS[2]],
-    "Green" : [2600, 1290, CARDS[3]],
-    "Pink" : [2900, 1290, CARDS[4]],
-    "Red" : [3200, 1290, CARDS[5]],
-    "White" : [2600, 1510, CARDS[6]],
-    "Yellow" : [2900, 1510, CARDS[7]],
-    "Locomotive" : [3200, 1510, CARDS[8]]
+    "Orange" : [2250, 1070, CARDS[0]],
+    "Black" : [2550, 1070, CARDS[1]],
+    "Blue" : [2850, 1070, CARDS[2]],
+    "Green" : [2250, 1290, CARDS[3]],
+    "Pink" : [2550, 1290, CARDS[4]],
+    "Red" : [2850, 1290, CARDS[5]],
+    "White" : [2250, 1510, CARDS[6]],
+    "Yellow" : [2550, 1510, CARDS[7]],
+    "Locomotive" : [2850, 1510, CARDS[8]]
 }
 
 FACEUP_CARDS = {
-    "First" : [-100, 550],
-    "Second" : [-100, 770],
-    "Third" : [-100, 990],
-    "Fourth" : [-100, 1210],
-    "Fifth" : [-100, 1430]
+    "First" : [150, 550],
+    "Second" : [150, 770],
+    "Third" : [150, 990],
+    "Fourth" : [150, 1210],
+    "Fifth" : [150, 1430]
 }
 
 EXIT_BUTTON = (128, 0, 0)

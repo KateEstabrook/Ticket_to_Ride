@@ -37,15 +37,15 @@ class GameView(arcade.View):
             arcade.Text(f"Player yellow - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
         ]
 
-        orange_num_x, orange_num_y = self.img_to_screen(2730, 1000, top_left=True)
-        black_num_x, black_num_y = self.img_to_screen(3030, 1000, top_left=True)
-        blue_num_x, blue_num_y = self.img_to_screen(3330, 1000, top_left=True)
-        green_num_x, green_num_y = self.img_to_screen(2730, 1220, top_left=True)
-        pink_num_x, pink_num_y = self.img_to_screen(3030, 1220, top_left=True)
-        red_num_x, red_num_y = self.img_to_screen(3330, 1220, top_left=True)
-        white_num_x, white_num_y = self.img_to_screen(2730, 1440, top_left=True)
-        yellow_num_x, yellow_num_y = self.img_to_screen(3030, 1440, top_left=True)
-        wild_num_x, wild_num_y = self.img_to_screen(3330, 1440, top_left=True)
+        orange_num_x, orange_num_y = self.img_to_screen(2350, 1000, top_left=True)
+        black_num_x, black_num_y = self.img_to_screen(2650, 1000, top_left=True)
+        blue_num_x, blue_num_y = self.img_to_screen(2950, 1000, top_left=True)
+        green_num_x, green_num_y = self.img_to_screen(2350, 1220, top_left=True)
+        pink_num_x, pink_num_y = self.img_to_screen(2650, 1220, top_left=True)
+        red_num_x, red_num_y = self.img_to_screen(2950, 1220, top_left=True)
+        white_num_x, white_num_y = self.img_to_screen(2350, 1440, top_left=True)
+        yellow_num_x, yellow_num_y = self.img_to_screen(2650, 1440, top_left=True)
+        wild_num_x, wild_num_y = self.img_to_screen(2950, 1440, top_left=True)
 
         self.index_cards = [
             arcade.Text(f"1", orange_num_x, orange_num_y, arcade.color.WHITE, 13, anchor_x="left"),
@@ -173,17 +173,17 @@ class GameView(arcade.View):
             self.card_list.append(card)
 
         self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.4)
-        cx, cy = self.img_to_screen(2850, 850, top_left=True)
+        cx, cy = self.img_to_screen(2450, 850, top_left=True)
         self.card_banner.center_x = cx
         self.card_banner.center_y = cy
 
         self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
-        lx, ly = self.img_to_screen(1250, -30, top_left=True)
+        lx, ly = self.img_to_screen(1250, 100, top_left=True)
         self.leaderboard_banner.center_x = lx
         self.leaderboard_banner.center_y = ly
 
         self.deck = arcade.Sprite("images/deck.png", scale=0.40)
-        sx, sy = self.img_to_screen(-100, 280, top_left=True)
+        sx, sy = self.img_to_screen(150, 280, top_left=True)
         self.deck.center_x = sx
         self.deck.center_y = sy
 
