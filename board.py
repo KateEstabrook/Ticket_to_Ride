@@ -4,21 +4,21 @@ Ticket to Ride Board
 
 import platform
 import arcade
+import globals
 import constants as c
 import random
+import deck, cards, graph, route, player
 
 class GameView(arcade.View):
     """
     Main application class
     """
 
-    def __init__(self, player_color = None):
+    def __init__(self, player_obj):
         """Initializer"""
 
         # Call the parent class initializer
         super().__init__()
-
-        self.player_color = player_color
 
         # Background image will be stored in this variable
         self.background = arcade.load_texture("images/board_borders.png")
@@ -55,10 +55,7 @@ class GameView(arcade.View):
         # Train pieces
         # One list for all train sprites (create it ONCE)
         self.train_list = arcade.SpriteList()
-        blue_train = arcade.load_texture("images/train_piece_blue.png")
-        green_train = arcade.load_texture("images/train_piece_green.png")
-        red_train = arcade.load_texture("images/train_piece_red.png")
-        yellow_train = arcade.load_texture("images/train_piece_yellow.png")
+        train_piece = arcade.load_texture(player_obj.get_sprite())
 
         # Create a mapping of city pairs to train sprites
         # Structure: {(city1, city2): [[sprites for route 1], [sprites for route 2]]}
@@ -78,22 +75,13 @@ class GameView(arcade.View):
                 positions = route_data["positions"]
                 color = route_data["color"]
 
+                train_piece = arcade.load_texture(player_obj.get_sprite())
                 for position in positions:
                     if isinstance(position, tuple) and len(position) == 3:
                         ix, iy, angle = position
                         train_sprite = arcade.Sprite()
-                        train_sprite.append_texture(blue_train)
-                        train_sprite.append_texture(green_train)
-                        train_sprite.append_texture(red_train)
-                        train_sprite.append_texture(yellow_train)
-                        if self.player_color == 'BLUE':
-                            train_sprite.set_texture(0)
-                        elif self.player_color == 'GREEN':
-                            train_sprite.set_texture(1)
-                        elif self.player_color == 'RED':
-                            train_sprite.set_texture(2)
-                        elif self.player_color == 'YELLOW':
-                            train_sprite.set_texture(3)
+                        train_sprite.append_texture(train_piece)
+                        train_sprite.set_texture(0)
                         train_sprite.scale = c.TRAIN_SCALE
                         train_sprite.angle = angle
                         train_sprite.alpha = 0  # start fully transparent
@@ -104,6 +92,34 @@ class GameView(arcade.View):
 
                         self.train_list.append(train_sprite)
                         route_sprites.append(train_sprite)
+
+                self.train_map[train].append(route_sprites)
+                # for position in positions:
+                #     if isinstance(position, tuple) and len(position) == 3:
+                #         ix, iy, angle = position
+                #         train_sprite = arcade.Sprite()
+                #         train_sprite.append_texture(blue_train)
+                #         train_sprite.append_texture(green_train)
+                #         train_sprite.append_texture(red_train)
+                #         train_sprite.append_texture(yellow_train)
+                #         if self.player_color == 'BLUE':
+                #             train_sprite.set_texture(0)
+                #         elif self.player_color == 'GREEN':
+                #             train_sprite.set_texture(1)
+                #         elif self.player_color == 'RED':
+                #             train_sprite.set_texture(2)
+                #         elif self.player_color == 'YELLOW':
+                #             train_sprite.set_texture(3)
+                #         train_sprite.scale = c.TRAIN_SCALE
+                #         train_sprite.angle = angle
+                #         train_sprite.alpha = 0  # start fully transparent
+                #         # Store route information with the sprite
+                #         train_sprite.route_color = color
+                #         train_sprite.route_name = train
+                #         self.place_train_sprite(ix, iy, train_sprite, top_left=True)
+
+                #         self.train_list.append(train_sprite)
+                #         route_sprites.append(train_sprite)
 
                 self.train_map[train].append(route_sprites)
         self.city_list = arcade.SpriteList()
@@ -138,7 +154,7 @@ class GameView(arcade.View):
         # Variables that will hold sprite lists
         self.player_sprite = arcade.Sprite(
             "images/cursor.png",
-            scale=c.PLAYER_SCALING,
+            scale=c.PLAYER_SCALING / 2,
         )
 
         self.card_textures = {
@@ -148,14 +164,18 @@ class GameView(arcade.View):
 
         self.card_list = arcade.SpriteList()
 
+        #faceup_deck = faceup_deck
+        i = 0
         for name, (sx, sy) in c.FACEUP_CARDS.items():
             card = arcade.Sprite()
-            random_name = random.choice(list(self.card_textures))
-            card.texture = self.card_textures[random_name]
+            
+            # Grab cards from the faceup deck
+            card.texture = arcade.load_texture(globals.faceup_deck.get_card_at_index(i).get_sprite())
 
             self.place_card(card, sx, sy, top_left=True, scale = 0.4)
 
             self.card_list.append(card)
+            i += 1
 
         for name, (sx, sy, filename) in c.PLAYER_CARDS.items():
             card = arcade.Sprite()
@@ -755,9 +775,10 @@ def main():
         window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.WINDOW_TITLE,
                                fullscreen=True, resizable=False)
 
+    globals.initialize_game()
     # Import StartMenuView here
     from start_menu import StartMenuView  # Or whatever file you put StartMenuView in
-
+    print(globals.faceup_deck)
     # Show the start menu first instead of going directly to game
     start_menu = StartMenuView()
     window.show_view(start_menu)

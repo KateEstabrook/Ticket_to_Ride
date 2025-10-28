@@ -32,7 +32,7 @@ class GameView(arcade.View):
         # Train pieces
         # One list for all train sprites (create it ONCE)
         self.train_list = arcade.SpriteList()
-        orange_train = arcade.load_texture(player_obj.get_sprite())
+        train_piece = arcade.load_texture(player_obj.get_sprite())
 
         # Create a mapping of city pairs to train sprites
         # Structure: {(city1, city2): [[sprites for route 1], [sprites for route 2]]}
@@ -56,7 +56,7 @@ class GameView(arcade.View):
                     if isinstance(position, tuple) and len(position) == 3:
                         ix, iy, angle = position
                         train_sprite = arcade.Sprite()
-                        train_sprite.append_texture(orange_train)
+                        train_sprite.append_texture(train_piece)
                         train_sprite.set_texture(0)
                         train_sprite.scale = c.TRAIN_SCALE
                         train_sprite.angle = angle
@@ -805,7 +805,6 @@ def main():
     # TODO popup for player color
     global player_color 
     player_color = "Yellow"
-    initialize_game()
 
     game = GameView(curr_player)
     print(faceup_deck)

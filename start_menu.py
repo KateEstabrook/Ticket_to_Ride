@@ -5,9 +5,9 @@ Add this class to your main game file, before the GameView class
 
 import arcade
 from arcade import SpriteList
-
+import globals
 import constants as c
-
+import player
 
 class StartMenuView(arcade.View):
     """Start menu where players choose their color"""
@@ -36,10 +36,10 @@ class StartMenuView(arcade.View):
 
         # Available player colors with their card images
         self.player_colors = [
-            ("RED", "red.png"),
-            ("BLUE", "blue.png"),
-            ("GREEN", "green.png"),
-            ("YELLOW", "yellow.png")
+            ("Red", "red.png"),
+            ("Blue", "blue.png"),
+            ("Green", "green.png"),
+            ("Yellow", "yellow.png")
         ]
 
         # Load card textures
@@ -271,7 +271,7 @@ class StartMenuView(arcade.View):
                         from board import GameView
 
                         # Create and show game view with selected color
-                        game_view = GameView(player_color=self.selected_color)
+                        game_view = GameView(player_obj=player.Player(self.selected_color))
                         game_view.reset()
                         self.window.show_view(game_view)
 
