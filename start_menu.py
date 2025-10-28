@@ -1,5 +1,3 @@
-# --- StartMenuView.py (replacement for your current class) ---
-
 import arcade
 import constants as c
 
@@ -68,8 +66,6 @@ class StartMenuView(arcade.View):
         bg_rect = self._cover_scale_rect(self.bg_tex.width, self.bg_tex.height, W, H)
         arcade.draw_texture_rect(self.bg_tex, bg_rect)
 
-        # arcade.draw_lrtb_rectangle_filled(0, W, H, 0, (0,0,0,40))
-
         # UI
         if not self.showing_colors:
             self.draw_choose_color_button()
@@ -110,6 +106,10 @@ class StartMenuView(arcade.View):
                     game_view = GameView(player_color=self.selected_color)
                     game_view.reset()
                     self.window.show_view(game_view)
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.ESCAPE:
+            self.window.close()
 
     # Drawing primitives that rebuild bounds per frame
 

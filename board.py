@@ -758,6 +758,7 @@ def main():
     else:
         window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.WINDOW_TITLE,
                                fullscreen=True, resizable=False)
+        window.set_location(0, 0)
 
     # Import StartMenuView here
     from start_menu import StartMenuView  # Or whatever file you put StartMenuView in
