@@ -3,13 +3,16 @@ Ticket to Ride Board
 """
 
 import platform
+import random
 import arcade
 from arcade import SpriteList
 
 import globals
 import constants as c
-import random
-import deck, cards, graph, route, player
+import deck
+import cards
+import route
+import player
 
 class GameView(arcade.View):
     """
@@ -36,10 +39,10 @@ class GameView(arcade.View):
         text_x3, text_y3 = self.img_to_screen(1700, -55, top_left=True)
         text_x4, text_y4 = self.img_to_screen(1700, 25, top_left=True)
         self.leaderboard_lines = [
-            arcade.Text(f"BLUE - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"GREEN - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"RED - 232", text_x3, text_y3, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"YELLOW - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text("BLUE - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text("GREEN - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text("RED - 232", text_x3, text_y3, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text("YELLOW - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
         ]
 
         orange_num_x, orange_num_y = self.img_to_screen(2670, 1075, top_left=True)
@@ -53,15 +56,15 @@ class GameView(arcade.View):
         wild_num_x, wild_num_y = self.img_to_screen(3230, 1435, top_left=True)
 
         self.index_cards = [
-            arcade.Text(f"0", orange_num_x, orange_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"0", black_num_x, black_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"0", blue_num_x, blue_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"0", green_num_x, green_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"0", pink_num_x, pink_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"0", red_num_x, red_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"0", white_num_x, white_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"0", yellow_num_x, yellow_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"0", wild_num_x, wild_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", orange_num_x, orange_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", black_num_x, black_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", blue_num_x, blue_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", green_num_x, green_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", pink_num_x, pink_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", red_num_x, red_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", white_num_x, white_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", yellow_num_x, yellow_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text("0", wild_num_x, wild_num_y, arcade.color.WHITE, 13, anchor_x="left"),
         ]
 
         # Train pieces
@@ -180,9 +183,10 @@ class GameView(arcade.View):
         i = 0
         for name, (sx, sy) in c.FACEUP_CARDS.items():
             card = arcade.Sprite()
-            
+
             # Grab cards from the faceup deck
-            card.texture = arcade.load_texture(globals.faceup_deck.get_card_at_index(i).get_sprite())
+            card.texture = arcade.load_texture(globals.faceup_deck.
+                                               get_card_at_index(i).get_sprite())
 
             self.place_card(card, sx, sy, top_left=True, scale = 0.37)
 
@@ -247,11 +251,11 @@ class GameView(arcade.View):
     def _update_board_rect(self):
         """Recompute the board rect from the current window size."""
         # Fall back to constants if window isn’t ready yet
-        W = getattr(self.window, "width", c.SCREEN_WIDTH)
-        H = getattr(self.window, "height", c.SCREEN_HEIGHT)
+        width = getattr(self.window, "width", c.SCREEN_WIDTH)
+        height = getattr(self.window, "height", c.SCREEN_HEIGHT)
 
         # contain the board inside the full window
-        base = self._contain_rect(self.background.width, self.background.height, W, H)
+        base = self._contain_rect(self.background.width, self.background.height, width, height)
 
         # uniformly shrink the rect and re-center it
         s = getattr(c, "BOARD_SCALE", 1.0)
