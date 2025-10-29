@@ -175,7 +175,7 @@ class GameView(arcade.View):
         i = 0
         for name, (sx, sy) in c.FACEUP_CARDS.items():
             card = arcade.Sprite()
-            
+
             # Grab cards from the faceup deck
             card.texture = arcade.load_texture(globals.faceup_deck.get_card_at_index(i).get_sprite())
 

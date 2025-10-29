@@ -5,6 +5,7 @@ def initialize_game():
     global faceup_deck, train_deck, dest_deck, routes, players
     # Initailize Train Card Deck
     train_deck = deck.Deck('Draw')
+    faceup_deck = deck.Deck('Faceup')
     
     
     # Add color cards 
