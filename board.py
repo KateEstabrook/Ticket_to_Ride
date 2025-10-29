@@ -26,37 +26,37 @@ class GameView(arcade.View):
         self.board_rect = None
         self._update_board_rect()  # compute once before placing sprites
 
-        text_x1, text_y1 = self.img_to_screen(1150, -50, top_left=True)
-        text_x2, text_y2 = self.img_to_screen(1150, 20, top_left=True)
-        text_x3, text_y3 = self.img_to_screen(1700, -50, top_left=True)
-        text_x4, text_y4 = self.img_to_screen(1700, 20, top_left=True)
+        text_x1, text_y1 = self.img_to_screen(1150, -55, top_left=True)
+        text_x2, text_y2 = self.img_to_screen(1150, 25, top_left=True)
+        text_x3, text_y3 = self.img_to_screen(1700, -55, top_left=True)
+        text_x4, text_y4 = self.img_to_screen(1700, 25, top_left=True)
         self.leaderboard_lines = [
-            arcade.Text(f"Player 0 - 312", 600, 830, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"Player 1 - 343", 600, 800, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"Player 2 - 232", 800, 830, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text(f"Player 3 - 123", 800, 800, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"BLUE - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"GREEN - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"RED - 232", text_x3, text_y3, arcade.color.WHITE, 15, anchor_x="left"),
+            arcade.Text(f"YELLOW - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
         ]
 
-        orange_num_x, orange_num_y = self.img_to_screen(2350, 1000, top_left=True)
-        black_num_x, black_num_y = self.img_to_screen(2650, 1000, top_left=True)
-        blue_num_x, blue_num_y = self.img_to_screen(2950, 1000, top_left=True)
-        green_num_x, green_num_y = self.img_to_screen(2350, 1220, top_left=True)
-        pink_num_x, pink_num_y = self.img_to_screen(2650, 1220, top_left=True)
-        red_num_x, red_num_y = self.img_to_screen(2950, 1220, top_left=True)
-        white_num_x, white_num_y = self.img_to_screen(2350, 1440, top_left=True)
-        yellow_num_x, yellow_num_y = self.img_to_screen(2650, 1440, top_left=True)
-        wild_num_x, wild_num_y = self.img_to_screen(2950, 1440, top_left=True)
+        orange_num_x, orange_num_y = self.img_to_screen(2670, 1075, top_left=True)
+        black_num_x, black_num_y = self.img_to_screen(2950, 1075, top_left=True)
+        blue_num_x, blue_num_y = self.img_to_screen(3230, 1075, top_left=True)
+        green_num_x, green_num_y = self.img_to_screen(2670, 1255, top_left=True)
+        pink_num_x, pink_num_y = self.img_to_screen(2950, 1255, top_left=True)
+        red_num_x, red_num_y = self.img_to_screen(3230, 1255, top_left=True)
+        white_num_x, white_num_y = self.img_to_screen(2670, 1435, top_left=True)
+        yellow_num_x, yellow_num_y = self.img_to_screen(2950, 1435, top_left=True)
+        wild_num_x, wild_num_y = self.img_to_screen(3230, 1435, top_left=True)
 
         self.index_cards = [
-            arcade.Text(f"1", orange_num_x, orange_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"2", black_num_x, black_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"3", blue_num_x, blue_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"4", green_num_x, green_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"5", pink_num_x, pink_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"6", red_num_x, red_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"7", white_num_x, white_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"8", yellow_num_x, yellow_num_y, arcade.color.WHITE, 13, anchor_x="left"),
-            arcade.Text(f"9", wild_num_x, wild_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"0", orange_num_x, orange_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"0", black_num_x, black_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"0", blue_num_x, blue_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"0", green_num_x, green_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"0", pink_num_x, pink_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"0", red_num_x, red_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"0", white_num_x, white_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"0", yellow_num_x, yellow_num_y, arcade.color.WHITE, 13, anchor_x="left"),
+            arcade.Text(f"0", wild_num_x, wild_num_y, arcade.color.WHITE, 13, anchor_x="left"),
         ]
 
         # Train pieces
@@ -175,11 +175,11 @@ class GameView(arcade.View):
         i = 0
         for name, (sx, sy) in c.FACEUP_CARDS.items():
             card = arcade.Sprite()
-            
+
             # Grab cards from the faceup deck
             card.texture = arcade.load_texture(globals.faceup_deck.get_card_at_index(i).get_sprite())
 
-            self.place_card(card, sx, sy, top_left=True, scale = 0.4)
+            self.place_card(card, sx, sy, top_left=True, scale = 0.37)
 
             self.card_list.append(card)
             i += 1
@@ -188,22 +188,22 @@ class GameView(arcade.View):
             card = arcade.Sprite()
             card.texture = self.card_textures[name]
 
-            self.place_card(card, sx, sy, top_left=True, scale=0.4)
+            self.place_card(card, sx, sy, top_left=True, scale=0.37)
 
             self.card_list.append(card)
 
-        self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.4)
-        cx, cy = self.img_to_screen(2450, 850, top_left=True)
+        self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.435)
+        cx, cy = self.img_to_screen(2840, 910, top_left=True)
         self.card_banner.center_x = cx
         self.card_banner.center_y = cy
 
         self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
-        lx, ly = self.img_to_screen(1250, 100, top_left=True)
+        lx, ly = self.img_to_screen(1250, -40, top_left=True)
         self.leaderboard_banner.center_x = lx
         self.leaderboard_banner.center_y = ly
 
-        self.deck = arcade.Sprite("images/deck.png", scale=0.40)
-        sx, sy = self.img_to_screen(150, 280, top_left=True)
+        self.deck = arcade.Sprite("images/deck.png", scale=0.37)
+        sx, sy = self.img_to_screen(-60, 280, top_left=True)
         self.deck.center_x = sx
         self.deck.center_y = sy
 
@@ -239,7 +239,18 @@ class GameView(arcade.View):
         # Fall back to constants if window isn’t ready yet
         W = getattr(self.window, "width", c.SCREEN_WIDTH)
         H = getattr(self.window, "height", c.SCREEN_HEIGHT)
-        self.board_rect = self._contain_rect(self.background.width, self.background.height, W, H)
+
+        # contain the board inside the full window
+        base = self._contain_rect(self.background.width, self.background.height, W, H)
+
+        # uniformly shrink the rect and re-center it
+        s = getattr(c, "BOARD_SCALE", 1.0)
+        draw_w = base.width * s
+        draw_h = base.height * s
+        left = base.left + (base.width - draw_w) / 2
+        bottom = base.bottom + (base.height - draw_h) / 2
+
+        self.board_rect = arcade.LBWH(left, bottom, draw_w, draw_h)
 
     def img_to_screen(self, ix: float, iy: float, *, top_left: bool = False) -> tuple[float, float]:
         """

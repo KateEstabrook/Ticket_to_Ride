@@ -14,20 +14,9 @@ class StartMenuView(arcade.View):
     def __init__(self):
         super().__init__()
         # Create a sprite for the background
-        self.background_sprite = arcade.Sprite("images/menu_screen.png")
+        # self.background_sprite = arcade.Sprite("images/menu_screen.png")
+        self.bg_tex = arcade.load_texture("images/menu_screen.png")
 
-        # Calculate scale to fit screen
-        scale_x = c.SCREEN_WIDTH / self.background_sprite.width
-        scale_y = c.WINDOW_HEIGHT / self.background_sprite.height
-
-        # Use the smaller scale to fit entirely, or larger to fill screen
-        self.background_sprite.scale = 0.415  # Fit inside
-        # OR
-        # self.background_sprite.scale = max(scale_x, scale_y)  # Fill screen
-
-        # Center it
-        self.background_sprite.center_x = c.SCREEN_WIDTH // 2 - 200
-        self.background_sprite.center_y = c.WINDOW_HEIGHT // 2
         self.selected_color = None
 
         # Track which stage we're in
@@ -50,6 +39,27 @@ class StartMenuView(arcade.View):
         self.start_button_bounds = None
         self.choose_color_button_bounds = None
 
+    def sw(self) -> int:
+        """Window width (falls back to constants if needed)."""
+        return getattr(self.window, "width", c.SCREEN_WIDTH)
+
+    def sh(self) -> int:
+        """Window height (falls back to constants if needed)."""
+        return getattr(self.window, "height", c.WINDOW_HEIGHT)
+
+    def _cover_scale_rect(self, tex_w, tex_h, view_w, view_h):
+        """Scale a texture to *cover* the view (preserve aspect), return LBWH rect."""
+        scale = max(view_w / tex_w, view_h / tex_h)
+        draw_w = tex_w * scale
+        draw_h = tex_h * scale
+        left = (view_w - draw_w) / 2
+        bottom = (view_h - draw_h) / 2
+        return arcade.LBWH(left, bottom, draw_w, draw_h)
+
+    def _centered_rect(self, cx, cy, w, h):
+        """LBWH rect centered at (cx, cy)."""
+        return arcade.LBWH(cx - w / 2, cy - h / 2, w, h)
+
     def on_show_view(self):
         """Called when switching to this view"""
         arcade.set_background_color(arcade.color.BLACK)
@@ -58,16 +68,17 @@ class StartMenuView(arcade.View):
         """Render the start menu"""
         self.clear()
 
-        # Draw background
-        tmp = SpriteList()
-        tmp.append(self.background_sprite)
-        tmp.draw()
+        W, H = self.sw(), self.sh()
+
+        # Draw background scaled to cover the screen
+        bg_rect = self._cover_scale_rect(self.bg_tex.width, self.bg_tex.height, W, H)
+        arcade.draw_texture_rect(self.bg_tex, bg_rect)
 
         if not self.showing_colors:
-            # Stage 1: Show only "Choose Your Color" button
+            # show only "Choose Your Color" button
             self.draw_choose_color_button()
         else:
-            # Stage 2: Show color selection and start button
+            # show color selection and start button
 
             # Draw color selection buttons
             self.draw_color_buttons()
@@ -90,158 +101,87 @@ class StartMenuView(arcade.View):
 
     def draw_choose_color_button(self):
         """Draw the initial 'Choose Your Color' button"""
-        button_width = 350
-        button_height = 80
-        button_x = c.SCREEN_WIDTH // 2 - 192
-        button_y = c.WINDOW_HEIGHT * 0.15
+        W, H = self.sw(), self.sh()
 
-        # Draw button background
-        button_texture = arcade.make_soft_square_texture(2, (154, 30, 31), outer_alpha=255)
-        button_rect = arcade.LBWH(
-            button_x - button_width // 2,
-            button_y - button_height // 2,
-            button_width,
-            button_height
-        )
-        arcade.draw_texture_rect(button_texture, button_rect)
+        btn_w = max(260, min(420, int(W * 0.23)))
+        btn_h = max(64, min(96, int(H * 0.09)))
+        cx, cy = W * 0.50, H * 0.15
 
-        # Draw button border
-        arcade.draw_rect_outline(
-            button_rect,
-            arcade.color.WHITE,
-            border_width=4
-        )
-
-        # Draw button text
+        tex = arcade.make_soft_square_texture(2, (154, 30, 31), outer_alpha=255)
+        rect = self._centered_rect(cx, cy, btn_w, btn_h)
+        arcade.draw_texture_rect(tex, rect)
+        arcade.draw_rect_outline(rect, arcade.color.WHITE, border_width=4)
         arcade.draw_text(
             "CHOOSE YOUR COLOR",
-            button_x,
-            button_y,
-            arcade.color.WHITE,
-            font_size=24,
-            anchor_x="center",
-            anchor_y="center",
-            bold=True
+            cx, cy, arcade.color.WHITE,
+            font_size=int(H * 0.025),
+            anchor_x="center", anchor_y="center", bold=True
         )
 
-        # Store button bounds
         self.choose_color_button_bounds = (
-            button_x - button_width // 2,   # left
-            button_x + button_width // 2,   # right
-            button_y - button_height // 2,  # bottom
-            button_y + button_height // 2   # top
+            rect.left, rect.left + rect.width,
+            rect.bottom, rect.bottom + rect.height
         )
 
     def draw_color_buttons(self):
-        """Draw the color selection buttons"""
-        button_width = 120
-        button_height = 160
-        spacing = 20
+        W, H = self.sw(), self.sh()
 
-        # Calculate total width to center the buttons
-        total_width = (button_width * len(self.player_colors) +
-                      spacing * (len(self.player_colors) - 1))
-        start_x = c.SCREEN_WIDTH // 2 - 450
-        button_y = c.WINDOW_HEIGHT * 0.35
+        card_w = max(100, min(160, int(H * 0.12)))
+        card_h = int(card_w * 4 / 3)  # keep card aspect ratio
+        spacing = max(16, int(card_w * 0.18))
+
+        total_w = card_w * len(self.player_colors) + spacing * (len(self.player_colors) - 1)
+        start_x = (W - total_w) / 2 + card_w / 2
+        y = H * 0.35
 
         self.color_buttons = []
+        for i, (name, _) in enumerate(self.player_colors):
+            x = start_x + i * (card_w + spacing)
+            tex = self.card_textures[name]
+            rect = self._centered_rect(x, y, card_w, card_h)
 
-        for i, (color_name, filename) in enumerate(self.player_colors):
-            button_x = start_x + i * (button_width + spacing) + button_width // 2
+            arcade.draw_texture_rect(tex, rect)
 
-            # Draw card image
-            texture = self.card_textures[color_name]
-            rect = arcade.LBWH(
-                button_x - button_width // 2,
-                button_y - button_height // 2,
-                button_width,
-                button_height
-            )
-            arcade.draw_texture_rect(texture, rect)
-
-            # Draw border (yellow if selected)
-            if self.selected_color == color_name:
-                border_color = arcade.color.YELLOW
-                border_width = 5
-            else:
-                border_color = arcade.color.WHITE
-                border_width = 2
-
+            selected = (self.selected_color == name)
             arcade.draw_rect_outline(
                 rect,
-                border_color,
-                border_width=border_width
+                arcade.color.YELLOW if selected else arcade.color.WHITE,
+                border_width=5 if selected else 2
             )
 
-            # Draw color name
-            text_color = arcade.color.WHITE
-            if color_name in ["WHITE", "YELLOW"]:
-                text_color = arcade.color.BLACK
-
+            label_color = arcade.color.BLACK if name in ("White", "Yellow") else arcade.color.WHITE
             arcade.draw_text(
-                color_name,
-                button_x,
-                button_y,
-                text_color,
-                font_size=16,
-                anchor_x="center",
-                anchor_y="center",
-                bold=True
+                name, x, y, label_color,
+                font_size=int(H * 0.022),
+                anchor_x="center", anchor_y="center", bold=True
             )
 
-            # Store button bounds for click detection
             self.color_buttons.append({
-                'color': color_name,
-                'bounds': (
-                    button_x - button_width // 2,   # left
-                    button_x + button_width // 2,   # right
-                    button_y - button_height // 2,  # bottom
-                    button_y + button_height // 2   # top
-                )
+                "color": name,
+                "bounds": (rect.left, rect.left + rect.width,
+                           rect.bottom, rect.bottom + rect.height)
             })
 
     def draw_start_button(self):
-        """Draw the start game button"""
-        button_width = 200
-        button_height = 60
-        button_x = c.SCREEN_WIDTH // 2 - 192
-        button_y = c.WINDOW_HEIGHT * 0.08
+        W, H = self.sw(), self.sh()
 
-        # Draw button background
-        button_texture = arcade.make_soft_square_texture(2, (34, 139, 34), outer_alpha=255)
-        button_rect = arcade.LBWH(
-            button_x - button_width // 2,
-            button_y - button_height // 2,
-            button_width,
-            button_height
-        )
-        arcade.draw_texture_rect(button_texture, button_rect)
+        btn_w = max(180, min(260, int(W * 0.16)))
+        btn_h = max(54, min(86, int(H * 0.08)))
+        cx, cy = W * 0.50, H * 0.08
 
-        # Draw button border
-        arcade.draw_rect_outline(
-            button_rect,
-            arcade.color.WHITE,
-            border_width=3
-        )
-
-        # Draw button text
+        tex = arcade.make_soft_square_texture(2, (34, 139, 34), outer_alpha=255)
+        rect = self._centered_rect(cx, cy, btn_w, btn_h)
+        arcade.draw_texture_rect(tex, rect)
+        arcade.draw_rect_outline(rect, arcade.color.WHITE, border_width=3)
         arcade.draw_text(
-            "START GAME",
-            button_x,
-            button_y,
-            arcade.color.WHITE,
-            font_size=20,
-            anchor_x="center",
-            anchor_y="center",
-            bold=True
+            "START GAME", cx, cy, arcade.color.WHITE,
+            font_size=int(H * 0.03),
+            anchor_x="center", anchor_y="center", bold=True
         )
 
-        # Store button bounds
         self.start_button_bounds = (
-            button_x - button_width // 2,   # left
-            button_x + button_width // 2,   # right
-            button_y - button_height // 2,  # bottom
-            button_y + button_height // 2   # top
+            rect.left, rect.left + rect.width,
+            rect.bottom, rect.bottom + rect.height
         )
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
