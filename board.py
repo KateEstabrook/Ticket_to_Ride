@@ -26,10 +26,10 @@ class GameView(arcade.View):
         self.board_rect = None
         self._update_board_rect()  # compute once before placing sprites
 
-        text_x1, text_y1 = self.img_to_screen(1150, 90, top_left=True)
-        text_x2, text_y2 = self.img_to_screen(1150, 140, top_left=True)
-        text_x3, text_y3 = self.img_to_screen(1700, 90, top_left=True)
-        text_x4, text_y4 = self.img_to_screen(1700, 140, top_left=True)
+        text_x1, text_y1 = self.img_to_screen(1150, -55, top_left=True)
+        text_x2, text_y2 = self.img_to_screen(1150, 25, top_left=True)
+        text_x3, text_y3 = self.img_to_screen(1700, -55, top_left=True)
+        text_x4, text_y4 = self.img_to_screen(1700, 25, top_left=True)
         self.leaderboard_lines = [
             arcade.Text(f"BLUE - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
             arcade.Text(f"GREEN - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
@@ -38,14 +38,14 @@ class GameView(arcade.View):
         ]
 
         orange_num_x, orange_num_y = self.img_to_screen(2670, 1075, top_left=True)
-        black_num_x, black_num_y = self.img_to_screen(2940, 1075, top_left=True)
-        blue_num_x, blue_num_y = self.img_to_screen(2950, 1000, top_left=True)
-        green_num_x, green_num_y = self.img_to_screen(2350, 1220, top_left=True)
-        pink_num_x, pink_num_y = self.img_to_screen(2650, 1220, top_left=True)
-        red_num_x, red_num_y = self.img_to_screen(2950, 1220, top_left=True)
-        white_num_x, white_num_y = self.img_to_screen(2350, 1440, top_left=True)
-        yellow_num_x, yellow_num_y = self.img_to_screen(2650, 1440, top_left=True)
-        wild_num_x, wild_num_y = self.img_to_screen(2950, 1440, top_left=True)
+        black_num_x, black_num_y = self.img_to_screen(2950, 1075, top_left=True)
+        blue_num_x, blue_num_y = self.img_to_screen(3230, 1075, top_left=True)
+        green_num_x, green_num_y = self.img_to_screen(2670, 1255, top_left=True)
+        pink_num_x, pink_num_y = self.img_to_screen(2950, 1255, top_left=True)
+        red_num_x, red_num_y = self.img_to_screen(3230, 1255, top_left=True)
+        white_num_x, white_num_y = self.img_to_screen(2670, 1435, top_left=True)
+        yellow_num_x, yellow_num_y = self.img_to_screen(2950, 1435, top_left=True)
+        wild_num_x, wild_num_y = self.img_to_screen(3230, 1435, top_left=True)
 
         self.index_cards = [
             arcade.Text(f"0", orange_num_x, orange_num_y, arcade.color.WHITE, 13, anchor_x="left"),
@@ -192,13 +192,13 @@ class GameView(arcade.View):
 
             self.card_list.append(card)
 
-        self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.45)
-        cx, cy = self.img_to_screen(2820, 870, top_left=True)
+        self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.435)
+        cx, cy = self.img_to_screen(2840, 910, top_left=True)
         self.card_banner.center_x = cx
         self.card_banner.center_y = cy
 
         self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
-        lx, ly = self.img_to_screen(1180, -40, top_left=True)
+        lx, ly = self.img_to_screen(1250, -40, top_left=True)
         self.leaderboard_banner.center_x = lx
         self.leaderboard_banner.center_y = ly
 
