@@ -14,6 +14,7 @@ INIT_TRAIN_PEICES = 45
 STARTING_POINTS = 0
 
 class Player:
+    """Player class"""
     # Constructor
     def __init__(self, color):
         self.color = color
@@ -23,46 +24,50 @@ class Player:
         self.destination_cards = deck.Deck('destination_cards')
         self.sprite = f"images/train_piece_{color}.png"
 
-    # Add points to player
     def add_points(self, points):
+        """Add points to player"""
         self.points += points
 
-    # Add cards to a player deck
     def add_card(self, deck, card):
+        """Add cards to a player deck"""
         deck.add(card)
 
-    # Remove points from player
     def remove_points(self, points):
+        """Remove points from player"""
         self.points -= points
 
-    # Remove train pieces from player
     def remove_trains(self, trains):
+        """Remove train pieces from player"""
         self.train_peices -= trains
 
-    # Remove cards from player deck
     def remove_card(self, deck, index):
+        """Remove cards from player deck"""
         return deck.remove(index)
 
-    # Getters
     def get_points(self):
+        """Getter for points"""
         return self.points
 
     def get_trains(self):
+        """Getter for trains"""
         return self.train_peices
 
     def get_color(self):
+        """Getter for color"""
         return self.color
 
     def get_train_cards(self):
+        """Getter for train cards"""
         return self.train_cards
 
     def get_destination_cards(self):
+        """Getter for destination cards"""
         return self.destination_cards
 
     def get_sprite(self):
+        """Getter for sprite"""
         return self.sprite
 
-    # To string
     def __str__(self):
+        """To string"""
         return f"{self.color} Player"
-    
