@@ -4,6 +4,8 @@ Ticket to Ride Board
 
 import platform
 import arcade
+from arcade import SpriteList
+
 import globals
 import constants as c
 import random
@@ -19,6 +21,9 @@ class GameView(arcade.View):
 
         # Call the parent class initializer
         super().__init__()
+
+        self.player = player_obj  # keep the player
+        self.drawn_card = None  # slot for the card you draw from the deck
 
         # Background image will be stored in this variable
         self.background = arcade.load_texture("images/board_borders.png")
@@ -210,6 +215,11 @@ class GameView(arcade.View):
         # Don't show the mouse cursor
         self.window.set_mouse_visible(False)
 
+        self.showing_deck_popup = False
+
+        self.deck_sprite = arcade.SpriteList()
+        self.deck_sprite.append(self.deck)
+
         self.showing_popup = False
         self.popup_city1 = None
         self.popup_city2 = None
@@ -326,10 +336,14 @@ class GameView(arcade.View):
         if self.showing_popup:
             self.show_pop_up(self.popup_city1, self.popup_city2)
 
+        if self.showing_deck_popup:
+            self.deck_pop_up()
+
+        self.deck_sprite.draw()
+
         tmp = arcade.SpriteList()
         tmp.append(self.card_banner)
         tmp.append(self.leaderboard_banner)
-        tmp.append(self.deck)
         tmp.append(self.player_sprite)
         tmp.draw()
 
@@ -355,6 +369,22 @@ class GameView(arcade.View):
 
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
+        if self.showing_deck_popup:
+            # Handle exit click
+            if hasattr(self, 'continue_button_bounds'):
+                left, right, bottom, top = self.continue_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    # Add the drawn card to the player's hand before closing
+                    if self.drawn_card is not None:
+                        self.player.get_train_cards().add(self.drawn_card)
+                        self.drawn_card = None
+                    self.showing_deck_popup = False
+                    self.selected_color = None
+                    return
+
+            # If click is elsewhere while popup is up, just consume it
+            return
+
         if self.showing_popup:
             # Check if exit button was clicked
             if hasattr(self, 'exit_button_bounds'):
@@ -394,7 +424,18 @@ class GameView(arcade.View):
             tip_y = self.player_sprite.center_y + self.player_sprite.height / 3
 
             # which cities are exactly under that point?
+            hit_deck = arcade.get_sprites_at_point((tip_x, tip_y), self.deck_sprite)
             hits = arcade.get_sprites_at_point((tip_x, tip_y), self.city_list)
+
+            # If we clicked the deck, show the deck popup and stop processing
+            if hit_deck:
+                if globals.train_deck.get_len() > 0:
+                    # draw the top card; choose -1 or 0, just be consistent
+                    self.drawn_card = globals.train_deck.remove(-1)
+                    self.showing_deck_popup = True
+                    self.selected_color = None
+
+                return
 
             if not hits:
                 return
@@ -500,6 +541,86 @@ class GameView(arcade.View):
             city.set_texture(0)
             city.scale = c.CITY_SCALE
         self.selected_cities.clear()
+
+    def deck_pop_up(self):
+        """
+        Show a white rectangle pop-up with color selection buttons using card images
+        """
+        # Calculate dimensions and positions
+        popup_width = c.WINDOW_WIDTH * 0.4
+        popup_height = c.WINDOW_HEIGHT * 0.4
+        popup_x = c.WINDOW_WIDTH // 2
+        popup_y = c.WINDOW_HEIGHT // 2
+
+        # Draw white rectangle
+        white_texture = arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255)
+        arcade.draw_texture_rect(
+            white_texture,
+            arcade.LBWH(
+                popup_x - popup_width // 2,
+                popup_y - popup_height // 2,
+                popup_width,
+                popup_height
+            )
+        )
+
+        if self.drawn_card is not None:
+            tex = arcade.load_texture(self.drawn_card.get_sprite())
+            # Center it nicely inside the popup
+            card_w = popup_width * 0.18
+            card_h = card_w * (4 / 3)  # keep card aspect ratio
+            card_rect = arcade.LBWH(popup_x - card_w / 2, popup_y - card_h / 2, card_w, card_h)
+            arcade.draw_texture_rect(tex, card_rect)
+
+        if self.drawn_card is not None:
+            color_name = self.drawn_card.get_color().upper()
+            arcade.draw_text(
+                f"You got a(n) {color_name} card!",
+                popup_x, popup_y + popup_height * 0.35,
+                arcade.color.BLACK,
+                font_size=18,
+                anchor_x="center",
+                anchor_y="center",
+                bold=True
+            )
+
+        # Add exit button in lower right corner
+        continue_button_width = popup_width * 0.2
+        continue_button_height = popup_height * 0.1
+        continue_button_x = popup_x + popup_width * 0.48 - continue_button_width // 2
+        continue_button_y = popup_y - popup_height * 0.45 + continue_button_height // 2
+
+        exit_texture = arcade.make_soft_square_texture(2, c.EXIT_BUTTON, outer_alpha=255)
+        exit_rect = arcade.LBWH(
+            continue_button_x - continue_button_width // 2,
+            continue_button_y - continue_button_height // 2,
+            continue_button_width,
+            continue_button_height
+        )
+
+        arcade.draw_texture_rect(exit_texture, exit_rect)
+        arcade.draw_rect_outline(
+            exit_rect,
+            arcade.color.BLACK,
+            border_width=2
+        )
+
+        arcade.draw_text(
+            "CONTINUE",
+            continue_button_x, continue_button_y,
+            arcade.color.WHITE,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True
+        )
+
+        self.continue_button_bounds = (
+            continue_button_x - continue_button_width // 2,  # left
+            continue_button_x + continue_button_width // 2,  # right
+            continue_button_y - continue_button_height // 2,  # bottom
+            continue_button_y + continue_button_height // 2  # top
+        )
 
     def show_pop_up(self, city1, city2):
         """
