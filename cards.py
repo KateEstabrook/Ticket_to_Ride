@@ -16,7 +16,7 @@ class DestinationCard:
         self.city_2 = card_info[1]
         self.points = card_info[2]
         self.completed = False
-        self.sprite = f"images/{card_info[0].replace(" ", "")}_{card_info[1].replace(" ", "")}.png"
+        self.sprite = f"images/{card_info[0].replace(' ', '')}_{card_info[1].replace(' ', '')}.png"
 
     # Getters
     def get_points(self):

@@ -344,12 +344,15 @@ class GameView(arcade.View):
             self.show_pop_up(self.popup_city1, self.popup_city2)
         
 
-        #self.showing_dest_popup = True
-        #if self.showing_dest_popup:
-            #self.show_dest_pop_up([cards.DestinationCard(["Boston", "Miami", 12]), 
+        # self.showing_dest_popup = True
+
+        # test_dest_list = [cards.DestinationCard(["Calgary", "Salt Lake City", 7]), 
                                    #cards.DestinationCard(["Calgary", "Phoenix", 13]), 
-                                   #cards.DestinationCard(["Calgary", "Salt Lake City", 7]), 
-                                   #cards.DestinationCard(["Chicago", "New Orleans", 7]), ]) # DEST CARDS CURRENTLY BEING DEALT
+                                   #cards.DestinationCard(["Boston", "Miami", 12]), 
+                                   #cards.DestinationCard(["Chicago", "New Orleans", 7])]
+
+        if self.showing_dest_popup:
+            self.show_dest_pop_up() # DEST CARDS CURRENTLY BEING DEALT
 
         if self.showing_deck_popup:
             self.deck_pop_up()
