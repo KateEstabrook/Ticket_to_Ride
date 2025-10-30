@@ -343,8 +343,13 @@ class GameView(arcade.View):
         if self.showing_popup:
             self.show_pop_up(self.popup_city1, self.popup_city2)
         
-        if self.showing_dest_popup:
-            self.showing_dest_popup() # DEST CARDS CURRENTLY BEING DEALT
+
+        #self.showing_dest_popup = True
+        #if self.showing_dest_popup:
+            #self.show_dest_pop_up([cards.DestinationCard(["Boston", "Miami", 12]), 
+                                   #cards.DestinationCard(["Calgary", "Phoenix", 13]), 
+                                   #cards.DestinationCard(["Calgary", "Salt Lake City", 7]), 
+                                   #cards.DestinationCard(["Chicago", "New Orleans", 7]), ]) # DEST CARDS CURRENTLY BEING DEALT
 
         if self.showing_deck_popup:
             self.deck_pop_up()
@@ -1022,7 +1027,7 @@ class GameView(arcade.View):
                 bold=True
             )
     
-    def dest_pop_up(self, dest_list):
+    def show_dest_pop_up(self, dest_list):
         """
         Show a white rectangle pop-up and destination card selection
         """
