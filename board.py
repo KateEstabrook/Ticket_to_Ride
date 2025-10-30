@@ -652,6 +652,127 @@ class GameView(arcade.View):
             continue_button_y + continue_button_height // 2  # top
         )
 
+    def faceup_card_pop_up(self, card_index):
+        """
+        Show a white rectangle pop-up when a face-up card is clicked
+        """
+        # Calculate dimensions and positions
+        popup_width = c.WINDOW_WIDTH * 0.4
+        popup_height = c.WINDOW_HEIGHT * 0.4
+        popup_x = c.WINDOW_WIDTH // 2
+        popup_y = c.WINDOW_HEIGHT // 2
+
+        # Draw white rectangle
+        white_texture = arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255)
+        arcade.draw_texture_rect(
+            white_texture,
+            arcade.LBWH(
+                popup_x - popup_width // 2,
+                popup_y - popup_height // 2,
+                popup_width,
+                popup_height
+            )
+        )
+
+        # Get the selected face-up card
+        selected_card = globals.faceup_deck.get_card_at_index(card_index)
+
+        if selected_card is not None:
+            tex = arcade.load_texture(selected_card.get_sprite())
+            # Center it nicely inside the popup
+            card_w = popup_width * 0.18
+            card_h = card_w * (4 / 3)  # keep card aspect ratio
+            card_rect = arcade.LBWH(popup_x - card_w / 2, popup_y - card_h / 2, card_w, card_h)
+            arcade.draw_texture_rect(tex, card_rect)
+
+        if selected_card is not None:
+            color_name = selected_card.get_color().upper()
+            arcade.draw_text(
+                f"You selected a(n) {color_name} card!",
+                popup_x, popup_y + popup_height * 0.35,
+                arcade.color.BLACK,
+                font_size=18,
+                anchor_x="center",
+                anchor_y="center",
+                bold=True
+            )
+
+        # Add take button
+        take_button_width = popup_width * 0.2
+        take_button_height = popup_height * 0.1
+        take_button_x = popup_x + popup_width * 0.25 - take_button_width // 2
+        take_button_y = popup_y - popup_height * 0.45 + take_button_height // 2
+
+        take_texture = arcade.make_soft_square_texture(2, c.SAVE_BUTTON, outer_alpha=255)
+        take_rect = arcade.LBWH(
+            take_button_x - take_button_width // 2,
+            take_button_y - take_button_height // 2,
+            take_button_width,
+            take_button_height
+        )
+
+        arcade.draw_texture_rect(take_texture, take_rect)
+        arcade.draw_rect_outline(
+            take_rect,
+            arcade.color.BLACK,
+            border_width=2
+        )
+
+        arcade.draw_text(
+            "TAKE CARD",
+            take_button_x, take_button_y,
+            arcade.color.WHITE,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True
+        )
+
+        self.take_button_bounds = (
+            take_button_x - take_button_width // 2,  # left
+            take_button_x + take_button_width // 2,  # right
+            take_button_y - take_button_height // 2,  # bottom
+            take_button_y + take_button_height // 2  # top
+        )
+
+        # Add exit button in lower right corner
+        exit_button_width = popup_width * 0.2
+        exit_button_height = popup_height * 0.1
+        exit_button_x = popup_x + popup_width * 0.48 - exit_button_width // 2
+        exit_button_y = popup_y - popup_height * 0.45 + exit_button_height // 2
+
+        exit_texture = arcade.make_soft_square_texture(2, c.EXIT_BUTTON, outer_alpha=255)
+        exit_rect = arcade.LBWH(
+            exit_button_x - exit_button_width // 2,
+            exit_button_y - exit_button_height // 2,
+            exit_button_width,
+            exit_button_height
+        )
+
+        arcade.draw_texture_rect(exit_texture, exit_rect)
+        arcade.draw_rect_outline(
+            exit_rect,
+            arcade.color.BLACK,
+            border_width=2
+        )
+
+        arcade.draw_text(
+            "EXIT",
+            exit_button_x, exit_button_y,
+            arcade.color.WHITE,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True
+        )
+
+        self.exit_button_bounds = (
+            exit_button_x - exit_button_width // 2,  # left
+            exit_button_x + exit_button_width // 2,  # right
+            exit_button_y - exit_button_height // 2,  # bottom
+            exit_button_y + exit_button_height // 2  # top
+        )
+
     def show_pop_up(self, city1, city2):
         """
         Show a white rectangle pop-up with color selection buttons using card images
