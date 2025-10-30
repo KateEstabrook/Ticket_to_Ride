@@ -69,10 +69,10 @@ class StartMenuView(arcade.View):
         """Render the start menu"""
         self.clear()
 
-        W, H = self.sw(), self.sh()
+        width, height = self.sw(), self.sh()
 
         # Draw background scaled to cover the screen
-        bg_rect = self._cover_scale_rect(self.bg_tex.width, self.bg_tex.height, W, H)
+        bg_rect = self._cover_scale_rect(self.bg_tex.width, self.bg_tex.height, width, height)
         arcade.draw_texture_rect(self.bg_tex, bg_rect)
 
         if not self.showing_colors:
@@ -102,11 +102,11 @@ class StartMenuView(arcade.View):
 
     def draw_choose_color_button(self):
         """Draw the initial 'Choose Your Color' button"""
-        W, H = self.sw(), self.sh()
+        width, height = self.sw(), self.sh()
 
-        btn_w = max(260, min(420, int(W * 0.23)))
-        btn_h = max(64, min(96, int(H * 0.09)))
-        cx, cy = W * 0.50, H * 0.15
+        btn_w = max(260, min(420, int(width * 0.23)))
+        btn_h = max(64, min(96, int(height * 0.09)))
+        cx, cy = width * 0.50, height * 0.15
 
         tex = arcade.make_soft_square_texture(2, (154, 30, 31), outer_alpha=255)
         rect = self._centered_rect(cx, cy, btn_w, btn_h)
@@ -115,7 +115,7 @@ class StartMenuView(arcade.View):
         arcade.draw_text(
             "CHOOSE YOUR COLOR",
             cx, cy, arcade.color.WHITE,
-            font_size=int(H * 0.025),
+            font_size=int(height * 0.025),
             anchor_x="center", anchor_y="center", bold=True
         )
 
@@ -125,15 +125,16 @@ class StartMenuView(arcade.View):
         )
 
     def draw_color_buttons(self):
-        W, H = self.sw(), self.sh()
+        """Draw the initial 'Choose Your Color' button"""
+        width, height = self.sw(), self.sh()
 
-        card_w = max(100, min(160, int(H * 0.12)))
+        card_w = max(100, min(160, int(height * 0.12)))
         card_h = int(card_w * 4 / 3)  # keep card aspect ratio
         spacing = max(16, int(card_w * 0.18))
 
         total_w = card_w * len(self.player_colors) + spacing * (len(self.player_colors) - 1)
-        start_x = (W - total_w) / 2 + card_w / 2
-        y = H * 0.35
+        start_x = (width - total_w) / 2 + card_w / 2
+        y = height * 0.35
 
         self.color_buttons = []
         for i, (name, _) in enumerate(self.player_colors):
@@ -153,7 +154,7 @@ class StartMenuView(arcade.View):
             label_color = arcade.color.BLACK if name in ("White", "Yellow") else arcade.color.WHITE
             arcade.draw_text(
                 name, x, y, label_color,
-                font_size=int(H * 0.022),
+                font_size=int(height * 0.022),
                 anchor_x="center", anchor_y="center", bold=True
             )
 
@@ -164,11 +165,12 @@ class StartMenuView(arcade.View):
             })
 
     def draw_start_button(self):
-        W, H = self.sw(), self.sh()
+        """Draw the start button"""
+        width, height = self.sw(), self.sh()
 
-        btn_w = max(180, min(260, int(W * 0.16)))
-        btn_h = max(54, min(86, int(H * 0.08)))
-        cx, cy = W * 0.50, H * 0.08
+        btn_w = max(180, min(260, int(width * 0.16)))
+        btn_h = max(54, min(86, int(height * 0.08)))
+        cx, cy = width * 0.50, height * 0.08
 
         tex = arcade.make_soft_square_texture(2, (34, 139, 34), outer_alpha=255)
         rect = self._centered_rect(cx, cy, btn_w, btn_h)
@@ -176,7 +178,7 @@ class StartMenuView(arcade.View):
         arcade.draw_rect_outline(rect, arcade.color.WHITE, border_width=3)
         arcade.draw_text(
             "START GAME", cx, cy, arcade.color.WHITE,
-            font_size=int(H * 0.03),
+            font_size=int(height * 0.03),
             anchor_x="center", anchor_y="center", bold=True
         )
 

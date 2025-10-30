@@ -1,12 +1,26 @@
-import deck, cards, graph, route, player
+"""
+Constants file
+"""
+
+import deck
+import cards
+import graph
+import route
+import player
 import constants as c
+
+
 
 global player_obj
 def initialize_game():
-    global faceup_deck, train_deck, dest_deck, routes, players
-    # Initailize Train Card Deck
+    """Game start (shuffling, dealing, itializing player colors)"""
+    global faceup_deck, train_deck, dest_deck, routes, players, player_deck
+
+    # Initialize Train Card Deck
     train_deck = deck.Deck('Draw')
+    player_deck = deck.Deck('Player')
     faceup_deck = deck.Deck('Faceup')
+    
     
     # Add color cards 
     for color in c.COLORS:
@@ -20,11 +34,16 @@ def initialize_game():
     while i < 14:
         train_deck.add(cards.TrainCard("wild"))
         i += 1
-        
+
+    # SHUFFLE the train deck
     train_deck.shuffle()
 
+    # Create faceup deck from shuffled train deck
+    while faceup_deck.get_len() < 5 and train_deck.get_len() > 0:
+        card = train_deck.remove(0)  # Remove from top of deck
+        faceup_deck.add(card)
 
-    # Initailize players
+    # Initialize players
     players = []
 
     # for color in c.PLAYER_COLORS:
@@ -39,9 +58,9 @@ def initialize_game():
     # players.append(green)
     # blue = player.Player("Blue")
     # players.append(blue)
-    
+
     # TODO Have player choose color
-    
+
     # Initialize Destination Card Deck
     dest_deck = deck.Deck("destination")
 
@@ -66,10 +85,3 @@ def initialize_game():
 
     # Initalize graph
     map = graph.Graph("", c.ROUTES_LST)
-
-    faceup_deck = deck.Deck("faceup")
-    while faceup_deck.get_len() < 5:
-        card_ = train_deck.remove(-1)
-        name = card_.get_color()
-        faceup_deck.add(card_)
-        i += 1

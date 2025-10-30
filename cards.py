@@ -16,6 +16,7 @@ class DestinationCard:
         self.city_2 = card_info[1]
         self.points = card_info[2]
         self.completed = False
+        self.sprite = f"images/{self.card_info[0] + self.card_info[1]}.png"
 
     # Getters
     def get_points(self):
@@ -29,6 +30,9 @@ class DestinationCard:
 
     def get_completed(self):
         return self.completed
+    
+    def get_sprite(self):
+        return self.sprite
 
     # To string
     def __str__(self):
