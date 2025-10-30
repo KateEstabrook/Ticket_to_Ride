@@ -13,6 +13,7 @@ import deck
 import cards
 import route
 import player
+import popups
 
 class GameView(arcade.View):
     """
@@ -233,6 +234,10 @@ class GameView(arcade.View):
         self.color_buttons = []
         self.dest_buttons = []
 
+        self.showing_faceup_popup = False
+        self.selected_faceup_card_index = None
+        self.take_button_bounds = None
+
     def reset(self):
         """Restart the game."""
         # Set up the player
@@ -317,6 +322,7 @@ class GameView(arcade.View):
         train_sprite.center_x = x
         train_sprite.center_y = y
 
+    # In your GameView class, update the on_draw method:
     def on_draw(self):
         """
         Render the screen.
@@ -341,21 +347,17 @@ class GameView(arcade.View):
             line.draw()
 
         if self.showing_popup:
-            self.show_pop_up(self.popup_city1, self.popup_city2)
-        
-
-        # self.showing_dest_popup = True
-
-        # test_dest_list = [cards.DestinationCard(["Calgary", "Salt Lake City", 7]), 
-                                   #cards.DestinationCard(["Calgary", "Phoenix", 13]), 
-                                   #cards.DestinationCard(["Boston", "Miami", 12]), 
-                                   #cards.DestinationCard(["Chicago", "New Orleans", 7])]
+            popups.route_popup(self, self.popup_city1, self.popup_city2)  # Pass self as first argument
 
         if self.showing_dest_popup:
-            self.show_dest_pop_up() # DEST CARDS CURRENTLY BEING DEALT
+            # You'll need to implement this similarly
+            pass
 
         if self.showing_deck_popup:
-            self.deck_pop_up()
+            popups.deck_pop_up(self)  # Pass self as first argument
+
+        if self.showing_faceup_popup:
+            popups.faceup_card_pop_up(self, self.selected_faceup_card_index)  # Add this line
 
         self.deck_sprite.draw()
 
@@ -385,7 +387,6 @@ class GameView(arcade.View):
         idx = self.city_list.index(spr)
         return list(c.CITIES.keys())[idx]
 
-
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         if self.showing_deck_popup:
             # Handle exit click
@@ -398,6 +399,34 @@ class GameView(arcade.View):
                         self.drawn_card = None
                     self.showing_deck_popup = False
                     self.selected_color = None
+                    return
+
+            # If click is elsewhere while popup is up, just consume it
+            return
+
+        # Add this section after the deck popup handling but before the route popup handling
+        if self.showing_faceup_popup:
+            # Handle take card button click
+            if hasattr(self, 'take_button_bounds'):
+                left, right, bottom, top = self.take_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    # Add the selected face-up card to player's hand
+                    if self.selected_faceup_card_index is not None:
+                        taken_card = globals.faceup_deck.remove(self.selected_faceup_card_index)
+                        if taken_card:
+                            self.player.get_train_cards().add(taken_card)
+                            # Refresh the face-up cards display
+                            self.refresh_faceup_cards()
+                    self.showing_faceup_popup = False
+                    self.selected_faceup_card_index = None
+                    return
+
+            # Handle exit button click
+            if hasattr(self, 'exit_button_bounds'):
+                left, right, bottom, top = self.exit_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    self.showing_faceup_popup = False
+                    self.selected_faceup_card_index = None
                     return
 
             # If click is elsewhere while popup is up, just consume it
@@ -419,13 +448,11 @@ class GameView(arcade.View):
                 if left <= x <= right and bottom <= y <= top:
                     if (self.selected_color and self.valid_route_colors(
                             self.selected_color, self.popup_city1, self.popup_city2)):
-
                         self.showing_popup = False
                         self.claim_route(self.popup_city1, self.popup_city2)
                         self.deselect_all_cities()
                         self.selected_color = None
                     return
-
 
             # Check if color button was clicked
             selected_color = self.handle_color_selection(x, y)
@@ -454,16 +481,11 @@ class GameView(arcade.View):
                 self.selected_dests.append(selected_dest)
             return
 
-        
         if button == arcade.MOUSE_BUTTON_LEFT:
-            # Generate a list of all cities that collided with the cursor
-            # fingertip = top-left corner of the cursor image
-            tip_x = self.player_sprite.center_x - self.player_sprite.width / 3
-            tip_y = self.player_sprite.center_y + self.player_sprite.height / 3
-
-            # which cities are exactly under that point?
-            hit_deck = arcade.get_sprites_at_point((tip_x, tip_y), self.deck_sprite)
-            hits = arcade.get_sprites_at_point((tip_x, tip_y), self.city_list)
+            # Use the actual mouse coordinates for collision detection
+            hit_deck = arcade.get_sprites_at_point((x, y), self.deck_sprite)
+            hits = arcade.get_sprites_at_point((x, y), self.city_list)
+            hit_faceup_cards = arcade.get_sprites_at_point((x, y), self.card_list)
 
             # If we clicked the deck, show the deck popup and stop processing
             if hit_deck:
@@ -472,7 +494,19 @@ class GameView(arcade.View):
                     self.drawn_card = globals.train_deck.remove(-1)
                     self.showing_deck_popup = True
                     self.selected_color = None
+                return
 
+            # Add face-up card detection
+            if hit_faceup_cards:
+                # Find which face-up card was clicked (first 5 cards in card_list are face-up)
+                clicked_sprite = hit_faceup_cards[0]
+                if clicked_sprite in self.card_list:
+                    card_index = self.card_list.index(clicked_sprite)
+                    # Only the first 5 cards are face-up cards
+                    if card_index < 5:
+                        self.selected_faceup_card_index = card_index
+                        self.showing_faceup_popup = True
+                        print(f"Face-up card {card_index} clicked")  # Debug
                 return
 
             if not hits:
@@ -1207,7 +1241,7 @@ class GameView(arcade.View):
             if self.is_point_in_button(x, y, button['bounds']):
                 return button['color']
         return None
-    
+
     def handle_dest_selection(self, x, y):
         """Handle dest button clicks"""
         if not hasattr(self, 'dest_buttons'):
