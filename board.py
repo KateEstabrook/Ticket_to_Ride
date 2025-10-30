@@ -354,7 +354,7 @@ class GameView(arcade.View):
                           cards.DestinationCard(["Calgary", "Salt Lake City", 7]),
                           cards.DestinationCard(["Chicago", "New Orleans", 7]),]
         
-        self.showing_dest_popup = True
+        #self.showing_dest_popup = True
 
         if self.showing_dest_popup:
             popups.show_dest_pop_up(self, test_dest_deck)
