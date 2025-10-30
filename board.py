@@ -143,6 +143,7 @@ class GameView(arcade.View):
         base_tex = arcade.load_texture("images/city.png")
         hover_tex = arcade.load_texture("images/button_yellow.png")
         self.selected_color = None
+        self.selected_dests = []
 
         # Build sprites from CITIES
         for _, info in c.CITIES.items():
@@ -225,10 +226,12 @@ class GameView(arcade.View):
         self.deck_sprite.append(self.deck)
 
         self.showing_popup = False
+        self.showing_dest_popup = False
         self.popup_city1 = None
         self.popup_city2 = None
         self.popup_route_length = 0
         self.color_buttons = []
+        self.dest_buttons = []
 
     def reset(self):
         """Restart the game."""
@@ -339,6 +342,9 @@ class GameView(arcade.View):
 
         if self.showing_popup:
             self.show_pop_up(self.popup_city1, self.popup_city2)
+        
+        if self.showing_dest_popup:
+            self.showing_dest_popup() # DEST CARDS CURRENTLY BEING DEALT
 
         if self.showing_deck_popup:
             self.deck_pop_up()
@@ -421,6 +427,26 @@ class GameView(arcade.View):
             # If neither button was pressed keep going
             return
 
+        if self.showing_dest_popup:
+            # Check if save button was clicked
+            if hasattr(self, 'save_button_bounds') and self.save_button_bounds:
+                left, right, bottom, top = self.save_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    if (len(self.selected_dests) >= 2):
+
+                        self.showing_dest_popup = False
+                        # ADD DEST CARDS TO PLAYER DEST DECK
+                        self.selected_dests = []
+                    return
+            # Check if dest card was clicked
+            selected_dest = self.handle_dest_selection(x, y)
+            if selected_dest in self.selected_dests:
+                self.selected_dests.remove(selected_dest)
+            else:
+                self.selected_dests.append(selected_dest)
+            return
+
+        
         if button == arcade.MOUSE_BUTTON_LEFT:
             # Generate a list of all cities that collided with the cursor
             # fingertip = top-left corner of the cursor image
@@ -874,6 +900,142 @@ class GameView(arcade.View):
                 anchor_y="center",
                 bold=True
             )
+    
+    def dest_pop_up(self, dest_list):
+        """
+        Show a white rectangle pop-up and destination card selection
+        """
+        # Calculate dimensions and positions
+        popup_width = c.WINDOW_WIDTH * 0.4
+        popup_height = c.WINDOW_HEIGHT * 0.4
+        popup_x = c.WINDOW_WIDTH // 2
+        popup_y = c.WINDOW_HEIGHT // 2
+
+        # Draw white rectangle
+        white_texture = arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255)
+        arcade.draw_texture_rect(
+            white_texture,
+            arcade.LBWH(
+                popup_x - popup_width // 2,
+                popup_y - popup_height // 2,
+                popup_width,
+                popup_height
+            )
+        )
+
+        # Button dimensions and layout
+        button_width = popup_width * 0.18
+        button_height = popup_height * 0.15
+        horizontal_spacing = popup_width * 0.1
+        vertical_spacing = popup_height * 0.03
+
+        # Starting position for the grid
+        start_x = popup_x - popup_width * 0.3
+        start_y = popup_y - popup_height * -0.2
+
+        # Store button positions for click detection
+        self.dest_buttons = []
+
+        # Draw cards
+        for row in range(2):
+            row_x = start_x
+
+            for col in range(2):
+                index = row * 2 + col
+                # Calculate button position
+                button_x = row_x + col * (button_width + horizontal_spacing)
+                button_y = start_y - row * (button_height + vertical_spacing)
+                city1 = dest_list[index].get_city_1()
+                city2 = dest_list[index].get_city_1()
+                texture = arcade.load_texture(dest_list[index].get_sprite())
+
+                # Draw card image
+                rect = arcade.LBWH(
+                    button_x - button_width // 2,
+                    button_y - button_height // 2,
+                    button_width,
+                    button_height
+                )
+                arcade.draw_texture_rect(texture, rect)
+
+                # draw border
+                if (city1 + city2) in self.selected_dests:
+                    border_color = arcade.color.YELLOW
+                    border_width = 4
+                else:
+                    border_color = arcade.color.BLACK
+                    border_width = 2
+
+                arcade.draw_rect_outline(
+                    rect,
+                    border_color,
+                    border_width=border_width
+                )
+
+                # Store button info for click detection
+                self.dest_buttons.append({
+                    'cities': city1 + city2,
+                    'bounds': (
+                        button_x - button_width // 2,  # left
+                        button_x + button_width // 2,  # right
+                        button_y - button_height // 2,  # bottom
+                        button_y + button_height // 2  # top
+                    )
+                })
+
+        # Only show save button if you have selected greater than or equal to 2 dest cards
+        if (len(self.selected_dests) >= 2):
+            save_button_width = popup_width * 0.2
+            save_button_height = popup_height * 0.1
+            save_button_x = popup_x + popup_width * 0.25 - save_button_width // 2
+            save_button_y = popup_y - popup_height * 0.45 + save_button_height // 2
+
+            save_texture = arcade.make_soft_square_texture(2, c.SAVE_BUTTON, outer_alpha=255)
+            save_rect = arcade.LBWH(
+                save_button_x - save_button_width // 2,
+                save_button_y - save_button_height // 2,
+                save_button_width,
+                save_button_height
+            )
+
+            arcade.draw_texture_rect(save_texture, save_rect)
+            arcade.draw_rect_outline(
+                save_rect,
+                arcade.color.BLACK,
+                border_width=2
+            )
+
+            arcade.draw_text(
+                "SAVE",
+                save_button_x, save_button_y,
+                arcade.color.WHITE,
+                font_size=12,
+                anchor_x="center",
+                anchor_y="center",
+                bold=True
+            )
+
+            self.save_button_bounds = (
+                save_button_x - save_button_width // 2,  # left
+                save_button_x + save_button_width // 2,  # right
+                save_button_y - save_button_height // 2,  # bottom
+                save_button_y + save_button_height // 2  # top
+            )
+        else:
+            self.save_button_bounds = None
+
+        # Add color selection prompt
+        color_text = "Which destination cards would you like to keep?"
+        arcade.draw_text(
+            color_text,
+            popup_x, popup_y + popup_height * 0.35,
+            arcade.color.BLACK,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center"
+        )
+
+        return 0
 
 
     def claim_route(self, city1, city2):
@@ -915,6 +1077,16 @@ class GameView(arcade.View):
         for button in self.color_buttons:
             if self.is_point_in_button(x, y, button['bounds']):
                 return button['color']
+        return None
+    
+    def handle_dest_selection(self, x, y):
+        """Handle dest button clicks"""
+        if not hasattr(self, 'dest_buttons'):
+            return None
+
+        for button in self.dest_buttons:
+            if self.is_point_in_button(x, y, button['bounds']):
+                return button['cities']
         return None
 
     # Color validation
