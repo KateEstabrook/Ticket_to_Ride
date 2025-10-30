@@ -349,8 +349,15 @@ class GameView(arcade.View):
         if self.showing_popup:
             popups.route_popup(self, self.popup_city1, self.popup_city2)  # Pass self as first argument
 
+        test_dest_deck = [cards.DestinationCard(["Boston", "Miami", 12]),
+                          cards.DestinationCard(["Calgary", "Phoenix", 13]),
+                          cards.DestinationCard(["Calgary", "Salt Lake City", 7]),
+                          cards.DestinationCard(["Chicago", "New Orleans", 7]),]
+        
+        self.showing_dest_popup = True
+
         if self.showing_dest_popup:
-            popups.show_dest_pop_up()
+            popups.show_dest_pop_up(self, test_dest_deck)
             0
 
         if self.showing_deck_popup:
