@@ -10,6 +10,8 @@ import player
 import constants as c
 
 
+
+global player_obj
 def initialize_game():
     """Game start (shuffling, dealing, itializing player colors)"""
     global faceup_deck, train_deck, dest_deck, routes, players, player_deck
@@ -18,8 +20,9 @@ def initialize_game():
     train_deck = deck.Deck('Draw')
     player_deck = deck.Deck('Player')
     faceup_deck = deck.Deck('Faceup')
-
-    # Add color cards
+    
+    
+    # Add color cards 
     for color in c.COLORS:
         i = 0
         while i < 12:

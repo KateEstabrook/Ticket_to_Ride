@@ -7,6 +7,7 @@ import arcade
 from arcade import SpriteList
 import constants as c
 import player
+import globals
 
 class StartMenuView(arcade.View):
     """Start menu where players choose their color"""
@@ -212,7 +213,9 @@ class StartMenuView(arcade.View):
                         from board import GameView
 
                         # Create and show game view with selected color
-                        game_view = GameView(player_obj=player.Player(self.selected_color))
+                        player_obj = player.Player(self.selected_color)
+                        globals.player_obj = player_obj
+                        game_view = GameView(player_obj)
                         game_view.reset()
                         self.window.show_view(game_view)
 
