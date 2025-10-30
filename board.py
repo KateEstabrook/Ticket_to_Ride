@@ -343,8 +343,13 @@ class GameView(arcade.View):
         if self.showing_popup:
             self.show_pop_up(self.popup_city1, self.popup_city2)
         
-        if self.showing_dest_popup:
-            self.showing_dest_popup() # DEST CARDS CURRENTLY BEING DEALT
+        #test_dest_list = [cards.DestinationCard(["Boston", "Miami", 12]), cards.DestinationCard(["Calgary", "Phoenix", 13]),
+                          #cards.DestinationCard(["Calgary", "Salt Lake City", 7]), cards.DestinationCard(["Chicago", "New Orleans", 7])]
+        
+        #self.showing_dest_popup = True
+
+        if (self.showing_dest_popup):
+            self.dest_pop_up() # DEST CARDS CURRENTLY BEING DEALT
 
         if self.showing_deck_popup:
             self.deck_pop_up()
@@ -1119,6 +1124,8 @@ def main():
     start_menu = StartMenuView()
     window.show_view(start_menu)
     arcade.run()
+
+
 
 
 if __name__ == "__main__":
