@@ -67,6 +67,9 @@ class Player:
     def get_sprite(self):
         """Getter for sprite"""
         return self.sprite
+    
+    def set_color(self, color):
+        self.color = color
 
     def __str__(self):
         """To string"""
