@@ -292,8 +292,8 @@ TRAINS = {
         {"positions": [(2007, 475, 87), (2014, 565, 87)], "color": "colorless"}
     ],
     ("Pittsburgh", "New York"): [
-        {"positions": [(2160, 534, 148), (2080, 582, 148)], "color": "green"},
-        {"positions": [(2094, 610, 148), (2170, 565, 148)], "color": "white"}
+        {"positions": [(2160, 534, 148), (2080, 582, 148)], "color": "white"},
+        {"positions": [(2094, 610, 148), (2170, 565, 148)], "color": "green"}
     ],
     ("Pittsburgh", "Washington"): [
         {"positions": [(2101, 678, 28), (2180, 720, 28)], "color": "colorless"}
@@ -332,8 +332,8 @@ TRAINS = {
         {"positions": [(1588, 939, 104), (1570, 1023, 104)], "color": "colorless"}
     ],
     ("Pittsburgh", "Chicago"): [
-        {"positions": [(1954, 639, 5), (1866, 639, -7), (1779, 660, -15)], "color": "orange"},
-        {"positions": [(1941, 600, 5), (1855, 609, -7), (1765, 625, -15)], "color": "black"}
+        {"positions": [(1954, 639, 5), (1866, 639, -7), (1779, 660, -15)], "color": "black"},
+        {"positions": [(1941, 600, 5), (1855, 609, -7), (1765, 625, -15)], "color": "orange"}
     ],
     ("Toronto", "Sault St. Marie"): [
         {"positions": [(1885, 392, 13), (1800, 373, 13)], "color": "colorless"}
@@ -373,14 +373,14 @@ TRAINS = {
         {"positions": [(1355, 820, 64)], "color": "colorless"}
     ],
     ("Kansas City", "Saint Louis"): [
-        {"positions": [(1537, 885, 0), (1450, 886, 0)], "color": "pink"},
-        {"positions": [(1539, 849, 0), (1450, 853, 0)], "color": "blue"}
+        {"positions": [(1537, 885, 0), (1450, 886, 0)], "color": "blue"},
+        {"positions": [(1539, 849, 0), (1450, 853, 0)], "color": "pink"}
     ],
     ("Kansas City", "Denver"): [
         {"positions": [(1315, 878, 160), (1233, 906, 170),
-                       (1146, 916, -5), (1057, 915, 5)], "color": "orange"},
+                       (1146, 916, -5), (1057, 915, 5)], "color": "black"},
         {"positions": [(1317, 912, 160), (1233, 937, 170), (1144, 949, -5),
-                       (1057, 951, 5)], "color": "black"}
+                       (1057, 951, 5)], "color": "orange"}
     ],
     ("Kansas City", "Oklahoma City"): [
         {"positions": [(1369, 934, 109), (1344, 1017, 109)], "color": "colorless"},
