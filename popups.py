@@ -1,4 +1,6 @@
-# popups.py
+"""
+Stores all of the pop ups during game play
+"""
 import arcade
 import constants as c
 import globals
@@ -54,7 +56,7 @@ def deck_pop_up(game_view):
     continue_button_x = popup_x + popup_width * 0.48 - continue_button_width // 2
     continue_button_y = popup_y - popup_height * 0.45 + continue_button_height // 2
 
-    exit_texture = arcade.make_soft_square_texture(2, c.EXIT_BUTTON, outer_alpha=255)
+    exit_texture = arcade.make_soft_square_texture(2, c.SAVE_BUTTON, outer_alpha=255)
     exit_rect = arcade.LBWH(
         continue_button_x - continue_button_width // 2,
         continue_button_y - continue_button_height // 2,
@@ -514,7 +516,7 @@ def show_dest_pop_up(self, dest_list):
             arcade.draw_texture_rect(texture, rect)
 
             # draw border
-            if (city1 + city2) in self.selected_dests:
+            if city1 + city2 in self.selected_dests:
                 border_color = arcade.color.YELLOW
                 border_width = 4
             else:
@@ -539,7 +541,7 @@ def show_dest_pop_up(self, dest_list):
             })
 
     # Only show save button if you have selected greater than or equal to 2 dest cards
-    if (len(self.selected_dests) >= 2):
+    if len(self.selected_dests) >= 2:
         save_button_width = popup_width * 0.2
         save_button_height = popup_height * 0.1
         save_button_x = popup_x + popup_width * 0.25 - save_button_width // 2

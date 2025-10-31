@@ -6,7 +6,6 @@ import platform
 import random
 import arcade
 from arcade import SpriteList
-
 import globals
 import constants as c
 import deck
@@ -35,6 +34,7 @@ class GameView(arcade.View):
         self.board_rect = None
         self._update_board_rect()  # compute once before placing sprites
 
+        # Convert image coordinates to screen coordinates for the leaderboard
         text_x1, text_y1 = self.img_to_screen(1150, -55, top_left=True)
         text_x2, text_y2 = self.img_to_screen(1150, 25, top_left=True)
         text_x3, text_y3 = self.img_to_screen(1700, -55, top_left=True)
@@ -46,6 +46,7 @@ class GameView(arcade.View):
             arcade.Text("YELLOW - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
         ]
 
+        # Train card on screen placements
         orange_num_x, orange_num_y = self.img_to_screen(2670, 1075, top_left=True)
         black_num_x, black_num_y = self.img_to_screen(2950, 1075, top_left=True)
         blue_num_x, blue_num_y = self.img_to_screen(3230, 1075, top_left=True)
@@ -56,6 +57,7 @@ class GameView(arcade.View):
         yellow_num_x, yellow_num_y = self.img_to_screen(2950, 1435, top_left=True)
         wild_num_x, wild_num_y = self.img_to_screen(3230, 1435, top_left=True)
 
+        # Count for the train cards
         self.index_cards = [
             arcade.Text("0", orange_num_x, orange_num_y, arcade.color.WHITE, 13, anchor_x="left"),
             arcade.Text("0", black_num_x, black_num_y, arcade.color.WHITE, 13, anchor_x="left"),
@@ -86,12 +88,14 @@ class GameView(arcade.View):
             self.train_map[train] = []
             self.route_taken[train] = [False] * len(routes)
 
+            # Create sprites for each route between cities
             for route_data in routes:
                 route_sprites = []
                 positions = route_data["positions"]
                 color = route_data["color"]
 
                 train_piece = arcade.load_texture(player_obj.get_sprite())
+                # Create individual train sprites for each position in the route
                 for position in positions:
                     if isinstance(position, tuple) and len(position) == 3:
                         ix, iy, angle = position
@@ -137,7 +141,6 @@ class GameView(arcade.View):
                 #         self.train_list.append(train_sprite)
                 #         route_sprites.append(train_sprite)
 
-                self.train_map[train].append(route_sprites)
         self.city_list = arcade.SpriteList()
 
         # Load textures
@@ -173,36 +176,31 @@ class GameView(arcade.View):
             "images/cursor.png",
             scale=c.PLAYER_SCALING / 2,
         )
-
         self.card_textures = {
             name : arcade.load_texture(f"images/{filename}")
             for name, (_, _, filename) in c.PLAYER_CARDS.items()
         }
-
         self.card_list = arcade.SpriteList()
 
-        #faceup_deck = faceup_deck
+        # Face up card set up
         i = 0
         for name, (sx, sy) in c.FACEUP_CARDS.items():
             card = arcade.Sprite()
-
-            # Grab cards from the faceup deck
             card.texture = arcade.load_texture(globals.faceup_deck.
                                                get_card_at_index(i).get_sprite())
 
             self.place_card(card, sx, sy, top_left=True, scale = 0.37)
-
             self.card_list.append(card)
             i += 1
 
+        # Player's hand card set up
         for name, (sx, sy, filename) in c.PLAYER_CARDS.items():
             card = arcade.Sprite()
             card.texture = self.card_textures[name]
-
             self.place_card(card, sx, sy, top_left=True, scale=0.37)
-
             self.card_list.append(card)
 
+        # Banners
         self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.435)
         cx, cy = self.img_to_screen(2840, 910, top_left=True)
         self.card_banner.center_x = cx
@@ -213,19 +211,17 @@ class GameView(arcade.View):
         self.leaderboard_banner.center_x = lx
         self.leaderboard_banner.center_y = ly
 
+        # Deck sprite set up
         self.deck = arcade.Sprite("images/deck.png", scale=0.37)
         sx, sy = self.img_to_screen(-60, 280, top_left=True)
         self.deck.center_x = sx
         self.deck.center_y = sy
 
-        # Don't show the mouse cursor
-        self.window.set_mouse_visible(False)
-
+        # Pop up and UI states
+        self.window.set_mouse_visible(False) # Don't show the mouse cursor
         self.showing_deck_popup = False
-
         self.deck_sprite = arcade.SpriteList()
         self.deck_sprite.append(self.deck)
-
         self.showing_popup = False
         self.showing_dest_popup = False
         self.popup_city1 = None
@@ -233,10 +229,10 @@ class GameView(arcade.View):
         self.popup_route_length = 0
         self.color_buttons = []
         self.dest_buttons = []
-
-        self.showing_faceup_popup = False
-        self.selected_faceup_card_index = None
-        self.take_button_bounds = None
+        self.showing_faceup_popup = False # Don't show face up popup
+        self.selected_faceup_card_index = None # Face up card that was clicked
+        self.take_button_bounds = None # Bounds for "take card"
+        self.update_card_counts() # Initialize card count display
 
     def reset(self):
         """Restart the game."""
@@ -247,7 +243,7 @@ class GameView(arcade.View):
     def _contain_rect(self, tex_w: float, tex_h: float, view_w: float, view_h: float):
         """
         Scale the texture to *contain* within the view while preserving aspect,
-        and return an LBWH rect centered in the view.
+        and return a  rect centered in the view.
         """
         scale = min(view_w / tex_w, view_h / tex_h)
         draw_w = tex_w * scale
@@ -271,7 +267,6 @@ class GameView(arcade.View):
         draw_h = base.height * s
         left = base.left + (base.width - draw_w) / 2
         bottom = base.bottom + (base.height - draw_h) / 2
-
         self.board_rect = arcade.LBWH(left, bottom, draw_w, draw_h)
 
     def img_to_screen(self, ix: float, iy: float, *, top_left: bool = False) -> tuple[float, float]:
@@ -322,7 +317,6 @@ class GameView(arcade.View):
         train_sprite.center_x = x
         train_sprite.center_y = y
 
-    # In your GameView class, update the on_draw method:
     def on_draw(self):
         """
         Render the screen.
@@ -347,13 +341,14 @@ class GameView(arcade.View):
             line.draw()
 
         if self.showing_popup:
-            popups.route_popup(self, self.popup_city1, self.popup_city2)  # Pass self as first argument
+            popups.route_popup(self, self.popup_city1,
+                               self.popup_city2)  # Pass self as first argument
 
         test_dest_deck = [cards.DestinationCard(["Boston", "Miami", 12]),
                           cards.DestinationCard(["Calgary", "Phoenix", 13]),
                           cards.DestinationCard(["Calgary", "Salt Lake City", 7]),
                           cards.DestinationCard(["Chicago", "New Orleans", 7]),]
-        
+
         #self.showing_dest_popup = True
 
         if self.showing_dest_popup:
@@ -364,10 +359,10 @@ class GameView(arcade.View):
             popups.deck_pop_up(self)  # Pass self as first argument
 
         if self.showing_faceup_popup:
-            popups.faceup_card_pop_up(self, self.selected_faceup_card_index)  # Add this line
+            popups.faceup_card_pop_up(self, self.selected_faceup_card_index)
 
+        # Draw sprites for beginning
         self.deck_sprite.draw()
-
         tmp = arcade.SpriteList()
         tmp.append(self.card_banner)
         tmp.append(self.leaderboard_banner)
@@ -404,14 +399,13 @@ class GameView(arcade.View):
                     if self.drawn_card is not None:
                         self.player.get_train_cards().add(self.drawn_card)
                         self.drawn_card = None
+                        self.update_card_counts()
                     self.showing_deck_popup = False
                     self.selected_color = None
                     return
-
             # If click is elsewhere while popup is up, just consume it
             return
 
-        # Add this section after the deck popup handling but before the route popup handling
         if self.showing_faceup_popup:
             # Handle take card button click
             if hasattr(self, 'take_button_bounds'):
@@ -419,11 +413,25 @@ class GameView(arcade.View):
                 if left <= x <= right and bottom <= y <= top:
                     # Add the selected face-up card to player's hand
                     if self.selected_faceup_card_index is not None:
-                        taken_card = globals.faceup_deck.remove(self.selected_faceup_card_index)
+                        # Store which position we're replacing
+                        replacement_index = self.selected_faceup_card_index
+                        # Remove the card from face-up deck
+                        taken_card = globals.faceup_deck.remove(replacement_index)
                         if taken_card:
+                            # Add the card to player's hand
                             self.player.get_train_cards().add(taken_card)
+
+                            # Replace the taken card with a card from the train deck
+                            if globals.train_deck.get_len() > 0:
+                                new_card = globals.train_deck.remove(-1)  # Draw from top
+                                # Insert the new card at the same position we removed from
+                                globals.faceup_deck.cards.insert(replacement_index, new_card)
+
                             # Refresh the face-up cards display
                             self.refresh_faceup_cards()
+                            # Update the card count display
+                            self.update_card_counts()
+                    # Close pop up
                     self.showing_faceup_popup = False
                     self.selected_faceup_card_index = None
                     return
@@ -435,7 +443,6 @@ class GameView(arcade.View):
                     self.showing_faceup_popup = False
                     self.selected_faceup_card_index = None
                     return
-
             # If click is elsewhere while popup is up, just consume it
             return
 
@@ -474,7 +481,7 @@ class GameView(arcade.View):
             if hasattr(self, 'save_button_bounds') and self.save_button_bounds:
                 left, right, bottom, top = self.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    if (len(self.selected_dests) >= 2):
+                    if len(self.selected_dests) >= 2:
 
                         self.showing_dest_popup = False
                         # ADD DEST CARDS TO PLAYER DEST DECK
@@ -494,10 +501,10 @@ class GameView(arcade.View):
             hits = arcade.get_sprites_at_point((x, y), self.city_list)
             hit_faceup_cards = arcade.get_sprites_at_point((x, y), self.card_list)
 
-            # If we clicked the deck, show the deck popup and stop processing
+            # Show the deck popup
             if hit_deck:
                 if globals.train_deck.get_len() > 0:
-                    # draw the top card; choose -1 or 0, just be consistent
+                    # draw the top card
                     self.drawn_card = globals.train_deck.remove(-1)
                     self.showing_deck_popup = True
                     self.selected_color = None
@@ -505,7 +512,7 @@ class GameView(arcade.View):
 
             # Add face-up card detection
             if hit_faceup_cards:
-                # Find which face-up card was clicked (first 5 cards in card_list are face-up)
+                # Find which face-up card was clicked
                 clicked_sprite = hit_faceup_cards[0]
                 if clicked_sprite in self.card_list:
                     card_index = self.card_list.index(clicked_sprite)
@@ -513,14 +520,13 @@ class GameView(arcade.View):
                     if card_index < 5:
                         self.selected_faceup_card_index = card_index
                         self.showing_faceup_popup = True
-                        print(f"Face-up card {card_index} clicked")  # Debug
                 return
 
             if not hits:
                 return
 
             city = hits[0]
-            # If this city is already selected -> deselect it
+            # If this city is already selected then deselect it
             if city in self.selected_cities:
                 city.set_texture(0)
                 city.scale = c.CITY_SCALE
@@ -534,12 +540,11 @@ class GameView(arcade.View):
                 self.selected_cities.append(city)
                 return
 
-            # Otherwise, select it; if already 2 selected, drop both
+            # If 2 cities are selected
             if len(self.selected_cities) == 2:
                 newest = self.selected_cities.pop(1)
                 newest.set_texture(0)
                 newest.scale = c.CITY_SCALE
-
                 oldest = self.selected_cities.pop(0)
                 oldest.set_texture(0)
                 oldest.scale = c.CITY_SCALE
@@ -602,7 +607,7 @@ class GameView(arcade.View):
         else:
             return
 
-        # Find first available route (not taken)
+        # Find first available route
         for i, taken in enumerate(self.route_taken[pair]):
             if not taken:
                 # Mark this route as taken
@@ -646,7 +651,6 @@ class GameView(arcade.View):
                     train_sprite.alpha = 255
                 break
 
-
     def is_point_in_button(self, x, y, button_bounds):
         """Check if a point is inside a button's bounds"""
         left, right, bottom, top = button_bounds
@@ -672,7 +676,6 @@ class GameView(arcade.View):
                 return button['cities']
         return None
 
-    # Color validation
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route"""
         for city_pair in [(city1, city2), (city2, city1)]:
@@ -684,6 +687,45 @@ class GameView(arcade.View):
                         "colorless" in available_colors)
         return False
 
+    def refresh_faceup_cards(self):
+        """Refresh the face-up card sprites after changes"""
+        # Update the first 5 cards
+        for i in range(5):
+            if i < len(self.card_list):
+                card_sprite = self.card_list[i]
+                # Make sure we don't go out of bounds of the face-up deck
+                if i < globals.faceup_deck.get_len():
+                    card_texture = arcade.load_texture(globals.faceup_deck.
+                                                       get_card_at_index(i).get_sprite())
+                    card_sprite.texture = card_texture
+                    card_sprite.alpha = 255  # Make sure it's visible
+                else:
+                    # If there are fewer than 5 cards, hide the extra sprites
+                    card_sprite.alpha = 0
+
+    def update_card_counts(self):
+        """Update the displayed card counts for each color"""
+        # Count cards in player's hand by color
+        color_counts = {
+            "orange": 0, "black": 0, "blue": 0, "green": 0,
+            "pink": 0, "red": 0, "white": 0, "yellow": 0, "wild": 0
+        }
+
+        # Get the player's train cards deck
+        player_train_cards = self.player.get_train_cards()
+
+        # Count cards by color
+        for i in range(player_train_cards.get_len()):
+            card = player_train_cards.get_card_at_index(i)
+            color = card.get_color().lower()
+            if color in color_counts:
+                color_counts[color] += 1
+
+        # Update the display text
+        colors = ["orange", "black", "blue", "green", "pink", "red", "white", "yellow", "wild"]
+        for i, color in enumerate(colors):
+            if i < len(self.index_cards):
+                self.index_cards[i].text = str(color_counts[color])
 
 def main():
     """ Main function """
@@ -695,10 +737,10 @@ def main():
                                fullscreen=True, resizable=False)
 
     globals.initialize_game()
-    # Import StartMenuView here
-    from start_menu import StartMenuView  # Or whatever file you put StartMenuView in
+
+    from start_menu import StartMenuView
     print(globals.faceup_deck)
-    # Show the start menu first instead of going directly to game
+    # Show the start menu
     start_menu = StartMenuView()
     window.show_view(start_menu)
     arcade.run()
