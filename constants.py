@@ -378,9 +378,9 @@ TRAINS = {
     ],
     ("Kansas City", "Denver"): [
         {"positions": [(1315, 878, 160), (1233, 906, 170),
-                       (1146, 916, -5), (1057, 915, 5)], "color": "black"},
+                       (1146, 916, -5), (1057, 915, 5)], "color": "orange"},
         {"positions": [(1317, 912, 160), (1233, 937, 170), (1144, 949, -5),
-                       (1057, 951, 5)], "color": "orange"}
+                       (1057, 951, 5)], "color": "black"}
     ],
     ("Kansas City", "Oklahoma City"): [
         {"positions": [(1369, 934, 109), (1344, 1017, 109)], "color": "colorless"},
@@ -907,9 +907,9 @@ TRAINS = {
     ],
     ("Kansas City", "Denver"): [
         {"positions": [(1315, 878, 160), (1233, 906, 170),
-                       (1146, 916, -5), (1057, 915, 5)], "color": "black"},
+                       (1146, 916, -5), (1057, 915, 5)], "color": "orange"},
         {"positions": [(1317, 912, 160), (1233, 937, 170), (1144, 949, -5),
-                       (1057, 951, 5)], "color": "orange"}
+                       (1057, 951, 5)], "color": "black"}
     ],
     ("Kansas City", "Oklahoma City"): [
         {"positions": [(1369, 934, 109), (1344, 1017, 109)], "color": "colorless"},
