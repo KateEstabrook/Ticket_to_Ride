@@ -503,7 +503,7 @@ def show_dest_pop_up(self, dest_list):
             button_x = row_x + col * (button_width + horizontal_spacing)
             button_y = start_y - row * (button_height + vertical_spacing)
             city1 = dest_list[index].get_city_1()
-            city2 = dest_list[index].get_city_1()
+            city2 = dest_list[index].get_city_2()
             texture = arcade.load_texture(dest_list[index].get_sprite())
 
             # Draw card image
@@ -525,7 +525,7 @@ def show_dest_pop_up(self, dest_list):
 
             arcade.draw_rect_outline(
                 rect,
-            border_color,
+                border_color,
                 border_width=border_width
             )
 

@@ -223,7 +223,7 @@ class GameView(arcade.View):
         self.deck_sprite = arcade.SpriteList()
         self.deck_sprite.append(self.deck)
         self.showing_popup = False
-        self.showing_dest_popup = False
+        self.showing_dest_popup = True
         self.popup_city1 = None
         self.popup_city2 = None
         self.popup_route_length = 0
@@ -349,11 +349,8 @@ class GameView(arcade.View):
                           cards.DestinationCard(["Calgary", "Salt Lake City", 7]),
                           cards.DestinationCard(["Chicago", "New Orleans", 7]),]
 
-        #self.showing_dest_popup = True
-
         if self.showing_dest_popup:
             popups.show_dest_pop_up(self, test_dest_deck)
-            0
 
         if self.showing_deck_popup:
             popups.deck_pop_up(self)  # Pass self as first argument
