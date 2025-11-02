@@ -227,7 +227,7 @@ class GameView(arcade.View):
         self.deck_sprite.append(self.deck)
 
         self.showing_popup = False
-        self.showing_dest_popup = False
+        self.showing_dest_popup = True
         self.popup_city1 = None
         self.popup_city2 = None
         self.popup_route_length = 0
