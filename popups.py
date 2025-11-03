@@ -18,8 +18,8 @@ def deck_pop_up(game_view):
     popup_x = c.WINDOW_WIDTH // 2
     popup_y = c.WINDOW_HEIGHT // 2
 
-    # Draw white rectangle
-    white_texture = arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255)
+    # Draw white rectangle using cached texture
+    white_texture = game_view.popup_textures['white_bg']
     arcade.draw_texture_rect(
         white_texture,
         arcade.LBWH(
@@ -31,10 +31,15 @@ def deck_pop_up(game_view):
     )
 
     if game_view.drawn_card is not None:
-        tex = arcade.load_texture(game_view.drawn_card.get_sprite())
+        # Use cached texture for drawn card
+        sprite_path = game_view.drawn_card.get_sprite()
+        if sprite_path not in game_view._faceup_textures:
+            game_view._faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
+        tex = game_view._faceup_textures[sprite_path]
+
         # Center it nicely inside the popup
         card_w = popup_width * 0.18
-        card_h = card_w * (4 / 3)  # keep card aspect ratio
+        card_h = card_w * (4 / 3)
         card_rect = arcade.LBWH(popup_x - card_w / 2, popup_y - card_h / 2, card_w, card_h)
         arcade.draw_texture_rect(tex, card_rect)
 
@@ -56,7 +61,7 @@ def deck_pop_up(game_view):
     continue_button_x = popup_x + popup_width * 0.48 - continue_button_width // 2
     continue_button_y = popup_y - popup_height * 0.45 + continue_button_height // 2
 
-    exit_texture = arcade.make_soft_square_texture(2, c.SAVE_BUTTON, outer_alpha=255)
+    exit_texture = game_view.popup_textures['save_button']
     exit_rect = arcade.LBWH(
         continue_button_x - continue_button_width // 2,
         continue_button_y - continue_button_height // 2,
@@ -98,8 +103,8 @@ def faceup_card_pop_up(game_view, card_index):
     popup_x = c.WINDOW_WIDTH // 2
     popup_y = c.WINDOW_HEIGHT // 2
 
-    # Draw white rectangle
-    white_texture = arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255)
+    # Draw white rectangle using cached texture
+    white_texture = game_view.popup_textures['white_bg']
     arcade.draw_texture_rect(
         white_texture,
         arcade.LBWH(
@@ -110,14 +115,19 @@ def faceup_card_pop_up(game_view, card_index):
         )
     )
 
-    # Get the selected face-up card
+    # Get the selected face up card
     selected_card = globals.faceup_deck.get_card_at_index(card_index)
 
     if selected_card is not None:
-        tex = arcade.load_texture(selected_card.get_sprite())
+        # Use cached texture for face-up card
+        sprite_path = selected_card.get_sprite()
+        if sprite_path not in game_view._faceup_textures:
+            game_view._faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
+        tex = game_view._faceup_textures[sprite_path]
+
         # Center it nicely inside the popup
         card_w = popup_width * 0.18
-        card_h = card_w * (4 / 3)  # keep card aspect ratio
+        card_h = card_w * (4 / 3)
         card_rect = arcade.LBWH(popup_x - card_w / 2, popup_y - card_h / 2, card_w, card_h)
         arcade.draw_texture_rect(tex, card_rect)
 
@@ -139,7 +149,7 @@ def faceup_card_pop_up(game_view, card_index):
     take_button_x = popup_x + popup_width * 0.25 - take_button_width // 2
     take_button_y = popup_y - popup_height * 0.45 + take_button_height // 2
 
-    take_texture = arcade.make_soft_square_texture(2, c.SAVE_BUTTON, outer_alpha=255)
+    take_texture = game_view.popup_textures['save_button']
     take_rect = arcade.LBWH(
         take_button_x - take_button_width // 2,
         take_button_y - take_button_height // 2,
@@ -177,7 +187,7 @@ def faceup_card_pop_up(game_view, card_index):
     exit_button_x = popup_x + popup_width * 0.48 - exit_button_width // 2
     exit_button_y = popup_y - popup_height * 0.45 + exit_button_height // 2
 
-    exit_texture = arcade.make_soft_square_texture(2, c.EXIT_BUTTON, outer_alpha=255)
+    exit_texture = game_view.popup_textures['exit_button']
     exit_rect = arcade.LBWH(
         exit_button_x - exit_button_width // 2,
         exit_button_y - exit_button_height // 2,
@@ -219,8 +229,8 @@ def route_popup(game_view, city1, city2):
     popup_x = c.WINDOW_WIDTH // 2
     popup_y = c.WINDOW_HEIGHT // 2
 
-    # Draw white rectangle
-    white_texture = arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255)
+    # Draw white rectangle using cached texture
+    white_texture = game_view.popup_textures['white_bg']
     arcade.draw_texture_rect(
         white_texture,
         arcade.LBWH(
@@ -231,23 +241,8 @@ def route_popup(game_view, city1, city2):
         )
     )
 
-    # Define colors
-    color_cards = [
-        ("RED", "red.png"),
-        ("BLUE", "blue.png"),
-        ("GREEN", "green.png"),
-        ("YELLOW", "yellow.png"),
-        ("ORANGE", "orange.png"),
-        ("PINK", "pink.png"),
-        ("BLACK", "black.png"),
-        ("WHITE", "white.png"),
-        ("LOCOMOTIVE", "wild.png")
-    ]
-
-    # Card textures (images)
-    card_textures = {}
-    for color_name, filename in color_cards:
-        card_textures[color_name] = arcade.load_texture(f"images/{filename}")
+    # Use pre loaded color textures
+    card_textures = game_view.color_textures
 
     # Button dimensions and layout
     button_width = popup_width * 0.18
@@ -261,6 +256,19 @@ def route_popup(game_view, city1, city2):
 
     # Store button positions for click detection
     game_view.color_buttons = []
+
+    # Define colors
+    color_cards = [
+        ("RED", "red.png"),
+        ("BLUE", "blue.png"),
+        ("GREEN", "green.png"),
+        ("YELLOW", "yellow.png"),
+        ("ORANGE", "orange.png"),
+        ("PINK", "pink.png"),
+        ("BLACK", "black.png"),
+        ("WHITE", "white.png"),
+        ("LOCOMOTIVE", "wild.png")
+    ]
 
     # Draw cards
     for row in range(3):
@@ -330,7 +338,7 @@ def route_popup(game_view, city1, city2):
     exit_button_x = popup_x + popup_width * 0.48 - exit_button_width // 2
     exit_button_y = popup_y - popup_height * 0.45 + exit_button_height // 2
 
-    exit_texture = arcade.make_soft_square_texture(2, c.EXIT_BUTTON, outer_alpha=255)
+    exit_texture = game_view.popup_textures['exit_button']
     exit_rect = arcade.LBWH(
         exit_button_x - exit_button_width // 2,
         exit_button_y - exit_button_height // 2,
@@ -371,7 +379,7 @@ def route_popup(game_view, city1, city2):
         save_button_x = popup_x + popup_width * 0.25 - save_button_width // 2
         save_button_y = popup_y - popup_height * 0.45 + save_button_height // 2
 
-        save_texture = arcade.make_soft_square_texture(2, c.SAVE_BUTTON, outer_alpha=255)
+        save_texture = game_view.popup_textures['save_button']
         save_rect = arcade.LBWH(
             save_button_x - save_button_width // 2,
             save_button_y - save_button_height // 2,
@@ -471,13 +479,13 @@ def show_dest_pop_up(self, dest_list):
     left = popup_x - popup_width / 2
     bottom = popup_y - popup_height / 2
 
-    # Shadow under popup
-    shadow_texture = arcade.make_soft_square_texture(2, (0, 0, 0), outer_alpha=100)
+    # Shadow under popup using cached texture
+    shadow_texture = self.popup_textures['shadow']
     shadow_rect = arcade.LBWH(left + 6, bottom - 6, popup_width, popup_height)
     arcade.draw_texture_rect(shadow_texture, shadow_rect)
 
-    # Background color
-    bg_texture = arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255)
+    # Background color using cached texture
+    bg_texture = self.popup_textures['white_bg']
     bg_rect = arcade.LBWH(left, bottom, popup_width, popup_height)
     arcade.draw_texture_rect(bg_texture, bg_rect)
 
@@ -521,9 +529,12 @@ def show_dest_pop_up(self, dest_list):
             card_y = start_y - row * (card_height + vertical_spacing)
 
             # Load card texture
-            texture = arcade.load_texture(dest_list[index].get_sprite())
+            texture_path = dest_list[index].get_sprite()
+            if texture_path not in self.destination_textures:
+                self.destination_textures[texture_path] = arcade.load_texture(texture_path)
+            texture = self.destination_textures[texture_path]
 
-            # Card rect (centered)
+            # Card rectangle
             card_rect = arcade.LBWH(
                 card_x - card_width / 2,
                 card_y - card_height / 2,
@@ -565,7 +576,7 @@ def show_dest_pop_up(self, dest_list):
         save_button_x = popup_x
         save_button_y = popup_y - popup_height * 0.42
 
-        save_texture = arcade.make_soft_square_texture(2, c.SAVE_BUTTON, outer_alpha=255)
+        save_texture = self.popup_textures['save_button']
         save_rect = arcade.LBWH(
             save_button_x - save_button_width // 2,
             save_button_y - save_button_height // 2,
