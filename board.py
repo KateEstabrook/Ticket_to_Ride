@@ -466,14 +466,15 @@ class CardController:
                     sprite_path = faceup_card.get_sprite()
 
                     # Cache the texture to avoid repeated loading
-                    if not hasattr(self.game_view, '_faceup_textures'):
-                        self.game_view._faceup_textures = {}
+                    if not hasattr(self.game_view, ''
+                                                   'faceup_textures'):
+                        self.game_view.faceup_textures = {}
 
-                    if sprite_path not in self.game_view._faceup_textures:
-                        self.game_view._faceup_textures[sprite_path] = (
+                    if sprite_path not in self.game_view.faceup_textures:
+                        self.game_view.faceup_textures[sprite_path] = (
                             arcade.load_texture(sprite_path))
 
-                    card_sprite.texture = self.game_view._faceup_textures[sprite_path]
+                    card_sprite.texture = self.game_view.faceup_textures[sprite_path]
                     card_sprite.alpha = 255  # Make sure it's visible
                 else:
                     # If there are fewer than 5 cards, hide the extra sprites
@@ -610,7 +611,7 @@ class GameView(arcade.View):
             self.color_textures[color_name] = arcade.load_texture(f"images/{filename}")
 
         self.destination_textures = {}
-        self._faceup_textures = {}
+        self.faceup_textures = {}
 
         # Train pieces
         # One list for all train sprites (create it ONCE)
@@ -772,7 +773,6 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time):
         """Update game state (currently empty)."""
-        pass
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
         """Get city name from sprite"""
