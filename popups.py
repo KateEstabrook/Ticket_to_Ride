@@ -32,9 +32,9 @@ def deck_pop_up(game_view):
     if game_view.drawn_card is not None:
         # Use cached texture for drawn card
         sprite_path = game_view.drawn_card.get_sprite()
-        if sprite_path not in game_view._faceup_textures:
-            game_view._faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
-        tex = game_view._faceup_textures[sprite_path]
+        if sprite_path not in game_view.faceup_textures:
+            game_view.faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
+        tex = game_view.faceup_textures[sprite_path]
 
         # Center it nicely inside the popup
         card_w = popup_width * 0.18
@@ -120,9 +120,9 @@ def faceup_card_pop_up(game_view, card_index):
     if selected_card is not None:
         # Use cached texture for face-up card
         sprite_path = selected_card.get_sprite()
-        if sprite_path not in game_view._faceup_textures:
-            game_view._faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
-        tex = game_view._faceup_textures[sprite_path]
+        if sprite_path not in game_view.faceup_textures:
+            game_view.faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
+        tex = game_view.faceup_textures[sprite_path]
 
         # Center it nicely inside the popup
         card_w = popup_width * 0.18
