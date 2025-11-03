@@ -3,16 +3,536 @@ Ticket to Ride Board
 """
 
 import platform
-import random
 import arcade
-from arcade import SpriteList
-import globals
+import globals as game_globals
 import constants as c
-import deck
 import cards
-import route
-import player
 import popups
+
+
+class BoardRenderer:
+    """Handles all rendering and display-related functionality for the game board."""
+
+    def __init__(self, game_view):
+        """Initialize the BoardRenderer with a reference to the main game view."""
+        self.game_view = game_view
+
+    def on_draw(self):
+        """Render the entire game screen including background, sprites, and UI elements."""
+        # This command has to happen before we start drawing
+        self.game_view.clear()
+
+        # Draw the background texture
+        arcade.draw_texture_rect(
+            self.game_view.background,
+            self.game_view.board_rect
+        )
+
+        # Draw all the sprites
+        self.game_view.train_list.draw()
+        self.game_view.city_list.draw()
+        self.game_view.card_list.draw()
+        for line in self.game_view.leaderboard_lines:
+            line.draw()
+
+        for line in self.game_view.index_cards:
+            line.draw()
+
+        if self.game_view.showing_popup:
+            popups.route_popup(self.game_view, self.game_view.popup_city1,
+                               self.game_view.popup_city2)  # Pass self as first argument
+
+        test_dest_deck = [cards.DestinationCard(["Boston", "Miami", 12]),
+                          cards.DestinationCard(["Calgary", "Phoenix", 13]),
+                          cards.DestinationCard(["Calgary", "Salt Lake City", 7]),
+                          cards.DestinationCard(["Chicago", "New Orleans", 7]),]
+
+        #self.showing_dest_popup = True
+
+        if self.game_view.showing_dest_popup:
+            popups.show_dest_pop_up(self.game_view, test_dest_deck)
+
+        if self.game_view.showing_deck_popup:
+            popups.deck_pop_up(self.game_view)  # Pass self as first argument
+
+        if self.game_view.showing_faceup_popup:
+            popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
+
+        # Draw sprites for beginning
+        self.game_view.deck_sprite.draw()
+        tmp = arcade.SpriteList()
+        tmp.append(self.game_view.card_banner)
+        tmp.append(self.game_view.leaderboard_banner)
+        tmp.append(self.game_view.player_sprite)
+        tmp.draw()
+
+        for line in self.game_view.leaderboard_lines:
+            line.draw()
+
+    def _contain_rect(self, tex_w: float, tex_h: float, view_w: float, view_h: float):
+        """
+        Scale the texture to within the view
+        """
+        scale = min(view_w / tex_w, view_h / tex_h)
+        draw_w = tex_w * scale
+        draw_h = tex_h * scale
+        left = (view_w - draw_w) / 2
+        bottom = (view_h - draw_h) / 2
+        return arcade.LBWH(left, bottom, draw_w, draw_h)
+
+    def _update_board_rect(self):
+        """Recompute the board rect from the current window size."""
+        # Fall back to constants if window isn't ready yet
+        width = getattr(self.game_view.window, "width", c.SCREEN_WIDTH)
+        height = getattr(self.game_view.window, "height", c.SCREEN_HEIGHT)
+
+        # contain the board inside the full window
+        base = self._contain_rect(self.game_view.background.width,
+                                  self.game_view.background.height, width, height)
+
+        # uniformly shrink the rect and re-center it
+        s = getattr(c, "BOARD_SCALE", 1.0)
+        draw_w = base.width * s
+        draw_h = base.height * s
+        left = base.left + (base.width - draw_w) / 2
+        bottom = base.bottom + (base.height - draw_h) / 2
+        self.game_view.board_rect = arcade.LBWH(left, bottom, draw_w, draw_h)
+
+    def img_to_screen(self, ix: float, iy: float, *, top_left: bool = False) -> tuple[float, float]:
+        """
+        Convert image pixel coords to screen coords using the current board rect.
+        """
+        if top_left:
+            iy = self.game_view.background.height - iy
+
+        # Use the dynamic board rect, not constants
+        left = self.game_view.board_rect.left
+        bottom = self.game_view.board_rect.bottom
+        bw = self.game_view.board_rect.width
+        bh = self.game_view.board_rect.height
+
+        sx = bw / self.game_view.background.width
+        sy = bh / self.game_view.background.height
+        return ix * sx + left, iy * sy + bottom
+
+    def place_city(self, city, ix: float, iy: float, *,
+                   top_left: bool = False, scale: float | None = None) -> None:
+        """
+        Position the city sprite using image-pixel coordinates.
+        """
+        x, y = self.img_to_screen(ix, iy, top_left=top_left)
+        city.center_x = x
+        city.center_y = y
+        if scale is not None:
+            city.scale = scale
+
+    def place_card(self, card, ix: float, iy: float, *,
+                   top_left: bool = False, scale: float | None = None) -> None:
+        """
+        Position the city sprite using image-pixel coordinates.
+        """
+        x, y = self.img_to_screen(ix, iy, top_left=top_left)
+        card.center_x = x
+        card.center_y = y
+        if scale is not None:
+            card.scale = scale
+
+    def place_train_sprite(self, ix: float, iy: float,
+                           train_sprite: arcade.Sprite, *, top_left: bool = False) -> None:
+        """
+        Show train sprites for a route between connected cities
+        """
+        x, y = self.img_to_screen(ix, iy, top_left=top_left)
+        train_sprite.center_x = x
+        train_sprite.center_y = y
+
+
+class MouseHandler:
+    """Handles all mouse input and interaction for the game."""
+
+    def __init__(self, game_view):
+        """Initialize the MouseHandler with a reference to the main game view."""
+        self.game_view = game_view
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        """
+        Called whenever the mouse moves.
+        """
+        self.game_view.player_sprite.center_x = x
+        self.game_view.player_sprite.center_y = y
+
+    def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
+        """Handle mouse press events including popup interactions and city selection."""
+        if self.game_view.showing_deck_popup:
+            # Handle exit click
+            if hasattr(self.game_view, 'continue_button_bounds'):
+                left, right, bottom, top = self.game_view.continue_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    # Add the drawn card to the player's hand before closing
+                    if self.game_view.drawn_card is not None:
+                        self.game_view.player.get_train_cards().add(self.game_view.drawn_card)
+                        self.game_view.drawn_card = None
+                        self.game_view.update_card_counts()
+                    self.game_view.showing_deck_popup = False
+                    self.game_view.selected_color = None
+                    return
+            # If click is elsewhere while popup is up, just consume it
+            return
+
+        if self.game_view.showing_faceup_popup:
+            # Handle take card button click
+            if hasattr(self.game_view, 'take_button_bounds'):
+                left, right, bottom, top = self.game_view.take_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    # Add the selected face-up card to player's hand
+                    if self.game_view.selected_faceup_card_index is not None:
+                        # Store which position we're replacing
+                        replacement_index = self.game_view.selected_faceup_card_index
+                        # Remove the card from face-up deck
+                        taken_card = game_globals.faceup_deck.remove(replacement_index)
+                        if taken_card:
+                            # Add the card to player's hand
+                            self.game_view.player.get_train_cards().add(taken_card)
+
+                            # Replace the taken card with a card from the train deck
+                            if game_globals.train_deck.get_len() > 0:
+                                new_card = game_globals.train_deck.remove(-1)  # Draw from top
+                                # Insert the new card at the same position we removed from
+                                game_globals.faceup_deck.cards.insert(replacement_index, new_card)
+
+                            # Refresh the face-up cards display
+                            self.game_view.refresh_faceup_cards()
+                            # Update the card count display
+                            self.game_view.update_card_counts()
+                    # Close pop up
+                    self.game_view.showing_faceup_popup = False
+                    self.game_view.selected_faceup_card_index = None
+                    return
+
+            # Handle exit button click
+            if hasattr(self.game_view, 'exit_button_bounds'):
+                left, right, bottom, top = self.game_view.exit_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    self.game_view.showing_faceup_popup = False
+                    self.game_view.selected_faceup_card_index = None
+                    return
+            # If click is elsewhere while popup is up, just consume it
+            return
+
+        if self.game_view.showing_popup:
+            # Check if exit button was clicked
+            if hasattr(self.game_view, 'exit_button_bounds'):
+                left, right, bottom, top = self.game_view.exit_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    self.game_view.showing_popup = False
+                    self.game_view.deselect_all_cities()
+                    self.game_view.selected_color = None
+                    return
+
+            # Check if save button was clicked
+            if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
+                left, right, bottom, top = self.game_view.save_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    if (self.game_view.selected_color and
+                            self.game_view.valid_route_colors(
+                            self.game_view.selected_color, self.game_view.popup_city1,
+                                self.game_view.popup_city2)):
+                        self.game_view.showing_popup = False
+                        self.game_view.claim_route(self.game_view.popup_city1,
+                                                   self.game_view.popup_city2)
+                        self.game_view.deselect_all_cities()
+                        self.game_view.selected_color = None
+                    return
+
+            # Check if color button was clicked
+            selected_color = self.game_view.handle_color_selection(x, y)
+            if selected_color:
+                self.game_view.selected_color = selected_color
+                return
+            # If neither button was pressed keep going
+            return
+
+        if self.game_view.showing_dest_popup:
+            # Check if save button was clicked
+            if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
+                left, right, bottom, top = self.game_view.save_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    if len(self.game_view.selected_dests) >= 2:
+
+                        self.game_view.showing_dest_popup = False
+                        # ADD DEST CARDS TO PLAYER DEST DECK
+                        self.game_view.selected_dests = []
+                    return
+            # Check if dest card was clicked
+            selected_dest = self.game_view.handle_dest_selection(x, y)
+            if selected_dest in self.game_view.selected_dests:
+                self.game_view.selected_dests.remove(selected_dest)
+            else:
+                self.game_view.selected_dests.append(selected_dest)
+            return
+
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            # Use the actual mouse coordinates for collision detection
+            hit_deck = arcade.get_sprites_at_point((x, y), self.game_view.deck_sprite)
+            hits = arcade.get_sprites_at_point((x, y), self.game_view.city_list)
+            hit_faceup_cards = arcade.get_sprites_at_point((x, y), self.game_view.card_list)
+
+            # Show the deck popup
+            if hit_deck:
+                if game_globals.train_deck.get_len() > 0:
+                    # draw the top card
+                    self.game_view.drawn_card = game_globals.train_deck.remove(-1)
+                    self.game_view.showing_deck_popup = True
+                    self.game_view.selected_color = None
+                return
+
+            # Add face-up card detection
+            if hit_faceup_cards:
+                # Find which face-up card was clicked
+                clicked_sprite = hit_faceup_cards[0]
+                if clicked_sprite in self.game_view.card_list:
+                    card_index = self.game_view.card_list.index(clicked_sprite)
+                    # Only the first 5 cards are face-up cards
+                    if card_index < 5:
+                        self.game_view.selected_faceup_card_index = card_index
+                        self.game_view.showing_faceup_popup = True
+                return
+
+            if not hits:
+                return
+
+            city = hits[0]
+            # If this city is already selected then deselect it
+            if city in self.game_view.selected_cities:
+                city.set_texture(0)
+                city.scale = c.CITY_SCALE
+                self.game_view.selected_cities.remove(city)
+                return
+
+            if len(self.game_view.selected_cities) == 0:
+                # If no city is already selected, select it
+                city.set_texture(1)
+                city.scale = c.CITY_SCALE_YELLOW
+                self.game_view.selected_cities.append(city)
+                return
+
+            # If 2 cities are selected
+            if len(self.game_view.selected_cities) == 2:
+                newest = self.game_view.selected_cities.pop(1)
+                newest.set_texture(0)
+                newest.scale = c.CITY_SCALE
+                oldest = self.game_view.selected_cities.pop(0)
+                oldest.set_texture(0)
+                oldest.scale = c.CITY_SCALE
+
+            first_city_name = self.game_view.sprite_to_name(self.game_view.selected_cities[0])
+            second_city_name = self.game_view.sprite_to_name(city)
+
+            if second_city_name in c.ROUTES.get(first_city_name, {}):
+                # Check if there are any available routes
+                city_pair = (first_city_name, second_city_name)
+                reverse_pair = (second_city_name, first_city_name)
+
+                # Determine which pair exists in TRAINS
+                if city_pair in c.TRAINS:
+                    pair = city_pair
+                elif reverse_pair in c.TRAINS:
+                    pair = reverse_pair
+                else:
+                    # Cities are connected but no train routes defined (shouldn't happen)
+                    self.game_view.deselect_all_cities()
+                    return
+
+                # Check if any routes are available
+                available_count = sum(1 for taken in self.game_view.route_taken[pair] if not taken)
+
+                if available_count > 0:
+                    # Mark this one as selected
+                    city.set_texture(1)
+                    city.scale = c.CITY_SCALE_YELLOW
+                    self.game_view.selected_cities.append(city)
+
+                    # Show pop-up with route information
+                    self.game_view.showing_popup = True
+                    self.game_view.popup_city1 = first_city_name
+                    self.game_view.popup_city2 = second_city_name
+                    self.game_view.popup_route_length = c.ROUTES[first_city_name][second_city_name]
+                    self.game_view.selected_color = None
+                    return
+
+            # If we get here, either cities aren't connected or all routes are claimed
+            self.game_view.deselect_all_cities()
+
+    def is_point_in_button(self, x, y, button_bounds):
+        """Check if a point is inside a button's bounds"""
+        left, right, bottom, top = button_bounds
+        return left <= x <= right and bottom <= y <= top
+
+    def handle_color_selection(self, x, y):
+        """Handle color button clicks"""
+        if not hasattr(self.game_view, 'color_buttons'):
+            return None
+
+        for button in self.game_view.color_buttons:
+            if self.is_point_in_button(x, y, button['bounds']):
+                return button['color']
+        return None
+
+    def handle_dest_selection(self, x, y):
+        """Handle dest button clicks"""
+        if not hasattr(self.game_view, 'dest_buttons'):
+            return None
+
+        for button in self.game_view.dest_buttons:
+            if self.is_point_in_button(x, y, button['bounds']):
+                return button['cities']
+        return None
+
+
+class RouteController:
+    """Manages route functionality including claiming routes and city connections."""
+
+    def __init__(self, game_view):
+        """Initialize the RouteController with a reference to the main game view."""
+        self.game_view = game_view
+
+    def deselect_all_cities(self):
+        """Deselect all currently selected cities"""
+        for city in self.game_view.selected_cities:
+            city.set_texture(0)
+            city.scale = c.CITY_SCALE
+        self.game_view.selected_cities.clear()
+
+    def claim_route(self, city1, city2):
+        """Claim the route after pop-up interaction"""
+        city_pair = (city1, city2)
+        reverse_pair = (city2, city1)
+
+        # Determine which pair exists
+        if city_pair in self.game_view.train_map:
+            pair = city_pair
+        elif reverse_pair in self.game_view.train_map:
+            pair = reverse_pair
+        else:
+            return
+
+        # Find first available route and claim it
+        for i, taken in enumerate(self.game_view.route_taken[pair]):
+            if not taken:
+                # Mark this route as taken
+                self.game_view.route_taken[pair][i] = True
+
+                # Make all sprites for this route visible
+                for train_sprite in self.game_view.train_map[pair][i]:
+                    train_sprite.set_texture(0)
+                    train_sprite.alpha = 255
+                break
+
+    def valid_route_colors(self, selected_color, city1, city2):
+        """Get available colors for the route"""
+        for city_pair in [(city1, city2), (city2, city1)]:
+            if city_pair in c.TRAINS:
+                available_colors = {route_data["color"] for route_data in c.TRAINS[city_pair]}
+                if selected_color == "locomotive":
+                    return True
+                return (selected_color in available_colors or
+                        "colorless" in available_colors)
+        return False
+
+    def sprite_to_name(self, spr: arcade.Sprite) -> str:
+        """
+        Helper to get the name of the city sprite in self.selected_cities
+        """
+        idx = self.game_view.city_list.index(spr)
+        return list(c.CITIES.keys())[idx]
+
+
+class CardController:
+    """Manages card-related functionality including face-up cards and card counting."""
+
+    def __init__(self, game_view):
+        """Initialize the CardController with a reference to the main game view."""
+        self.game_view = game_view
+
+    def refresh_faceup_cards(self):
+        """Refresh the face-up card sprites after changes"""
+        # Update the first 5 cards
+        for i in range(5):
+            if i < len(self.game_view.card_list):
+                card_sprite = self.game_view.card_list[i]
+                # Make sure we don't go out of bounds of the face-up deck
+                if i < game_globals.faceup_deck.get_len():
+                    faceup_card = game_globals.faceup_deck.get_card_at_index(i)
+                    sprite_path = faceup_card.get_sprite()
+
+                    # Cache the texture to avoid repeated loading
+                    if not hasattr(self.game_view, ''
+                                                   'faceup_textures'):
+                        self.game_view.faceup_textures = {}
+
+                    if sprite_path not in self.game_view.faceup_textures:
+                        self.game_view.faceup_textures[sprite_path] = (
+                            arcade.load_texture(sprite_path))
+
+                    card_sprite.texture = self.game_view.faceup_textures[sprite_path]
+                    card_sprite.alpha = 255  # Make sure it's visible
+                else:
+                    # If there are fewer than 5 cards, hide the extra sprites
+                    card_sprite.alpha = 0
+
+    def update_card_counts(self):
+        """Update the displayed card counts for each color"""
+        # Count cards in player's hand by color
+        color_counts = {
+            "orange": 0, "black": 0, "blue": 0, "green": 0,
+            "pink": 0, "red": 0, "white": 0, "yellow": 0, "wild": 0
+        }
+
+        # Get the player's train cards deck
+        player_train_cards = self.game_view.player.get_train_cards()
+
+        # Count cards by color
+        for i in range(player_train_cards.get_len()):
+            card = player_train_cards.get_card_at_index(i)
+            color = card.get_color().lower()
+            if color in color_counts:
+                color_counts[color] += 1
+
+        # Update the display text
+        colors = ["orange", "black", "blue", "green", "pink", "red", "white", "yellow", "wild"]
+        for i, color in enumerate(colors):
+            if i < len(self.game_view.index_cards):
+                self.game_view.index_cards[i].text = str(color_counts[color])
+
+
+class KeyboardHandler:
+    """Handles keyboard input for the game."""
+
+    def __init__(self, game_view):
+        """Initialize the KeyboardHandler with a reference to the main game view."""
+        self.game_view = game_view
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        """Handle keyboard input including game controls and navigation."""
+        if symbol == arcade.key.SPACE:
+            self.game_view.reset()
+        elif symbol == arcade.key.ESCAPE:
+            self.game_view.window.close()
+
+
+class GameInitializer:
+    """Handles game initialization and reset functionality."""
+
+    def __init__(self, game_view):
+        """Initialize the GameInitializer with a reference to the main game view."""
+        self.game_view = game_view
+
+    def reset(self):
+        """Restart the game."""
+        # Set up the player
+        self.game_view.player_sprite.center_x = 50
+        self.game_view.player_sprite.center_y = 50
+
 
 class GameView(arcade.View):
     """
@@ -32,13 +552,16 @@ class GameView(arcade.View):
         self.background = arcade.load_texture("images/board_borders.png")
 
         self.board_rect = None
-        self._update_board_rect()  # compute once before placing sprites
+
+        # Create helper classes
+        self.board_renderer = BoardRenderer(self)
+        self.board_renderer._update_board_rect()  # compute once before placing sprites
 
         # Convert image coordinates to screen coordinates for the leaderboard
-        text_x1, text_y1 = self.img_to_screen(1150, -55, top_left=True)
-        text_x2, text_y2 = self.img_to_screen(1150, 25, top_left=True)
-        text_x3, text_y3 = self.img_to_screen(1700, -55, top_left=True)
-        text_x4, text_y4 = self.img_to_screen(1700, 25, top_left=True)
+        text_x1, text_y1 = self.board_renderer.img_to_screen(1150, -55, top_left=True)
+        text_x2, text_y2 = self.board_renderer.img_to_screen(1150, 25, top_left=True)
+        text_x3, text_y3 = self.board_renderer.img_to_screen(1700, -55, top_left=True)
+        text_x4, text_y4 = self.board_renderer.img_to_screen(1700, 25, top_left=True)
         self.leaderboard_lines = [
             arcade.Text("BLUE - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
             arcade.Text("GREEN - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
@@ -47,15 +570,15 @@ class GameView(arcade.View):
         ]
 
         # Train card on screen placements
-        orange_num_x, orange_num_y = self.img_to_screen(2670, 1075, top_left=True)
-        black_num_x, black_num_y = self.img_to_screen(2950, 1075, top_left=True)
-        blue_num_x, blue_num_y = self.img_to_screen(3230, 1075, top_left=True)
-        green_num_x, green_num_y = self.img_to_screen(2670, 1255, top_left=True)
-        pink_num_x, pink_num_y = self.img_to_screen(2950, 1255, top_left=True)
-        red_num_x, red_num_y = self.img_to_screen(3230, 1255, top_left=True)
-        white_num_x, white_num_y = self.img_to_screen(2670, 1435, top_left=True)
-        yellow_num_x, yellow_num_y = self.img_to_screen(2950, 1435, top_left=True)
-        wild_num_x, wild_num_y = self.img_to_screen(3230, 1435, top_left=True)
+        orange_num_x, orange_num_y = self.board_renderer.img_to_screen(2670, 1075, top_left=True)
+        black_num_x, black_num_y = self.board_renderer.img_to_screen(2950, 1075, top_left=True)
+        blue_num_x, blue_num_y = self.board_renderer.img_to_screen(3230, 1075, top_left=True)
+        green_num_x, green_num_y = self.board_renderer.img_to_screen(2670, 1255, top_left=True)
+        pink_num_x, pink_num_y = self.board_renderer.img_to_screen(2950, 1255, top_left=True)
+        red_num_x, red_num_y = self.board_renderer.img_to_screen(3230, 1255, top_left=True)
+        white_num_x, white_num_y = self.board_renderer.img_to_screen(2670, 1435, top_left=True)
+        yellow_num_x, yellow_num_y = self.board_renderer.img_to_screen(2950, 1435, top_left=True)
+        wild_num_x, wild_num_y = self.board_renderer.img_to_screen(3230, 1435, top_left=True)
 
         # Count for the train cards
         self.index_cards = [
@@ -88,7 +611,7 @@ class GameView(arcade.View):
             self.color_textures[color_name] = arcade.load_texture(f"images/{filename}")
 
         self.destination_textures = {}
-        self._faceup_textures = {}
+        self.faceup_textures = {}
 
         # Train pieces
         # One list for all train sprites (create it ONCE)
@@ -128,38 +651,12 @@ class GameView(arcade.View):
                         # Store route information with the sprite
                         train_sprite.route_color = color
                         train_sprite.route_name = train
-                        self.place_train_sprite(ix, iy, train_sprite, top_left=True)
+                        self.board_renderer.place_train_sprite(ix, iy, train_sprite, top_left=True)
 
                         self.train_list.append(train_sprite)
                         route_sprites.append(train_sprite)
 
                 self.train_map[train].append(route_sprites)
-                # for position in positions:
-                #     if isinstance(position, tuple) and len(position) == 3:
-                #         ix, iy, angle = position
-                #         train_sprite = arcade.Sprite()
-                #         train_sprite.append_texture(blue_train)
-                #         train_sprite.append_texture(green_train)
-                #         train_sprite.append_texture(red_train)
-                #         train_sprite.append_texture(yellow_train)
-                #         if self.player_color == 'BLUE':
-                #             train_sprite.set_texture(0)
-                #         elif self.player_color == 'GREEN':
-                #             train_sprite.set_texture(1)
-                #         elif self.player_color == 'RED':
-                #             train_sprite.set_texture(2)
-                #         elif self.player_color == 'YELLOW':
-                #             train_sprite.set_texture(3)
-                #         train_sprite.scale = c.TRAIN_SCALE
-                #         train_sprite.angle = angle
-                #         train_sprite.alpha = 0  # start fully transparent
-                #         # Store route information with the sprite
-                #         train_sprite.route_color = color
-                #         train_sprite.route_name = train
-                #         self.place_train_sprite(ix, iy, train_sprite, top_left=True)
-
-                #         self.train_list.append(train_sprite)
-                #         route_sprites.append(train_sprite)
 
         self.city_list = arcade.SpriteList()
 
@@ -183,7 +680,7 @@ class GameView(arcade.View):
             city.scale = c.CITY_SCALE
 
             # Position it using your helper
-            self.place_city(
+            self.board_renderer.place_city(
                 city, info["CITY_IMG_X"], info["CITY_IMG_Y"],
                 top_left=True, scale=None
             )
@@ -206,10 +703,10 @@ class GameView(arcade.View):
         i = 0
         for name, (sx, sy) in c.FACEUP_CARDS.items():
             card = arcade.Sprite()
-            card.texture = arcade.load_texture(globals.faceup_deck.
+            card.texture = arcade.load_texture(game_globals.faceup_deck.
                                                get_card_at_index(i).get_sprite())
 
-            self.place_card(card, sx, sy, top_left=True, scale = 0.37)
+            self.board_renderer.place_card(card, sx, sy, top_left=True, scale = 0.37)
             self.card_list.append(card)
             i += 1
 
@@ -217,23 +714,23 @@ class GameView(arcade.View):
         for name, (sx, sy, filename) in c.PLAYER_CARDS.items():
             card = arcade.Sprite()
             card.texture = self.card_textures[name]
-            self.place_card(card, sx, sy, top_left=True, scale=0.37)
+            self.board_renderer.place_card(card, sx, sy, top_left=True, scale=0.37)
             self.card_list.append(card)
 
         # Banners
         self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.435)
-        cx, cy = self.img_to_screen(2840, 910, top_left=True)
+        cx, cy = self.board_renderer.img_to_screen(2840, 910, top_left=True)
         self.card_banner.center_x = cx
         self.card_banner.center_y = cy
 
         self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
-        lx, ly = self.img_to_screen(1250, -40, top_left=True)
+        lx, ly = self.board_renderer.img_to_screen(1250, -40, top_left=True)
         self.leaderboard_banner.center_x = lx
         self.leaderboard_banner.center_y = ly
 
         # Deck sprite set up
         self.deck = arcade.Sprite("images/deck.png", scale=0.37)
-        sx, sy = self.img_to_screen(-60, 280, top_left=True)
+        sx, sy = self.board_renderer.img_to_screen(-60, 280, top_left=True)
         self.deck.center_x = sx
         self.deck.center_y = sy
 
@@ -252,510 +749,78 @@ class GameView(arcade.View):
         self.showing_faceup_popup = False # Don't show face up popup
         self.selected_faceup_card_index = None # Face up card that was clicked
         self.take_button_bounds = None # Bounds for "take card"
-        self.update_card_counts() # Initialize card count display
+
+        # Initialize helper classes
+        self.mouse_handler = MouseHandler(self)
+        self.route_controller = RouteController(self)
+        self.card_controller = CardController(self)
+        self.keyboard_handler = KeyboardHandler(self)
+        self.game_initializer = GameInitializer(self)
+
+        self.card_controller.update_card_counts() # Initialize card count display
 
     def reset(self):
-        """Restart the game."""
-        # Set up the player
-        self.player_sprite.center_x = 50
-        self.player_sprite.center_y = 50
-
-    def _contain_rect(self, tex_w: float, tex_h: float, view_w: float, view_h: float):
-        """
-        Scale the texture to *contain* within the view while preserving aspect,
-        and return a  rect centered in the view.
-        """
-        scale = min(view_w / tex_w, view_h / tex_h)
-        draw_w = tex_w * scale
-        draw_h = tex_h * scale
-        left = (view_w - draw_w) / 2
-        bottom = (view_h - draw_h) / 2
-        return arcade.LBWH(left, bottom, draw_w, draw_h)
-
-    def _update_board_rect(self):
-        """Recompute the board rect from the current window size."""
-        # Fall back to constants if window isn’t ready yet
-        width = getattr(self.window, "width", c.SCREEN_WIDTH)
-        height = getattr(self.window, "height", c.SCREEN_HEIGHT)
-
-        # contain the board inside the full window
-        base = self._contain_rect(self.background.width, self.background.height, width, height)
-
-        # uniformly shrink the rect and re-center it
-        s = getattr(c, "BOARD_SCALE", 1.0)
-        draw_w = base.width * s
-        draw_h = base.height * s
-        left = base.left + (base.width - draw_w) / 2
-        bottom = base.bottom + (base.height - draw_h) / 2
-        self.board_rect = arcade.LBWH(left, bottom, draw_w, draw_h)
-
-    def img_to_screen(self, ix: float, iy: float, *, top_left: bool = False) -> tuple[float, float]:
-        """
-        Convert image pixel coords to screen coords using the current board rect.
-        """
-        if top_left:
-            iy = self.background.height - iy
-
-        # Use the dynamic board rect, not constants
-        left = self.board_rect.left
-        bottom = self.board_rect.bottom
-        bw = self.board_rect.width
-        bh = self.board_rect.height
-
-        sx = bw / self.background.width
-        sy = bh / self.background.height
-        return ix * sx + left, iy * sy + bottom
-
-    def place_city(self, city, ix: float, iy: float, *,
-                   top_left: bool = False, scale: float | None = None) -> None:
-        """
-        Position the city sprite using image-pixel coordinates.
-        """
-        x, y = self.img_to_screen(ix, iy, top_left=top_left)
-        city.center_x = x
-        city.center_y = y
-        if scale is not None:
-            city.scale = scale
-
-    def place_card(self, card, ix: float, iy: float, *,
-                   top_left: bool = False, scale: float | None = None) -> None:
-        """
-        Position the city sprite using image-pixel coordinates.
-        """
-        x, y = self.img_to_screen(ix, iy, top_left=top_left)
-        card.center_x = x
-        card.center_y = y
-        if scale is not None:
-            card.scale = scale
-
-    def place_train_sprite(self, ix: float, iy: float,
-                           train_sprite: arcade.Sprite, *, top_left: bool = False) -> None:
-        """
-        Show train sprites for a route between connected cities
-        """
-        x, y = self.img_to_screen(ix, iy, top_left=top_left)
-        train_sprite.center_x = x
-        train_sprite.center_y = y
+        """Restart the game"""
+        self.game_initializer.reset()
 
     def on_draw(self):
-        """
-        Render the screen.
-        """
-        # This command has to happen before we start drawing
-        self.clear()
-
-        # Draw the background texture
-        arcade.draw_texture_rect(
-            self.background,
-            self.board_rect
-        )
-
-        # Draw all the sprites
-        self.train_list.draw()
-        self.city_list.draw()
-        self.card_list.draw()
-        for line in self.leaderboard_lines:
-            line.draw()
-
-        for line in self.index_cards:
-            line.draw()
-
-        if self.showing_popup:
-            popups.route_popup(self, self.popup_city1,
-                               self.popup_city2)  # Pass self as first argument
-
-        test_dest_deck = [cards.DestinationCard(["Boston", "Miami", 12]),
-                          cards.DestinationCard(["Calgary", "Phoenix", 13]),
-                          cards.DestinationCard(["Calgary", "Salt Lake City", 7]),
-                          cards.DestinationCard(["Chicago", "New Orleans", 7]),]
-
-        #self.showing_dest_popup = True
-
-        if self.showing_dest_popup:
-            popups.show_dest_pop_up(self, test_dest_deck)
-
-        if self.showing_deck_popup:
-            popups.deck_pop_up(self)  # Pass self as first argument
-
-        if self.showing_faceup_popup:
-            popups.faceup_card_pop_up(self, self.selected_faceup_card_index)
-
-        # Draw sprites for beginning
-        self.deck_sprite.draw()
-        tmp = arcade.SpriteList()
-        tmp.append(self.card_banner)
-        tmp.append(self.leaderboard_banner)
-        tmp.append(self.player_sprite)
-        tmp.draw()
-
-        for line in self.leaderboard_lines:
-            line.draw()
+        """Render the screen"""
+        self.board_renderer.on_draw()
 
     def on_mouse_motion(self, x, y, dx, dy):
-        """
-        Called whenever the mouse moves.
-        """
-        self.player_sprite.center_x = x
-        self.player_sprite.center_y = y
+        """Handle mouse motion"""
+        self.mouse_handler.on_mouse_motion(x, y, dx, dy)
 
     def on_update(self, delta_time):
-        pass
+        """Update game state (currently empty)."""
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
-        """
-        Helper to get the name of the city sprite in self.selected_cities
-        """
-        idx = self.city_list.index(spr)
-        return list(c.CITIES.keys())[idx]
+        """Get city name from sprite"""
+        return self.route_controller.sprite_to_name(spr)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
-        if self.showing_deck_popup:
-            # Handle exit click
-            if hasattr(self, 'continue_button_bounds'):
-                left, right, bottom, top = self.continue_button_bounds
-                if left <= x <= right and bottom <= y <= top:
-                    # Add the drawn card to the player's hand before closing
-                    if self.drawn_card is not None:
-                        self.player.get_train_cards().add(self.drawn_card)
-                        self.drawn_card = None
-                        self.update_card_counts()
-                    self.showing_deck_popup = False
-                    self.selected_color = None
-                    return
-            # If click is elsewhere while popup is up, just consume it
-            return
+        """Handle mouse press"""
+        self.mouse_handler.on_mouse_press(x, y, button, modifiers)
 
-        if self.showing_faceup_popup:
-            # Handle take card button click
-            if hasattr(self, 'take_button_bounds'):
-                left, right, bottom, top = self.take_button_bounds
-                if left <= x <= right and bottom <= y <= top:
-                    # Add the selected face-up card to player's hand
-                    if self.selected_faceup_card_index is not None:
-                        # Store which position we're replacing
-                        replacement_index = self.selected_faceup_card_index
-                        # Remove the card from face-up deck
-                        taken_card = globals.faceup_deck.remove(replacement_index)
-                        if taken_card:
-                            # Add the card to player's hand
-                            self.player.get_train_cards().add(taken_card)
-
-                            # Replace the taken card with a card from the train deck
-                            if globals.train_deck.get_len() > 0:
-                                new_card = globals.train_deck.remove(-1)  # Draw from top
-                                # Insert the new card at the same position we removed from
-                                globals.faceup_deck.cards.insert(replacement_index, new_card)
-
-                            # Refresh the face-up cards display
-                            self.refresh_faceup_cards()
-                            # Update the card count display
-                            self.update_card_counts()
-                    # Close pop up
-                    self.showing_faceup_popup = False
-                    self.selected_faceup_card_index = None
-                    return
-
-            # Handle exit button click
-            if hasattr(self, 'exit_button_bounds'):
-                left, right, bottom, top = self.exit_button_bounds
-                if left <= x <= right and bottom <= y <= top:
-                    self.showing_faceup_popup = False
-                    self.selected_faceup_card_index = None
-                    return
-            # If click is elsewhere while popup is up, just consume it
-            return
-
-        if self.showing_popup:
-            # Check if exit button was clicked
-            if hasattr(self, 'exit_button_bounds'):
-                left, right, bottom, top = self.exit_button_bounds
-                if left <= x <= right and bottom <= y <= top:
-                    self.showing_popup = False
-                    self.deselect_all_cities()
-                    self.selected_color = None
-                    return
-
-            # Check if save button was clicked
-            if hasattr(self, 'save_button_bounds') and self.save_button_bounds:
-                left, right, bottom, top = self.save_button_bounds
-                if left <= x <= right and bottom <= y <= top:
-                    if (self.selected_color and self.valid_route_colors(
-                            self.selected_color, self.popup_city1, self.popup_city2)):
-                        self.showing_popup = False
-                        self.claim_route(self.popup_city1, self.popup_city2)
-                        self.deselect_all_cities()
-                        self.selected_color = None
-                    return
-
-            # Check if color button was clicked
-            selected_color = self.handle_color_selection(x, y)
-            if selected_color:
-                self.selected_color = selected_color
-                return
-            # If neither button was pressed keep going
-            return
-
-        if self.showing_dest_popup:
-            # Check if save button was clicked
-            if hasattr(self, 'save_button_bounds') and self.save_button_bounds:
-                left, right, bottom, top = self.save_button_bounds
-                if left <= x <= right and bottom <= y <= top:
-                    if len(self.selected_dests) >= 2:
-
-                        self.showing_dest_popup = False
-                        # ADD DEST CARDS TO PLAYER DEST DECK
-                        self.selected_dests = []
-                    return
-            # Check if dest card was clicked
-            selected_dest = self.handle_dest_selection(x, y)
-            if selected_dest in self.selected_dests:
-                self.selected_dests.remove(selected_dest)
-            else:
-                self.selected_dests.append(selected_dest)
-            return
-
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            # Use the actual mouse coordinates for collision detection
-            hit_deck = arcade.get_sprites_at_point((x, y), self.deck_sprite)
-            hits = arcade.get_sprites_at_point((x, y), self.city_list)
-            hit_faceup_cards = arcade.get_sprites_at_point((x, y), self.card_list)
-
-            # Show the deck popup
-            if hit_deck:
-                if globals.train_deck.get_len() > 0:
-                    # draw the top card
-                    self.drawn_card = globals.train_deck.remove(-1)
-                    self.showing_deck_popup = True
-                    self.selected_color = None
-                return
-
-            # Add face-up card detection
-            if hit_faceup_cards:
-                # Find which face-up card was clicked
-                clicked_sprite = hit_faceup_cards[0]
-                if clicked_sprite in self.card_list:
-                    card_index = self.card_list.index(clicked_sprite)
-                    # Only the first 5 cards are face-up cards
-                    if card_index < 5:
-                        self.selected_faceup_card_index = card_index
-                        self.showing_faceup_popup = True
-                return
-
-            if not hits:
-                return
-
-            city = hits[0]
-            # If this city is already selected then deselect it
-            if city in self.selected_cities:
-                city.set_texture(0)
-                city.scale = c.CITY_SCALE
-                self.selected_cities.remove(city)
-                return
-
-            if len(self.selected_cities) == 0:
-                # If no city is already selected, select it
-                city.set_texture(1)
-                city.scale = c.CITY_SCALE_YELLOW
-                self.selected_cities.append(city)
-                return
-
-            # If 2 cities are selected
-            if len(self.selected_cities) == 2:
-                newest = self.selected_cities.pop(1)
-                newest.set_texture(0)
-                newest.scale = c.CITY_SCALE
-                oldest = self.selected_cities.pop(0)
-                oldest.set_texture(0)
-                oldest.scale = c.CITY_SCALE
-
-            first_city_name = self.sprite_to_name(self.selected_cities[0])
-            second_city_name = self.sprite_to_name(city)
-
-            if second_city_name in c.ROUTES.get(first_city_name, {}):
-                # Check if there are any available routes
-                city_pair = (first_city_name, second_city_name)
-                reverse_pair = (second_city_name, first_city_name)
-
-                # Determine which pair exists in TRAINS
-                if city_pair in c.TRAINS:
-                    pair = city_pair
-                elif reverse_pair in c.TRAINS:
-                    pair = reverse_pair
-                else:
-                    # Cities are connected but no train routes defined (shouldn't happen)
-                    self.deselect_all_cities()
-                    return
-
-                # Check if any routes are available
-                available_count = sum(1 for taken in self.route_taken[pair] if not taken)
-
-                if available_count > 0:
-                    # Mark this one as selected
-                    city.set_texture(1)
-                    city.scale = c.CITY_SCALE_YELLOW
-                    self.selected_cities.append(city)
-
-                    # Show pop-up with route information
-                    self.showing_popup = True
-                    self.popup_city1 = first_city_name
-                    self.popup_city2 = second_city_name
-                    self.popup_route_length = c.ROUTES[first_city_name][second_city_name]
-                    self.selected_color = None
-                    return
-
-            # If we get here, either cities aren't connected or all routes are claimed
-            self.deselect_all_cities()
-
-    # Actions to make if specific buttons are pressed
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.SPACE:
-            self.reset()
-        elif symbol == arcade.key.ESCAPE:
-            self.window.close()
-
-    def show_trains_between(self, city1, city2):
-        """Show train sprites for a route between two connected cities."""
-        city_pair = (city1, city2)
-        reverse_pair = (city2, city1)
-
-        # Determine which pair exists
-        if city_pair in self.train_map:
-            pair = city_pair
-        elif reverse_pair in self.train_map:
-            pair = reverse_pair
-        else:
-            return
-
-        # Find first available route
-        for i, taken in enumerate(self.route_taken[pair]):
-            if not taken:
-                # Mark this route as taken
-                self.route_taken[pair][i] = True
-
-                # Make all sprites for this route visible
-                for train_sprite in self.train_map[pair][i]:
-                    train_sprite.set_texture(0)
-                    train_sprite.alpha = 255
-                break
+        """Handle key press"""
+        self.keyboard_handler.on_key_press(symbol, modifiers)
 
     def deselect_all_cities(self):
-        """Deselect all currently selected cities"""
-        for city in self.selected_cities:
-            city.set_texture(0)
-            city.scale = c.CITY_SCALE
-        self.selected_cities.clear()
+        """Deselect all cities"""
+        self.route_controller.deselect_all_cities()
 
     def claim_route(self, city1, city2):
-        """Claim the route after pop-up interaction"""
-        city_pair = (city1, city2)
-        reverse_pair = (city2, city1)
-
-        # Determine which pair exists
-        if city_pair in self.train_map:
-            pair = city_pair
-        elif reverse_pair in self.train_map:
-            pair = reverse_pair
-        else:
-            return
-
-        # Find first available route and claim it
-        for i, taken in enumerate(self.route_taken[pair]):
-            if not taken:
-                # Mark this route as taken
-                self.route_taken[pair][i] = True
-
-                # Make all sprites for this route visible
-                for train_sprite in self.train_map[pair][i]:
-                    train_sprite.set_texture(0)
-                    train_sprite.alpha = 255
-                break
+        """Claim route"""
+        self.route_controller.claim_route(city1, city2)
 
     def is_point_in_button(self, x, y, button_bounds):
-        """Check if a point is inside a button's bounds"""
-        left, right, bottom, top = button_bounds
-        return left <= x <= right and bottom <= y <= top
+        """Check if point is in button"""
+        return self.mouse_handler.is_point_in_button(x, y, button_bounds)
 
     def handle_color_selection(self, x, y):
-        """Handle color button clicks"""
-        if not hasattr(self, 'color_buttons'):
-            return None
-
-        for button in self.color_buttons:
-            if self.is_point_in_button(x, y, button['bounds']):
-                return button['color']
-        return None
+        """Handle color selection"""
+        return self.mouse_handler.handle_color_selection(x, y)
 
     def handle_dest_selection(self, x, y):
-        """Handle dest button clicks"""
-        if not hasattr(self, 'dest_buttons'):
-            return None
-
-        for button in self.dest_buttons:
-            if self.is_point_in_button(x, y, button['bounds']):
-                return button['cities']
-        return None
+        """Handle destination selection"""
+        return self.mouse_handler.handle_dest_selection(x, y)
 
     def valid_route_colors(self, selected_color, city1, city2):
-        """Get available colors for the route"""
-        for city_pair in [(city1, city2), (city2, city1)]:
-            if city_pair in c.TRAINS:
-                available_colors = {route_data["color"] for route_data in c.TRAINS[city_pair]}
-                if selected_color == "locomotive":
-                    return True
-                return (selected_color in available_colors or
-                        "colorless" in available_colors)
-        return False
+        """Validate route colors"""
+        return self.route_controller.valid_route_colors(selected_color, city1, city2)
 
     def refresh_faceup_cards(self):
-        """Refresh the face-up card sprites after changes"""
-        # Update the first 5 cards
-        for i in range(5):
-            if i < len(self.card_list):
-                card_sprite = self.card_list[i]
-                # Make sure we don't go out of bounds of the face-up deck
-                if i < globals.faceup_deck.get_len():
-                    faceup_card = globals.faceup_deck.get_card_at_index(i)
-                    sprite_path = faceup_card.get_sprite()
-
-                    # Cache the texture to avoid repeated loading
-                    if not hasattr(self, '_faceup_textures'):
-                        self._faceup_textures = {}
-
-                    if sprite_path not in self._faceup_textures:
-                        self._faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
-
-                    card_sprite.texture = self._faceup_textures[sprite_path]
-                    card_sprite.alpha = 255  # Make sure it's visible
-                else:
-                    # If there are fewer than 5 cards, hide the extra sprites
-                    card_sprite.alpha = 0
+        """Refresh face-up cards"""
+        self.card_controller.refresh_faceup_cards()
 
     def update_card_counts(self):
-        """Update the displayed card counts for each color"""
-        # Count cards in player's hand by color
-        color_counts = {
-            "orange": 0, "black": 0, "blue": 0, "green": 0,
-            "pink": 0, "red": 0, "white": 0, "yellow": 0, "wild": 0
-        }
+        """Update card counts"""
+        self.card_controller.update_card_counts()
 
-        # Get the player's train cards deck
-        player_train_cards = self.player.get_train_cards()
-
-        # Count cards by color
-        for i in range(player_train_cards.get_len()):
-            card = player_train_cards.get_card_at_index(i)
-            color = card.get_color().lower()
-            if color in color_counts:
-                color_counts[color] += 1
-
-        # Update the display text
-        colors = ["orange", "black", "blue", "green", "pink", "red", "white", "yellow", "wild"]
-        for i, color in enumerate(colors):
-            if i < len(self.index_cards):
-                self.index_cards[i].text = str(color_counts[color])
 
 def main():
-    """ Main function """
+    """Main function to initialize and run the game."""
     if platform.system() == "Darwin":  # macOS
         window = arcade.Window(c.SCREEN_WIDTH, c.WINDOW_HEIGHT, c.WINDOW_TITLE, resizable=False)
         window.set_location(0, 0)
@@ -763,10 +828,10 @@ def main():
         window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.WINDOW_TITLE,
                                fullscreen=True, resizable=False)
 
-    globals.initialize_game()
+    game_globals.initialize_game()
 
     from start_menu import StartMenuView
-    print(globals.faceup_deck)
+    print(game_globals.faceup_deck)
     # Show the start menu
     start_menu = StartMenuView()
     window.show_view(start_menu)
