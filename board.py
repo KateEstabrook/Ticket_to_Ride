@@ -70,6 +70,26 @@ class GameView(arcade.View):
             arcade.Text("0", wild_num_x, wild_num_y, arcade.color.WHITE, 13, anchor_x="left"),
         ]
 
+        self.popup_textures = {
+            'white_bg': arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255),
+            'save_button': arcade.make_soft_square_texture(2, c.SAVE_BUTTON, outer_alpha=255),
+            'exit_button': arcade.make_soft_square_texture(2, c.EXIT_BUTTON, outer_alpha=255),
+            'shadow': arcade.make_soft_square_texture(2, (0, 0, 0), outer_alpha=100)
+        }
+
+        self.color_textures = {}
+        color_cards = [
+            ("RED", "red.png"), ("BLUE", "blue.png"), ("GREEN", "green.png"),
+            ("YELLOW", "yellow.png"), ("ORANGE", "orange.png"), ("PINK", "pink.png"),
+            ("BLACK", "black.png"), ("WHITE", "white.png"), ("LOCOMOTIVE", "wild.png")
+        ]
+
+        for color_name, filename in color_cards:
+            self.color_textures[color_name] = arcade.load_texture(f"images/{filename}")
+
+        self.destination_textures = {}
+        self._faceup_textures = {}
+
         # Train pieces
         # One list for all train sprites (create it ONCE)
         self.train_list = arcade.SpriteList()
@@ -694,9 +714,17 @@ class GameView(arcade.View):
                 card_sprite = self.card_list[i]
                 # Make sure we don't go out of bounds of the face-up deck
                 if i < globals.faceup_deck.get_len():
-                    card_texture = arcade.load_texture(globals.faceup_deck.
-                                                       get_card_at_index(i).get_sprite())
-                    card_sprite.texture = card_texture
+                    faceup_card = globals.faceup_deck.get_card_at_index(i)
+                    sprite_path = faceup_card.get_sprite()
+
+                    # Cache the texture to avoid repeated loading
+                    if not hasattr(self, '_faceup_textures'):
+                        self._faceup_textures = {}
+
+                    if sprite_path not in self._faceup_textures:
+                        self._faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
+
+                    card_sprite.texture = self._faceup_textures[sprite_path]
                     card_sprite.alpha = 255  # Make sure it's visible
                 else:
                     # If there are fewer than 5 cards, hide the extra sprites
