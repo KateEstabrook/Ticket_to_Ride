@@ -28,9 +28,9 @@ class Player:
         """Add points to player"""
         self.points += points
 
-    def add_card(self, deck, card):
+    def add_card(self, deck_, card):
         """Add cards to a player deck"""
-        deck.add(card)
+        deck_.add(card)
 
     def remove_points(self, points):
         """Remove points from player"""
@@ -40,9 +40,9 @@ class Player:
         """Remove train pieces from player"""
         self.train_peices -= trains
 
-    def remove_card(self, deck, index):
+    def remove_card(self, deck_, index):
         """Remove cards from player deck"""
-        return deck.remove(index)
+        return deck_.remove(index)
 
     def get_points(self):
         """Getter for points"""
@@ -67,7 +67,7 @@ class Player:
     def get_sprite(self):
         """Getter for sprite"""
         return self.sprite
-    
+
     def set_color(self, color):
         self.color = color
 

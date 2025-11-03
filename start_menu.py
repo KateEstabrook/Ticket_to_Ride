@@ -4,10 +4,12 @@ Add this class to your main game file, before the GameView class
 """
 
 import arcade
-from arcade import SpriteList
+#from arcade import SpriteList
 import constants as c
 import player
 import globals
+
+from board import GameView
 
 class StartMenuView(arcade.View):
     """Start menu where players choose their color"""
@@ -144,7 +146,7 @@ class StartMenuView(arcade.View):
 
             arcade.draw_texture_rect(tex, rect)
 
-            selected = (self.selected_color == name)
+            selected = self.selected_color == name
             arcade.draw_rect_outline(
                 rect,
                 arcade.color.YELLOW if selected else arcade.color.WHITE,
@@ -210,7 +212,6 @@ class StartMenuView(arcade.View):
                     left, right, bottom, top = self.start_button_bounds
                     if left <= x <= right and bottom <= y <= top:
                         # Import GameView here to avoid circular import
-                        from board import GameView
 
                         # Create and show game view with selected color
                         player_obj = player.Player(self.selected_color)
