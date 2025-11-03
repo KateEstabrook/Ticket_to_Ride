@@ -4,9 +4,8 @@ Stores all of the pop ups during game play
 import arcade
 import constants as c
 import globals
-import cards
-import board
-
+#import cards
+#import board
 
 def deck_pop_up(game_view):
     """
@@ -279,7 +278,7 @@ def route_popup(game_view, city1, city2):
             # Calculate button position
             button_x = row_x + col * (button_width + horizontal_spacing)
             button_y = start_y - row * (button_height + vertical_spacing)
-            color_name, filename = color_cards[index]
+            color_name = color_cards[index][0]
             texture = card_textures[color_name]
 
             # Draw card image

@@ -1,14 +1,26 @@
-import deck, cards, graph, route, player
+"""
+Globals
+"""
+
+import deck
+import cards
+import route
 import constants as c
 
+
+faceup_deck = []
+train_deck = []
+dest_deck = []
+routes = []
+players = []
+
 def initialize_game():
-    global faceup_deck, train_deck, dest_deck, routes, players, player_obj
+    global faceup_deck, train_deck, dest_deck, routes, players
     # Initailize Train Card Deck
     train_deck = deck.Deck('Draw')
     faceup_deck = deck.Deck('Faceup')
-    
-    
-    # Add color cards 
+
+    # Add color cards
     for color in c.COLORS:
         i = 0
         while i < 12:
@@ -20,9 +32,8 @@ def initialize_game():
     while i < 14:
         train_deck.add(cards.TrainCard("wild"))
         i += 1
-        
-    train_deck.shuffle()
 
+    train_deck.shuffle()
 
     # Initailize players
     players = []
@@ -39,9 +50,9 @@ def initialize_game():
     # players.append(green)
     # blue = player.Player("Blue")
     # players.append(blue)
-    
-    # TODO Have player choose color
-    
+
+    # TO DO Have player choose color
+
     # Initialize Destination Card Deck
     dest_deck = deck.Deck("destination")
 
@@ -57,7 +68,7 @@ def initialize_game():
             p.get_train_cards().add(train_deck.remove(0))
             i += 1
 
-    # TODO Deal Destination Cards
+    # TO DO Deal Destination Cards
 
     # Initalize routes
     routes = []
@@ -65,11 +76,11 @@ def initialize_game():
         routes.append(route.Route((rt)))
 
     # Initalize graph
-    map = graph.Graph("", c.ROUTES_LST)
+    #map = graph.Graph("", c.ROUTES_LST)
 
     faceup_deck = deck.Deck("faceup")
     while faceup_deck.get_len() < 5:
         card_ = train_deck.remove(-1)
-        name = card_.get_color()
+        color = card_.get_color()
         faceup_deck.add(card_)
         i += 1

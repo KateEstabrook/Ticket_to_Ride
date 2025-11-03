@@ -3,11 +3,11 @@ Main / testing
 """
 
 #import city
-import player
-import route
-import deck
-import cards
-import graph
+# import player
+# import route
+# import deck
+# import cards
+# import graph
 
 
 ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, "colorless"),
@@ -69,23 +69,28 @@ ROUTES = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, 
           ("New York", "Boston", 2, "yellow"), ("Boston", "Montreal", 2, "colorless"),
           ("Boston", "Montreal", 2, "colorless")]
 
-DESTINATIONS = [("Boston", "Miami", 12), ("Calgary", "Phoenix", 13), ("Calgary", "Salt Lake City", 7),
-                ("Chicago", "New Orleans", 7), ("Chicago", "Santa Fe", 9), ("Dallas", "New York", 11),
-                ("Denver", "El Paso", 4), ("Denver", "Pittsburgh", 11), ("Duluth", "El Paso", 10), 
-                ("Duluth", "Houston", 8), ("Helena", "Los Angeles", 8), ("Kansas City", "Houston", 5),
-                ("Los Angeles", "Chicago", 16), ("Los Angeles", "Miami", 20), ("Los Angeles", "New York", 21),
-                ("Montréal", "Atlanta", 9), ("Montréal", "New Orleans", 13), ("New York", "Atlanta", 6),
-                ("Portland", "Nashville", 17), ("Portland", "Phoenix", 11), ("San Francisco", "Atlanta", 17),
-                ("Sault St. Marie", "Nashville", 8), ("Sault St. Marie", "Oklahoma City", 9), 
-                ("Seattle", "Los Angeles", 9), ("Seattle", "New York", 22), ("Toronto", "Miami", 10),
-                ("Vancouver", "Montreal", 20), ("Vancouver", "Santa Fe", 13), 
+DESTINATIONS = [("Boston", "Miami", 12), ("Calgary", "Phoenix", 13),
+                ("Calgary", "Salt Lake City", 7), ("Chicago", "New Orleans", 7),
+                ("Chicago", "Santa Fe", 9), ("Dallas", "New York", 11),
+                ("Denver", "El Paso", 4), ("Denver", "Pittsburgh", 11),
+                ("Duluth", "El Paso", 10), ("Duluth", "Houston", 8),
+                ("Helena", "Los Angeles", 8), ("Kansas City", "Houston", 5),
+                ("Los Angeles", "Chicago", 16), ("Los Angeles", "Miami", 20),
+                ("Los Angeles", "New York", 21),
+                ("Montréal", "Atlanta", 9), ("Montréal", "New Orleans", 13),
+                ("New York", "Atlanta", 6),
+                ("Portland", "Nashville", 17), ("Portland", "Phoenix", 11),
+                ("San Francisco", "Atlanta", 17),
+                ("Sault St. Marie", "Nashville", 8), ("Sault St. Marie", "Oklahoma City", 9),
+                ("Seattle", "Los Angeles", 9), ("Seattle", "New York", 22),
+                ("Toronto", "Miami", 10),
+                ("Vancouver", "Montreal", 20),
+                ("Vancouver", "Santa Fe", 13),
                 ("Winnipeg", "Houston", 12), ("Winnipeg", "Little Rock", 11)]
 
-
+"""
 def train_deck_test():
-    """
-    train test
-    """
+    # Train test
     train_deck = deck.Deck('Draw')
     
     colors = ["pink", "blue", "orange", "white", "green", "yellow", "black", "red"]
@@ -125,9 +130,8 @@ def train_deck_test():
     print(red.get_train_cards())
 
 def destination_deck_test():
-    """
-    destination deck test
-    """
+    # destination deck test
+    
     destination_deck = deck.Deck('Test')
     destination_deck.add(cards.DestinationCard(('Deluth', 'Denver'), 1))
     destination_deck.add(cards.DestinationCard(('Boston', 'New York'), 4))
@@ -138,9 +142,7 @@ def destination_deck_test():
     print(destination_deck)
 
 def route_test():
-    """
-    route test
-    """
+    # route test
     routes = []
     for rt in ROUTES:
         routes.append(route.Route((rt)))
@@ -204,9 +206,7 @@ if __name__ == "__main__":
     train_deck.shuffle()
     #print(train_deck)
 
-    """
-    Tests
-    """
+    # Tests
     #destination_deck_test()
     #route_test()
     #graph_test()
@@ -214,7 +214,8 @@ if __name__ == "__main__":
     #player_test(train_deck)
     
 
-    # Prints number of each color card in the deck, when used with player_test it shows the number of each color
+    # Prints number of each color card in the deck,
+    # when used with player_test it shows the number of each color
     # minus the cards in each players hand
 
     # colors = ["pink", "blue", "orange", "white", "green", "yellow", "black", "red", "wild"]
@@ -223,3 +224,4 @@ if __name__ == "__main__":
 
 
     #print(train_deck.get_card_index("blue"))
+"""
