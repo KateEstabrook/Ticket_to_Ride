@@ -276,6 +276,7 @@ class MouseHandler:
         if button == arcade.MOUSE_BUTTON_LEFT:
             # Use the actual mouse coordinates for collision detection
             hit_deck = arcade.get_sprites_at_point((x, y), self.game_view.deck_sprite)
+            hit_dest_deck = arcade.get_sprites_at_point((x, y), self.game_view.dest_deck_sprite)
             hits = arcade.get_sprites_at_point((x, y), self.game_view.city_list)
             hit_faceup_cards = arcade.get_sprites_at_point((x, y), self.game_view.card_list)
 
@@ -286,6 +287,11 @@ class MouseHandler:
                     self.game_view.drawn_card = game_globals.train_deck.remove(-1)
                     self.game_view.showing_deck_popup = True
                     self.game_view.selected_color = None
+                return
+
+            # Show the destination deck popup
+            if hit_dest_deck:
+                self.game_view.showing_dest_popup = True
                 return
 
             # Add face-up card detection
@@ -736,11 +742,19 @@ class GameView(arcade.View):
         self.deck.center_x = sx
         self.deck.center_y = sy
 
+        # Destination deck sprite set up
+        self.dest_deck = arcade.Sprite("images/dest_deck.png", scale=0.37)
+        sx, sy = self.board_renderer.img_to_screen(2560, 280, top_left=True)
+        self.dest_deck.center_x = sx
+        self.dest_deck.center_y = sy
+
         # Pop up and UI states
         self.window.set_mouse_visible(False) # Don't show the mouse cursor
         self.showing_deck_popup = False
         self.deck_sprite = arcade.SpriteList()
         self.deck_sprite.append(self.deck)
+        self.dest_deck_sprite = arcade.SpriteList()
+        self.dest_deck_sprite.append(self.dest_deck)
         self.showing_popup = False
         self.showing_dest_popup = True
         self.popup_city1 = None
