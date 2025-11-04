@@ -545,10 +545,10 @@ def show_dest_pop_up(self, dest_list, num):
             arcade.draw_texture_rect(texture, card_rect)
 
             # Highlight selection
-            city1 = dest_list[index].get_city_1()
-            city2 = dest_list[index].get_city_2()
-            key = city1 + city2
-            if key in self.selected_dests:
+            # city1 = dest_list[index].get_city_1()
+            # city2 = dest_list[index].get_city_2()
+            # key = city1 + city2
+            if dest_list[index] in self.selected_dests:
                 border_color = arcade.color.GOLD
                 border_width = 6
             else:
@@ -558,7 +558,7 @@ def show_dest_pop_up(self, dest_list, num):
 
             # Save for click detection
             self.dest_buttons.append({
-                'cities': key,
+                'card': dest_list[index],
                 'bounds': (
                     card_x - card_width / 2,
                     card_x + card_width / 2,

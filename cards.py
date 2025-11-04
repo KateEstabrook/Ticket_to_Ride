@@ -38,6 +38,14 @@ class DestinationCard:
     # To string
     def __str__(self):
         return f"{self.city_1} to {self.city_2}: {self.points}"
+    
+    def __eq__(self, other):
+        # It's good practice to first check if 'other' is an instance of the same class
+        if not isinstance(other, DestinationCard):
+            return NotImplemented  # Or raise TypeError("Can only compare with MyClass instances")
+
+        # Define the equality logic based on the attributes
+        return self.city_1 == other.city_1 and self.city_2 == other.city_2
 
 
 class TrainCard:

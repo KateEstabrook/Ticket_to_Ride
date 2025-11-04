@@ -71,6 +71,14 @@ class Player:
     def set_color(self, color):
         self.color = color
 
+    def set_player(self, player_):
+        self.color = player_.get_color()
+        self.train_peices = player_.get_trains()
+        self.points = player_.get_points()
+        self.train_cards = player_.get_train_cards()
+        self.destination_cards = player_.get_destination_cards()
+        self.sprite = player_.get_sprite()
+
     def __str__(self):
         """To string"""
         return f"{self.color} Player"

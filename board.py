@@ -7,6 +7,7 @@ import arcade
 import globals as game_globals
 import constants as c
 import cards
+import player
 import popups
 
 
@@ -42,15 +43,14 @@ class BoardRenderer:
             popups.route_popup(self.game_view, self.game_view.popup_city1,
                                self.game_view.popup_city2)  # Pass self as first argument
 
-        test_dest_deck = [cards.DestinationCard(["Boston", "Miami", 12]),
-                          cards.DestinationCard(["Calgary", "Phoenix", 13]),
-                          cards.DestinationCard(["Calgary", "Salt Lake City", 7]),
-                          cards.DestinationCard(["Chicago", "New Orleans", 7]),]
+        if len(game_globals.dest_draw) == 0:
+            for i in range(4):
+                game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
 
         #self.showing_dest_popup = True
 
         if self.game_view.showing_dest_popup:
-            popups.show_dest_pop_up(self.game_view, test_dest_deck, 2)
+            popups.show_dest_pop_up(self.game_view, game_globals.dest_draw, 2)
 
         if self.game_view.showing_deck_popup:
             popups.deck_pop_up(self.game_view)  # Pass self as first argument
@@ -170,7 +170,7 @@ class MouseHandler:
                 if left <= x <= right and bottom <= y <= top:
                     # Add the drawn card to the player's hand before closing
                     if self.game_view.drawn_card is not None:
-                        self.game_view.player.get_train_cards().add(self.game_view.drawn_card)
+                        game_globals.player_obj.get_train_cards().add(self.game_view.drawn_card)
                         self.game_view.drawn_card = None
                         self.game_view.update_card_counts()
                     self.game_view.showing_deck_popup = False
@@ -192,7 +192,7 @@ class MouseHandler:
                         taken_card = game_globals.faceup_deck.remove(replacement_index)
                         if taken_card:
                             # Add the card to player's hand
-                            self.game_view.player.get_train_cards().add(taken_card)
+                            game_globals.player_obj.get_train_cards().add(taken_card)
 
                             # Replace the taken card with a card from the train deck
                             if game_globals.train_deck.get_len() > 0:
@@ -260,7 +260,8 @@ class MouseHandler:
                     if len(self.game_view.selected_dests) >= 2:
 
                         self.game_view.showing_dest_popup = False
-                        # ADD DEST CARDS TO PLAYER DEST DECK
+                        for card in self.game_view.selected_dests:
+                            game_globals.player_obj.get_destination_cards().add(card)
                         self.game_view.selected_dests = []
                     return
             # Check if dest card was clicked
@@ -387,7 +388,7 @@ class MouseHandler:
 
         for button in self.game_view.dest_buttons:
             if self.is_point_in_button(x, y, button['bounds']):
-                return button['cities']
+                return button['card']
         return None
 
 
@@ -491,7 +492,7 @@ class CardController:
         }
 
         # Get the player's train cards deck
-        player_train_cards = self.game_view.player.get_train_cards()
+        player_train_cards = game_globals.player_obj.get_train_cards()
 
         # Count cards by color
         for i in range(player_train_cards.get_len()):
@@ -541,13 +542,12 @@ class GameView(arcade.View):
     Main application class
     """
 
-    def __init__(self, player_obj):
+    def __init__(self):
         """Initializer"""
 
         # Call the parent class initializer
         super().__init__()
 
-        self.player = player_obj  # keep the player
         self.drawn_card = None  # slot for the card you draw from the deck
 
         # Background image will be stored in this variable
@@ -618,7 +618,7 @@ class GameView(arcade.View):
         # Train pieces
         # One list for all train sprites (create it ONCE)
         self.train_list = arcade.SpriteList()
-        train_piece = arcade.load_texture(player_obj.get_sprite())
+        train_piece = arcade.load_texture(game_globals.player_obj.get_sprite())
 
         # Create a mapping of city pairs to train sprites
         # Structure: {(city1, city2): [[sprites for route 1], [sprites for route 2]]}
@@ -639,7 +639,7 @@ class GameView(arcade.View):
                 positions = route_data["positions"]
                 color = route_data["color"]
 
-                train_piece = arcade.load_texture(player_obj.get_sprite())
+                train_piece = arcade.load_texture(game_globals.player_obj.get_sprite())
                 # Create individual train sprites for each position in the route
                 for position in positions:
                     if isinstance(position, tuple) and len(position) == 3:
@@ -821,7 +821,7 @@ class GameView(arcade.View):
         self.card_controller.update_card_counts()
 
 
-def main():
+def main(self):
     """Main function to initialize and run the game."""
     if platform.system() == "Darwin":  # macOS
         window = arcade.Window(c.SCREEN_WIDTH, c.WINDOW_HEIGHT, c.WINDOW_TITLE, resizable=False)
@@ -841,4 +841,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(GameView)

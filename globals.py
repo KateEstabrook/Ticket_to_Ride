@@ -5,17 +5,19 @@ Globals
 import deck
 import cards
 import route
+import player
 import constants as c
-
 
 faceup_deck = []
 train_deck = []
 dest_deck = []
+dest_draw = []
 routes = []
 players = []
+player_obj = player.Player("none")
 
 def initialize_game():
-    global faceup_deck, train_deck, dest_deck, routes, players
+    global faceup_deck, train_deck, dest_deck, routes, players, player_obj, dest_draw
     # Initailize Train Card Deck
     train_deck = deck.Deck('Draw')
     faceup_deck = deck.Deck('Faceup')
@@ -67,8 +69,6 @@ def initialize_game():
         while i < 4:
             p.get_train_cards().add(train_deck.remove(0))
             i += 1
-
-    # TO DO Deal Destination Cards
 
     # Initalize routes
     routes = []
