@@ -33,6 +33,7 @@ class BoardRenderer:
         self.game_view.train_list.draw()
         self.game_view.city_list.draw()
         self.game_view.card_list.draw()
+        self.game_view.dest_deck_sprite.draw()
         for line in self.game_view.leaderboard_lines:
             line.draw()
 
