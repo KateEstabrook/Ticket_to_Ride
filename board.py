@@ -50,7 +50,7 @@ class BoardRenderer:
         #self.showing_dest_popup = True
 
         if self.game_view.showing_dest_popup:
-            popups.show_dest_pop_up(self.game_view, test_dest_deck)
+            popups.show_dest_pop_up(self.game_view, test_dest_deck, 2)
 
         if self.game_view.showing_deck_popup:
             popups.deck_pop_up(self.game_view)  # Pass self as first argument
@@ -267,6 +267,8 @@ class MouseHandler:
             selected_dest = self.game_view.handle_dest_selection(x, y)
             if selected_dest in self.game_view.selected_dests:
                 self.game_view.selected_dests.remove(selected_dest)
+            elif selected_dest == None:
+                return
             else:
                 self.game_view.selected_dests.append(selected_dest)
             return

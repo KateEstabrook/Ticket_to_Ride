@@ -465,7 +465,7 @@ def route_popup(game_view, city1, city2):
             bold=True
         )
 
-def show_dest_pop_up(self, dest_list):
+def show_dest_pop_up(self, dest_list, num):
     """
     Destination popup
     """
@@ -567,9 +567,8 @@ def show_dest_pop_up(self, dest_list):
                 )
             })
 
-
     # Only show save button if you have selected greater than or equal to 2 dest cards
-    if len(self.selected_dests) >= 2:
+    if len(self.selected_dests) >= num:
         save_button_width = popup_width * 0.2
         save_button_height = popup_height * 0.1
         save_button_x = popup_x
