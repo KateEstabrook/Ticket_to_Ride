@@ -34,33 +34,12 @@ class BoardRenderer:
         self.game_view.city_list.draw()
         self.game_view.card_list.draw()
         self.game_view.dest_deck_sprite.draw()
+
         for line in self.game_view.leaderboard_lines:
             line.draw()
 
         for line in self.game_view.index_cards:
             line.draw()
-
-        if self.game_view.showing_popup:
-            popups.route_popup(self.game_view, self.game_view.popup_city1,
-                               self.game_view.popup_city2)  # Pass self as first argument
-
-        if len(game_globals.dest_draw) == 0:
-            for i in range(4):
-                game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
-
-        #self.showing_dest_popup = True
-
-        if self.game_view.showing_dest_popup:
-            popups.show_dest_pop_up(self.game_view, game_globals.dest_draw, 2)
-
-        if self.game_view.showing_deck_popup:
-            popups.deck_pop_up(self.game_view)  # Pass self as first argument
-
-        if self.game_view.showing_faceup_popup:
-            popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
-
-        if self.game_view.showing_info_popup:
-            popups.show_info_pop_up(self.game_view)
 
         # Draw sprites for beginning
         self.game_view.deck_sprite.draw()
@@ -71,8 +50,26 @@ class BoardRenderer:
         tmp.append(self.game_view.info_button)
         tmp.draw()
 
-        for line in self.game_view.leaderboard_lines:
-            line.draw()
+        # Draw pop ups last
+        if self.game_view.showing_popup:
+            popups.route_popup(self.game_view, self.game_view.popup_city1,
+                               self.game_view.popup_city2)
+
+        if len(game_globals.dest_draw) == 0:
+            for i in range(4):
+                game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
+
+        if self.game_view.showing_dest_popup:
+            popups.show_dest_pop_up(self.game_view, game_globals.dest_draw, 2)
+
+        if self.game_view.showing_deck_popup:
+            popups.deck_pop_up(self.game_view)
+
+        if self.game_view.showing_faceup_popup:
+            popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
+
+        if self.game_view.showing_info_popup:
+            popups.show_info_pop_up(self.game_view)
 
 
     def _contain_rect(self, tex_w: float, tex_h: float, view_w: float, view_h: float):
