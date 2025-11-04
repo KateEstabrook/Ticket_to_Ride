@@ -621,8 +621,8 @@ def show_info_pop_up(game_view):
     Help menu popup
     """
     # Popup dimensions
-    popup_width = c.WINDOW_WIDTH * 0.75
-    popup_height = c.WINDOW_HEIGHT * 0.75
+    popup_width = c.WINDOW_WIDTH * 0.9
+    popup_height = c.WINDOW_HEIGHT * 0.9
     popup_x = c.WINDOW_WIDTH // 2
     popup_y = c.WINDOW_HEIGHT // 2
 
@@ -680,7 +680,7 @@ def show_info_pop_up(game_view):
         "EXIT",
         exit_button_x, exit_button_y,
         arcade.color.WHITE,
-        font_size=12,
+        font_size=20,
         anchor_x="center",
         anchor_y="center",
         bold=True

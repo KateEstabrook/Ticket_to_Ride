@@ -35,28 +35,21 @@ class BoardRenderer:
         self.game_view.card_list.draw()
         self.game_view.dest_deck_sprite.draw()
 
-        for line in self.game_view.leaderboard_lines:
-            line.draw()
-
-        for line in self.game_view.index_cards:
-            line.draw()
-
         # Draw sprites for beginning
         self.game_view.deck_sprite.draw()
         tmp = arcade.SpriteList()
         tmp.append(self.game_view.card_banner)
         tmp.append(self.game_view.leaderboard_banner)
-        tmp.append(self.game_view.player_sprite)
         tmp.append(self.game_view.info_button)
         tmp.draw()
 
-        # Draw pop ups last
+        # draw popups
         if self.game_view.showing_popup:
             popups.route_popup(self.game_view, self.game_view.popup_city1,
                                self.game_view.popup_city2)
 
         if len(game_globals.dest_draw) == 0:
-            for i in range(4):
+            for _ in range(4):
                 game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
 
         if self.game_view.showing_dest_popup:
@@ -68,8 +61,21 @@ class BoardRenderer:
         if self.game_view.showing_faceup_popup:
             popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
 
+
+        # Draw leaderboard lines and card counts
+        for line in self.game_view.leaderboard_lines:
+            line.draw()
+
+        for line in self.game_view.index_cards:
+            line.draw()
+
         if self.game_view.showing_info_popup:
             popups.show_info_pop_up(self.game_view)
+
+        # draw cursor last
+        cursor = arcade.SpriteList()
+        cursor.append(self.game_view.player_sprite)
+        cursor.draw()
 
 
     def _contain_rect(self, tex_w: float, tex_h: float, view_w: float, view_h: float):
