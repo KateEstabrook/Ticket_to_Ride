@@ -445,9 +445,19 @@ FACEUP_CARDS = {
     "Fifth" : [-60, 1430]
 }
 
+DEST_CARDS = {
+    "First" : [2840, 1150],
+    "Second" : [3120, 1150],
+    "Third" : [2560, 1330],
+    "Fourth" : [2840, 1330],
+    "Fifth" : [3120, 1330],
+    "Sixth" : [2560, 1510],
+    "Seventh" : [2840, 1510],
+    "Eighth" : [3120, 1510]
+}
+
 EXIT_BUTTON = (128, 0, 0)
 SAVE_BUTTON = (0, 153, 0)
-
 
 ROUTES_LST = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, "colorless"),
           ("Vancouver", "Calgary", 3, "colorless"), ("Seattle", "Portland", 1, "colorless"),

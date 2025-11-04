@@ -284,7 +284,11 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    if len(self.game_view.selected_dests) >= 2:
+                    min_required = getattr(self.game_view, 'min_dest_cards_to_keep', 2)
+                    max_allowed = getattr(self.game_view, 'max_dest_cards_to_keep', 8)
+
+                    # Check if player selected the right amount
+                    if min_required <= len(self.game_view.selected_dests) <= max_allowed:
                         # Add selected cards to player's hand
                         for card in self.game_view.selected_dests:
                             game_globals.player_obj.get_destination_cards().add(card)
@@ -304,10 +308,13 @@ class MouseHandler:
             selected_dest = self.game_view.handle_dest_selection(x, y)
             if selected_dest in self.game_view.selected_dests:
                 self.game_view.selected_dests.remove(selected_dest)
-            elif selected_dest == None:
+            elif selected_dest is None:
                 return
             else:
-                self.game_view.selected_dests.append(selected_dest)
+                # Check if player can still select more cards
+                max_allowed = getattr(self.game_view, 'max_dest_cards_to_keep', 8)
+                if len(self.game_view.selected_dests) < max_allowed:
+                    self.game_view.selected_dests.append(selected_dest)
             return
 
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -328,11 +335,30 @@ class MouseHandler:
 
             # Show the destination deck popup
             if hit_dest_deck:
+                # Check how many destination cards the player currently has
+                current_dest_cards = game_globals.player_obj.get_destination_cards().get_len()
+
+                # Maximum of 8 destination cards allowed
+                max_dest_cards = 8
+
+                # If player already has 8 or more, don't allow drawing more
+                if current_dest_cards >= max_dest_cards or current_dest_cards >= (max_dest_cards - 1):
+                    return
+
+                # Calculate how many cards the player can keep (but still draw 4 to show)
+                remaining_slots = max_dest_cards - current_dest_cards
+
                 # If dest_draw is empty, draw 4 new cards
                 if len(game_globals.dest_draw) == 0:
                     for i in range(4):
                         if game_globals.dest_deck.get_len() > 0:
                             game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
+
+                # Store how many cards can be kept (e.g., if player has 6, they can only keep 2 more)
+                self.game_view.max_dest_cards_to_keep = remaining_slots
+                # Minimum to keep is 2, or all remaining slots if less than 2
+                self.game_view.min_dest_cards_to_keep = min(2, remaining_slots)
+
                 self.game_view.showing_dest_popup = True
                 return
 
@@ -747,6 +773,7 @@ class GameView(arcade.View):
             for name, (_, _, filename) in c.PLAYER_CARDS.items()
         }
         self.card_list = arcade.SpriteList()
+        self.dest_list = arcade.SpriteList()
 
         # Face up card set up
         i = 0
@@ -803,6 +830,8 @@ class GameView(arcade.View):
         self.popup_route_length = 0
         self.color_buttons = []
         self.dest_buttons = []
+        self.min_dest_cards_to_keep = 2
+        self.max_dest_cards_to_keep = 8
         self.showing_faceup_popup = False # Don't show face up popup
         self.selected_faceup_card_index = None # Face up card that was clicked
         self.take_button_bounds = None # Bounds for "take card"
