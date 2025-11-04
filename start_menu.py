@@ -130,13 +130,21 @@ class StartMenuView(arcade.View):
         """Draw the initial 'Choose Your Color' button"""
         width, height = self.sw(), self.sh()
 
-        card_w = max(100, min(160, int(height * 0.12)))
-        card_h = int(card_w * 4 / 3)  # keep card aspect ratio
-        spacing = max(16, int(card_w * 0.18))
+        card_w = max(175, min(275, int(height * 0.25)))
+
+        aspect_ratio = None
+        for color_name, _ in self.player_colors:
+            if color_name in self.card_textures:
+                tex = self.card_textures[color_name]
+                aspect_ratio = tex.height / tex.width  # height/width for portrait orientation
+                break
+
+        card_h = int(card_w * aspect_ratio)  # keep card aspect ratio
+        spacing = max(20, int(card_w * 0.2))
 
         total_w = card_w * len(self.player_colors) + spacing * (len(self.player_colors) - 1)
         start_x = (width - total_w) / 2 + card_w / 2
-        y = height * 0.35
+        y = height * 0.4
 
         self.color_buttons = []
         for i, (name, _) in enumerate(self.player_colors):
@@ -155,8 +163,8 @@ class StartMenuView(arcade.View):
 
             label_color = arcade.color.BLACK if name in ("White", "Yellow") else arcade.color.WHITE
             arcade.draw_text(
-                name, x, y, label_color,
-                font_size=int(height * 0.022),
+                name, x, y + card_h * 0.07, label_color,
+                font_size=int(height * 0.028),
                 anchor_x="center", anchor_y="center", bold=True
             )
 

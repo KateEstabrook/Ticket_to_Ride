@@ -37,8 +37,9 @@ def deck_pop_up(game_view):
         tex = game_view.faceup_textures[sprite_path]
 
         # Center it nicely inside the popup
-        card_w = popup_width * 0.18
-        card_h = card_w * (4 / 3)
+        card_w = popup_width * 0.3
+        aspect_ratio = tex.height / tex.width
+        card_h = card_w * aspect_ratio
         card_rect = arcade.LBWH(popup_x - card_w / 2, popup_y - card_h / 2, card_w, card_h)
         arcade.draw_texture_rect(tex, card_rect)
 
@@ -92,6 +93,7 @@ def deck_pop_up(game_view):
         continue_button_y + continue_button_height // 2  # top
     )
 
+
 def faceup_card_pop_up(game_view, card_index):
     """
     Show a white rectangle pop-up when a face-up card is clicked
@@ -124,13 +126,17 @@ def faceup_card_pop_up(game_view, card_index):
             game_view.faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
         tex = game_view.faceup_textures[sprite_path]
 
+        # Calculate card dimensions
+        card_w = popup_width * 0.3
+        # Use the actual texture aspect ratio
+        aspect_ratio = tex.height / tex.width
+        card_h = card_w * aspect_ratio
+
         # Center it nicely inside the popup
-        card_w = popup_width * 0.18
-        card_h = card_w * (4 / 3)
         card_rect = arcade.LBWH(popup_x - card_w / 2, popup_y - card_h / 2, card_w, card_h)
         arcade.draw_texture_rect(tex, card_rect)
 
-    if selected_card is not None:
+        # Draw card info text
         color_name = selected_card.get_color().upper()
         arcade.draw_text(
             f"You selected a(n) {color_name} card!",
@@ -609,3 +615,80 @@ def show_dest_pop_up(self, dest_list, num):
         self.save_button_bounds = None
 
     return 0
+
+def show_info_pop_up(game_view):
+    """
+    Help menu popup
+    """
+    # Popup dimensions
+    popup_width = c.WINDOW_WIDTH * 0.75
+    popup_height = c.WINDOW_HEIGHT * 0.75
+    popup_x = c.WINDOW_WIDTH // 2
+    popup_y = c.WINDOW_HEIGHT // 2
+
+    left = popup_x - popup_width / 2
+    bottom = popup_y - popup_height / 2
+
+    # Shadow under popup using cached texture
+    shadow_texture = game_view.popup_textures['shadow']
+    shadow_rect = arcade.LBWH(left + 6, bottom - 6, popup_width, popup_height)
+    arcade.draw_texture_rect(shadow_texture, shadow_rect)
+
+    # Background color using cached texture
+    bg_texture = game_view.popup_textures['white_bg']
+    bg_rect = arcade.LBWH(left, bottom, popup_width, popup_height)
+    arcade.draw_texture_rect(bg_texture, bg_rect)
+
+    # Border
+    arcade.draw_rect_outline(bg_rect, arcade.color.DARK_BROWN, border_width=3)
+
+    # Title
+    title = "How To Play"
+    arcade.draw_text(
+        title,
+        popup_x,
+        popup_y + popup_height * 0.42,
+        arcade.color.DARK_BROWN,
+        font_size=18,
+        anchor_x="center",
+        anchor_y="center",
+        bold=True
+    )
+
+    # Add exit button in lower right corner
+    exit_button_width = popup_width * 0.2
+    exit_button_height = popup_height * 0.1
+    exit_button_x = popup_x + popup_width * 0.48 - exit_button_width // 2
+    exit_button_y = popup_y - popup_height * 0.45 + exit_button_height // 2
+
+    exit_texture = game_view.popup_textures['exit_button']
+    exit_rect = arcade.LBWH(
+        exit_button_x - exit_button_width // 2,
+        exit_button_y - exit_button_height // 2,
+        exit_button_width,
+        exit_button_height
+    )
+
+    arcade.draw_texture_rect(exit_texture, exit_rect)
+    arcade.draw_rect_outline(
+        exit_rect,
+        arcade.color.BLACK,
+        border_width=2
+    )
+
+    arcade.draw_text(
+        "EXIT",
+        exit_button_x, exit_button_y,
+        arcade.color.WHITE,
+        font_size=12,
+        anchor_x="center",
+        anchor_y="center",
+        bold=True
+    )
+
+    game_view.exit_button_bounds = (
+        exit_button_x - exit_button_width // 2,  # left
+        exit_button_x + exit_button_width // 2,  # right
+        exit_button_y - exit_button_height // 2,  # bottom
+        exit_button_y + exit_button_height // 2  # top
+    )

@@ -58,16 +58,21 @@ class BoardRenderer:
         if self.game_view.showing_faceup_popup:
             popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
 
+        if self.game_view.showing_info_popup:
+            popups.show_info_pop_up(self.game_view)
+
         # Draw sprites for beginning
         self.game_view.deck_sprite.draw()
         tmp = arcade.SpriteList()
         tmp.append(self.game_view.card_banner)
         tmp.append(self.game_view.leaderboard_banner)
         tmp.append(self.game_view.player_sprite)
+        tmp.append(self.game_view.info_button)
         tmp.draw()
 
         for line in self.game_view.leaderboard_lines:
             line.draw()
+
 
     def _contain_rect(self, tex_w: float, tex_h: float, view_w: float, view_h: float):
         """
@@ -163,6 +168,24 @@ class MouseHandler:
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Handle mouse press events including popup interactions and city selection."""
+        if (hasattr(self.game_view, 'info_button_bounds') and
+                self.game_view.info_button_bounds and
+                button == arcade.MOUSE_BUTTON_LEFT):
+            left, right, bottom, top = self.game_view.info_button_bounds
+            if left <= x <= right and bottom <= y <= top:
+                self.game_view.showing_info_popup = True
+                return
+
+            # Handle info popup exit
+        if self.game_view.showing_info_popup:
+            if hasattr(self.game_view, 'exit_button_bounds'):
+                left, right, bottom, top = self.game_view.exit_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    self.game_view.showing_info_popup = False
+                    return
+            # If click is elsewhere while info popup is up, just consume it
+            return
+
         if self.game_view.showing_deck_popup:
             # Handle exit click
             if hasattr(self.game_view, 'continue_button_bounds'):
@@ -277,6 +300,7 @@ class MouseHandler:
         if button == arcade.MOUSE_BUTTON_LEFT:
             # Use the actual mouse coordinates for collision detection
             hit_deck = arcade.get_sprites_at_point((x, y), self.game_view.deck_sprite)
+            hit_dest_deck = arcade.get_sprites_at_point((x, y), self.game_view.dest_deck_sprite)
             hits = arcade.get_sprites_at_point((x, y), self.game_view.city_list)
             hit_faceup_cards = arcade.get_sprites_at_point((x, y), self.game_view.card_list)
 
@@ -287,6 +311,11 @@ class MouseHandler:
                     self.game_view.drawn_card = game_globals.train_deck.remove(-1)
                     self.game_view.showing_deck_popup = True
                     self.game_view.selected_color = None
+                return
+
+            # Show the destination deck popup
+            if hit_dest_deck:
+                self.game_view.showing_dest_popup = True
                 return
 
             # Add face-up card detection
@@ -736,11 +765,19 @@ class GameView(arcade.View):
         self.deck.center_x = sx
         self.deck.center_y = sy
 
+        # Destination deck sprite set up
+        self.dest_deck = arcade.Sprite("images/dest_deck.png", scale=0.37)
+        sx, sy = self.board_renderer.img_to_screen(2560, 280, top_left=True)
+        self.dest_deck.center_x = sx
+        self.dest_deck.center_y = sy
+
         # Pop up and UI states
         self.window.set_mouse_visible(False) # Don't show the mouse cursor
         self.showing_deck_popup = False
         self.deck_sprite = arcade.SpriteList()
         self.deck_sprite.append(self.deck)
+        self.dest_deck_sprite = arcade.SpriteList()
+        self.dest_deck_sprite.append(self.dest_deck)
         self.showing_popup = False
         self.showing_dest_popup = True
         self.popup_city1 = None
@@ -760,6 +797,23 @@ class GameView(arcade.View):
         self.game_initializer = GameInitializer(self)
 
         self.card_controller.update_card_counts() # Initialize card count display
+
+        # Info button
+        self.info_button = arcade.Sprite("images/info_button.jpg", scale=0.1)
+        self.info_button.center_x = 50  # Top left position
+        self.info_button.center_y = c.WINDOW_HEIGHT - 50
+        self.info_button_bounds = None
+        self.showing_info_popup = False
+
+        # Calculate info button bounds
+        info_button_width = self.info_button.width
+        info_button_height = self.info_button.height
+        self.info_button_bounds = (
+            self.info_button.center_x - info_button_width / 2,
+            self.info_button.center_x + info_button_width / 2,
+            self.info_button.center_y - info_button_height / 2,
+            self.info_button.center_y + info_button_height / 2
+        )
 
     def reset(self):
         """Restart the game"""
