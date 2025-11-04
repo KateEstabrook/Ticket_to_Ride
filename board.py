@@ -282,12 +282,21 @@ class MouseHandler:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
                     if len(self.game_view.selected_dests) >= 2:
-
-                        self.game_view.showing_dest_popup = False
+                        # Add selected cards to player's hand
                         for card in self.game_view.selected_dests:
                             game_globals.player_obj.get_destination_cards().add(card)
+
+                        # Return unselected cards back to the deck
+                        for card in game_globals.dest_draw:
+                            if card not in self.game_view.selected_dests:
+                                game_globals.dest_deck.cards.append(card)
+
+                        # Clear dest_draw so next time we draw 4 new cards
+                        game_globals.dest_draw.clear()
+                        self.game_view.showing_dest_popup = False
                         self.game_view.selected_dests = []
                     return
+
             # Check if dest card was clicked
             selected_dest = self.game_view.handle_dest_selection(x, y)
             if selected_dest in self.game_view.selected_dests:
@@ -316,6 +325,11 @@ class MouseHandler:
 
             # Show the destination deck popup
             if hit_dest_deck:
+                # If dest_draw is empty, draw 4 new cards
+                if len(game_globals.dest_draw) == 0:
+                    for i in range(4):
+                        if game_globals.dest_deck.get_len() > 0:
+                            game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
                 self.game_view.showing_dest_popup = True
                 return
 
