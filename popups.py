@@ -37,8 +37,9 @@ def deck_pop_up(game_view):
         tex = game_view.faceup_textures[sprite_path]
 
         # Center it nicely inside the popup
-        card_w = popup_width * 0.18
-        card_h = card_w * (4 / 3)
+        card_w = popup_width * 0.3
+        aspect_ratio = tex.height / tex.width
+        card_h = card_w * aspect_ratio
         card_rect = arcade.LBWH(popup_x - card_w / 2, popup_y - card_h / 2, card_w, card_h)
         arcade.draw_texture_rect(tex, card_rect)
 
@@ -92,6 +93,7 @@ def deck_pop_up(game_view):
         continue_button_y + continue_button_height // 2  # top
     )
 
+
 def faceup_card_pop_up(game_view, card_index):
     """
     Show a white rectangle pop-up when a face-up card is clicked
@@ -124,13 +126,17 @@ def faceup_card_pop_up(game_view, card_index):
             game_view.faceup_textures[sprite_path] = arcade.load_texture(sprite_path)
         tex = game_view.faceup_textures[sprite_path]
 
+        # Calculate card dimensions
+        card_w = popup_width * 0.3
+        # Use the actual texture aspect ratio
+        aspect_ratio = tex.height / tex.width
+        card_h = card_w * aspect_ratio
+
         # Center it nicely inside the popup
-        card_w = popup_width * 0.18
-        card_h = card_w * (4 / 3)
         card_rect = arcade.LBWH(popup_x - card_w / 2, popup_y - card_h / 2, card_w, card_h)
         arcade.draw_texture_rect(tex, card_rect)
 
-    if selected_card is not None:
+        # Draw card info text
         color_name = selected_card.get_color().upper()
         arcade.draw_text(
             f"You selected a(n) {color_name} card!",
