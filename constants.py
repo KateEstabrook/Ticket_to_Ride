@@ -125,8 +125,8 @@ TRAINS = {
         {"positions": [(2232, 256, 220), (2301, 313, 220)], "color": "colorless"}
     ],
     ("Boston", "New York"): [
-        {"positions": [(2320, 394, 123), (2273, 470, 123)], "color": "red"},
-        {"positions": [(2346, 414, 123), (2298, 488, 123)], "color": "yellow"}
+        {"positions": [(2320, 394, 123), (2273, 470, 123)], "color": "yellow"},
+        {"positions": [(2346, 414, 123), (2298, 488, 123)], "color": "red"}
     ],
     ("Montreal", "New York"): [
         {"positions": [(2182, 280, 80), (2196, 367, 80), (2210, 456, 80)], "color": "blue"}
@@ -271,9 +271,9 @@ TRAINS = {
     ],
     ("Portland", "San Francisco"): [
         {"positions": [(198, 579, 116), (171, 664, 103), (161, 752, 90),
-                       (163, 840, 85), (178, 926, 76)], "color": "green"},
+                       (163, 840, 85), (178, 926, 76)], "color": "pink"},
         {"positions": [(165, 574, 116), (139, 659, 103), (128, 747, 90),
-                       (129, 835, 85), (146, 921, 76)], "color": "pink"}
+                       (129, 835, 85), (146, 921, 76)], "color": "green"}
     ],
     ("New Orleans", "Atlanta"): [
         {"positions": [(1760, 1324, 109), (1801, 1246, 119),
@@ -373,8 +373,8 @@ TRAINS = {
         {"positions": [(1355, 820, 64)], "color": "colorless"}
     ],
     ("Kansas City", "Saint Louis"): [
-        {"positions": [(1537, 885, 0), (1450, 886, 0)], "color": "blue"},
-        {"positions": [(1539, 849, 0), (1450, 853, 0)], "color": "pink"}
+        {"positions": [(1537, 885, 0), (1450, 886, 0)], "color": "pink"},
+        {"positions": [(1539, 849, 0), (1450, 853, 0)], "color": "blue"}
     ],
     ("Kansas City", "Denver"): [
         {"positions": [(1315, 878, 160), (1233, 906, 170),
@@ -445,9 +445,19 @@ FACEUP_CARDS = {
     "Fifth" : [-60, 1430]
 }
 
+DEST_CARDS = {
+    "First" : [2840, 270],
+    "Second" : [3120, 270],
+    "Third" : [2560, 450],
+    "Fourth" : [2840, 450],
+    "Fifth" : [3120, 450],
+    "Sixth" : [2560, 630],
+    "Seventh" : [2840, 630],
+    "Eighth" : [3120, 630]
+}
+
 EXIT_BUTTON = (128, 0, 0)
 SAVE_BUTTON = (0, 153, 0)
-
 
 ROUTES_LST = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle", 1, "colorless"),
           ("Vancouver", "Calgary", 3, "colorless"), ("Seattle", "Portland", 1, "colorless"),
@@ -517,13 +527,13 @@ DESTINATIONS = [("Boston", "Miami", 12), ("Calgary", "Phoenix", 13),
                 ("Duluth", "Houston", 8), ("Helena", "Los Angeles", 8),
                 ("Kansas City", "Houston", 5),
                 ("Los Angeles", "Chicago", 16), ("Los Angeles", "Miami", 20),
-                ("Los Angeles", "New York", 21), ("San Francisco", "Washington", 21),
+                ("Los Angeles", "New York", 21),
                 ("Montreal", "Atlanta", 9), ("Montreal", "New Orleans", 13),
-                ("New York", "Atlanta", 6), ("Atlanta", "Washington", 4),
+                ("New York", "Atlanta", 6),
                 ("Portland", "Nashville", 17), ("Portland", "Phoenix", 11),
                 ("San Francisco", "Atlanta", 17),
                 ("Sault St. Marie", "Nashville", 8), ("Sault St. Marie", "Oklahoma City", 9),
                 ("Seattle", "Los Angeles", 9), ("Seattle", "New York", 22),
-                ("Toronto", "Miami", 10), ("Omaha", "New Orleans", 8),
+                ("Toronto", "Miami", 10),
                 ("Vancouver", "Montreal", 20), ("Vancouver", "Santa Fe", 13),
                 ("Winnipeg", "Houston", 12), ("Winnipeg", "Little Rock", 11)]

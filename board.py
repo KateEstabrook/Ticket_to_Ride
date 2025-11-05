@@ -29,49 +29,72 @@ class BoardRenderer:
             self.game_view.board_rect
         )
 
+        dest_list = arcade.SpriteList()
+        # Destination cards set up
+        i = 0
+        if game_globals.player_obj.get_destination_cards().get_len() > 0:
+            for number, (sx, sy) in c.DEST_CARDS.items():
+                if i >= game_globals.player_obj.get_destination_cards().get_len():
+                    break  # stop if there are no more cards to draw
+
+                card = arcade.Sprite()
+
+                card.texture = arcade.load_texture(game_globals.player_obj.
+                                                   get_destination_cards().get_card_at_index(i).get_sprite())
+
+                self.place_card(card, sx, sy, top_left=True, scale=0.38)
+                dest_list.append(card)
+                i += 1
+
         # Draw all the sprites
         self.game_view.train_list.draw()
         self.game_view.city_list.draw()
         self.game_view.card_list.draw()
+        self.game_view.dest_deck_sprite.draw()
+        dest_list.draw()
+
+        # Draw sprites for beginning
+        self.game_view.deck_sprite.draw()
+        tmp = arcade.SpriteList()
+        tmp.append(self.game_view.dest_cards_banner)
+        tmp.append(self.game_view.train_cards_banner)
+        tmp.append(self.game_view.leaderboard_banner)
+        tmp.append(self.game_view.info_button)
+        tmp.draw()
+
+        # draw popups
+        if self.game_view.showing_popup:
+            popups.route_popup(self.game_view, self.game_view.popup_city1,
+                               self.game_view.popup_city2)
+
+        if len(game_globals.dest_draw) == 0:
+            for _ in range(4):
+                game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
+
+        if self.game_view.showing_dest_popup:
+            popups.show_dest_pop_up(self.game_view, game_globals.dest_draw, 2)
+
+        if self.game_view.showing_deck_popup:
+            popups.deck_pop_up(self.game_view)
+
+        if self.game_view.showing_faceup_popup:
+            popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
+
+
+        # Draw leaderboard lines and card counts
         for line in self.game_view.leaderboard_lines:
             line.draw()
 
         for line in self.game_view.index_cards:
             line.draw()
 
-        if self.game_view.showing_popup:
-            popups.route_popup(self.game_view, self.game_view.popup_city1,
-                               self.game_view.popup_city2)  # Pass self as first argument
-
-        if len(game_globals.dest_draw) == 0:
-            for i in range(4):
-                game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
-
-        #self.showing_dest_popup = True
-
-        if self.game_view.showing_dest_popup:
-            popups.show_dest_pop_up(self.game_view, game_globals.dest_draw, 2)
-
-        if self.game_view.showing_deck_popup:
-            popups.deck_pop_up(self.game_view)  # Pass self as first argument
-
-        if self.game_view.showing_faceup_popup:
-            popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
-
         if self.game_view.showing_info_popup:
             popups.show_info_pop_up(self.game_view)
 
-        # Draw sprites for beginning
-        self.game_view.deck_sprite.draw()
-        tmp = arcade.SpriteList()
-        tmp.append(self.game_view.card_banner)
-        tmp.append(self.game_view.leaderboard_banner)
-        tmp.append(self.game_view.player_sprite)
-        tmp.append(self.game_view.info_button)
-        tmp.draw()
-
-        for line in self.game_view.leaderboard_lines:
-            line.draw()
+        # draw cursor last
+        cursor = arcade.SpriteList()
+        cursor.append(self.game_view.player_sprite)
+        cursor.draw()
 
 
     def _contain_rect(self, tex_w: float, tex_h: float, view_w: float, view_h: float):
@@ -256,21 +279,29 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    if (self.game_view.selected_color and
-                            self.game_view.valid_route_colors(
-                            self.game_view.selected_color, self.game_view.popup_city1,
-                                self.game_view.popup_city2)):
+                    if self.game_view.selected_color == "locomotive" and not hasattr(self.game_view,
+                                                                                     'showing_route_selection'):
+                        self.game_view.showing_route_selection = True
+                        return
+                    else:
                         self.game_view.showing_popup = False
-                        self.game_view.claim_route(self.game_view.popup_city1,
-                                                   self.game_view.popup_city2)
+                        self.game_view.claim_route(self.game_view.popup_city1, self.game_view.popup_city2)
                         self.game_view.deselect_all_cities()
                         self.game_view.selected_color = None
+                        # Clean up route selection state
+                        if hasattr(self.game_view, 'showing_route_selection'):
+                            del self.game_view.showing_route_selection
+                        if hasattr(self.game_view, 'selected_route_index'):
+                            del self.game_view.selected_route_index
                     return
 
             # Check if color button was clicked
-            selected_color = self.game_view.handle_color_selection(x, y)
-            if selected_color:
-                self.game_view.selected_color = selected_color
+            selected_color_info = self.game_view.handle_color_selection(x, y)
+            if selected_color_info:
+                self.game_view.selected_color = selected_color_info['color']
+                # Store route index if available (for locomotive on double routes)
+                if 'route_index' in selected_color_info:
+                    self.game_view.selected_route_index = selected_color_info['route_index']
                 return
             # If neither button was pressed keep going
             return
@@ -280,21 +311,37 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    if len(self.game_view.selected_dests) >= 2:
+                    min_required = getattr(self.game_view, 'min_dest_cards_to_keep', 2)
+                    max_allowed = getattr(self.game_view, 'max_dest_cards_to_keep', 8)
 
-                        self.game_view.showing_dest_popup = False
+                    # Check if player selected the right amount
+                    if min_required <= len(self.game_view.selected_dests) <= max_allowed:
+                        # Add selected cards to player's hand
                         for card in self.game_view.selected_dests:
                             game_globals.player_obj.get_destination_cards().add(card)
+
+                        # Return unselected cards back to the deck
+                        for card in game_globals.dest_draw:
+                            if card not in self.game_view.selected_dests:
+                                game_globals.dest_deck.cards.append(card)
+
+                        # Clear dest_draw so next time we draw 4 new cards
+                        game_globals.dest_draw.clear()
+                        self.game_view.showing_dest_popup = False
                         self.game_view.selected_dests = []
                     return
+
             # Check if dest card was clicked
             selected_dest = self.game_view.handle_dest_selection(x, y)
             if selected_dest in self.game_view.selected_dests:
                 self.game_view.selected_dests.remove(selected_dest)
-            elif selected_dest == None:
+            elif selected_dest is None:
                 return
             else:
-                self.game_view.selected_dests.append(selected_dest)
+                # Check if player can still select more cards
+                max_allowed = getattr(self.game_view, 'max_dest_cards_to_keep', 8)
+                if len(self.game_view.selected_dests) < max_allowed:
+                    self.game_view.selected_dests.append(selected_dest)
             return
 
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -315,6 +362,30 @@ class MouseHandler:
 
             # Show the destination deck popup
             if hit_dest_deck:
+                # Check how many destination cards the player currently has
+                current_dest_cards = game_globals.player_obj.get_destination_cards().get_len()
+
+                # Maximum of 8 destination cards allowed
+                max_dest_cards = 8
+
+                # If player already has 8 or more, don't allow drawing more
+                if current_dest_cards >= max_dest_cards or current_dest_cards >= (max_dest_cards - 1):
+                    return
+
+                # Calculate how many cards the player can keep (but still draw 4 to show)
+                remaining_slots = max_dest_cards - current_dest_cards
+
+                # If dest_draw is empty, draw 4 new cards
+                if len(game_globals.dest_draw) == 0:
+                    for i in range(4):
+                        if game_globals.dest_deck.get_len() > 0:
+                            game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
+
+                # Store how many cards can be kept (e.g., if player has 6, they can only keep 2 more)
+                self.game_view.max_dest_cards_to_keep = remaining_slots
+                # Minimum to keep is 2, or all remaining slots if less than 2
+                self.game_view.min_dest_cards_to_keep = min(2, remaining_slots)
+
                 self.game_view.showing_dest_popup = True
                 return
 
@@ -407,7 +478,7 @@ class MouseHandler:
 
         for button in self.game_view.color_buttons:
             if self.is_point_in_button(x, y, button['bounds']):
-                return button['color']
+                return button
         return None
 
     def handle_dest_selection(self, x, y):
@@ -436,29 +507,49 @@ class RouteController:
         self.game_view.selected_cities.clear()
 
     def claim_route(self, city1, city2):
-        """Claim the route after pop-up interaction"""
+        """Claim the route after pop-up interaction - match color when possible"""
         city_pair = (city1, city2)
         reverse_pair = (city2, city1)
 
-        # Determine which pair exists
-        if city_pair in self.game_view.train_map:
+        if city_pair in c.TRAINS:
+            routes_data = c.TRAINS[city_pair]
             pair = city_pair
-        elif reverse_pair in self.game_view.train_map:
+        elif reverse_pair in c.TRAINS:
+            routes_data = c.TRAINS[reverse_pair]
             pair = reverse_pair
-        else:
-            return
+        selected_color = self.game_view.selected_color
 
-        # Find first available route and claim it
-        for i, taken in enumerate(self.game_view.route_taken[pair]):
-            if not taken:
-                # Mark this route as taken
-                self.game_view.route_taken[pair][i] = True
+        # Check if we have a specific route index selected (for locomotive on double routes)
+        selected_route_index = getattr(self.game_view, 'selected_route_index', None)
 
-                # Make all sprites for this route visible
-                for train_sprite in self.game_view.train_map[pair][i]:
+        if selected_route_index is not None:
+            # Claim the specifically selected route
+            if not self.game_view.route_taken[pair][selected_route_index]:
+                self.game_view.route_taken[pair][selected_route_index] = True
+                for train_sprite in self.game_view.train_map[pair][selected_route_index]:
                     train_sprite.set_texture(0)
                     train_sprite.alpha = 255
-                break
+            # Clear the selected route index
+            self.game_view.selected_route_index = None
+
+        elif selected_color == "locomotive":
+            # For locomotive without specific selection, claim first available
+            for i, taken in enumerate(self.game_view.route_taken[pair]):
+                if not taken:
+                    self.game_view.route_taken[pair][i] = True
+                    for train_sprite in self.game_view.train_map[pair][i]:
+                        train_sprite.set_texture(0)
+                        train_sprite.alpha = 255
+                    break
+        else:
+            # Regular card
+            for i, (taken, route_data) in enumerate(zip(self.game_view.route_taken[pair], routes_data)):
+                if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
+                    self.game_view.route_taken[pair][i] = True
+                    for train_sprite in self.game_view.train_map[pair][i]:
+                        train_sprite.set_texture(0)
+                        train_sprite.alpha = 255
+                    break
 
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route"""
@@ -749,10 +840,15 @@ class GameView(arcade.View):
             self.card_list.append(card)
 
         # Banners
-        self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.435)
+        self.train_cards_banner = arcade.Sprite("images/train_cards_banner.png", scale=0.435)
         cx, cy = self.board_renderer.img_to_screen(2840, 910, top_left=True)
-        self.card_banner.center_x = cx
-        self.card_banner.center_y = cy
+        self.train_cards_banner.center_x = cx
+        self.train_cards_banner.center_y = cy
+
+        self.dest_cards_banner = arcade.Sprite("images/dest_cards_banner.png", scale=0.435)
+        cx, cy = self.board_renderer.img_to_screen(2840, -35, top_left=True)
+        self.dest_cards_banner.center_x = cx
+        self.dest_cards_banner.center_y = cy
 
         self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
         lx, ly = self.board_renderer.img_to_screen(1250, -40, top_left=True)
@@ -767,7 +863,7 @@ class GameView(arcade.View):
 
         # Destination deck sprite set up
         self.dest_deck = arcade.Sprite("images/dest_deck.png", scale=0.37)
-        sx, sy = self.board_renderer.img_to_screen(2560, 280, top_left=True)
+        sx, sy = self.board_renderer.img_to_screen(2560, 240, top_left=True)
         self.dest_deck.center_x = sx
         self.dest_deck.center_y = sy
 
@@ -785,6 +881,8 @@ class GameView(arcade.View):
         self.popup_route_length = 0
         self.color_buttons = []
         self.dest_buttons = []
+        self.min_dest_cards_to_keep = 2
+        self.max_dest_cards_to_keep = 8
         self.showing_faceup_popup = False # Don't show face up popup
         self.selected_faceup_card_index = None # Face up card that was clicked
         self.take_button_bounds = None # Bounds for "take card"
