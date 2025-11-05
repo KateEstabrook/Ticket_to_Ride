@@ -29,11 +29,29 @@ class BoardRenderer:
             self.game_view.board_rect
         )
 
+        dest_list = arcade.SpriteList()
+        # Destination cards set up
+        i = 0
+        if game_globals.player_obj.get_destination_cards().get_len() > 0:
+            for number, (sx, sy) in c.DEST_CARDS.items():
+                if i >= game_globals.player_obj.get_destination_cards().get_len():
+                    break  # stop if there are no more cards to draw
+
+                card = arcade.Sprite()
+
+                card.texture = arcade.load_texture(game_globals.player_obj.
+                                                   get_destination_cards().get_card_at_index(i).get_sprite())
+
+                self.place_card(card, sx, sy, top_left=True, scale=0.38)
+                dest_list.append(card)
+                i += 1
+
         # Draw all the sprites
         self.game_view.train_list.draw()
         self.game_view.city_list.draw()
         self.game_view.card_list.draw()
         self.game_view.dest_deck_sprite.draw()
+        dest_list.draw()
 
         # Draw sprites for beginning
         self.game_view.deck_sprite.draw()
@@ -773,7 +791,6 @@ class GameView(arcade.View):
             for name, (_, _, filename) in c.PLAYER_CARDS.items()
         }
         self.card_list = arcade.SpriteList()
-        self.dest_list = arcade.SpriteList()
 
         # Face up card set up
         i = 0

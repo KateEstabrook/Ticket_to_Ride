@@ -446,14 +446,14 @@ FACEUP_CARDS = {
 }
 
 DEST_CARDS = {
-    "First" : [2840, 1150],
-    "Second" : [3120, 1150],
-    "Third" : [2560, 1330],
-    "Fourth" : [2840, 1330],
-    "Fifth" : [3120, 1330],
-    "Sixth" : [2560, 1510],
-    "Seventh" : [2840, 1510],
-    "Eighth" : [3120, 1510]
+    "First" : [2840, 300],
+    "Second" : [3120, 300],
+    "Third" : [2560, 480],
+    "Fourth" : [2840, 480],
+    "Fifth" : [3120, 480],
+    "Sixth" : [2560, 660],
+    "Seventh" : [2840, 660],
+    "Eighth" : [3120, 660]
 }
 
 EXIT_BUTTON = (128, 0, 0)
@@ -527,13 +527,13 @@ DESTINATIONS = [("Boston", "Miami", 12), ("Calgary", "Phoenix", 13),
                 ("Duluth", "Houston", 8), ("Helena", "Los Angeles", 8),
                 ("Kansas City", "Houston", 5),
                 ("Los Angeles", "Chicago", 16), ("Los Angeles", "Miami", 20),
-                ("Los Angeles", "New York", 21), ("San Francisco", "Washington", 21),
+                ("Los Angeles", "New York", 21),
                 ("Montreal", "Atlanta", 9), ("Montreal", "New Orleans", 13),
-                ("New York", "Atlanta", 6), ("Atlanta", "Washington", 4),
+                ("New York", "Atlanta", 6),
                 ("Portland", "Nashville", 17), ("Portland", "Phoenix", 11),
                 ("San Francisco", "Atlanta", 17),
                 ("Sault St. Marie", "Nashville", 8), ("Sault St. Marie", "Oklahoma City", 9),
                 ("Seattle", "Los Angeles", 9), ("Seattle", "New York", 22),
-                ("Toronto", "Miami", 10), ("Omaha", "New Orleans", 8),
+                ("Toronto", "Miami", 10),
                 ("Vancouver", "Montreal", 20), ("Vancouver", "Santa Fe", 13),
                 ("Winnipeg", "Houston", 12), ("Winnipeg", "Little Rock", 11)]
