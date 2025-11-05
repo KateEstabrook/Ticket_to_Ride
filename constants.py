@@ -446,14 +446,14 @@ FACEUP_CARDS = {
 }
 
 DEST_CARDS = {
-    "First" : [2840, 300],
-    "Second" : [3120, 300],
-    "Third" : [2560, 480],
-    "Fourth" : [2840, 480],
-    "Fifth" : [3120, 480],
-    "Sixth" : [2560, 660],
-    "Seventh" : [2840, 660],
-    "Eighth" : [3120, 660]
+    "First" : [2840, 270],
+    "Second" : [3120, 270],
+    "Third" : [2560, 450],
+    "Fourth" : [2840, 450],
+    "Fifth" : [3120, 450],
+    "Sixth" : [2560, 630],
+    "Seventh" : [2840, 630],
+    "Eighth" : [3120, 630]
 }
 
 EXIT_BUTTON = (128, 0, 0)

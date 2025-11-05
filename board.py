@@ -56,7 +56,8 @@ class BoardRenderer:
         # Draw sprites for beginning
         self.game_view.deck_sprite.draw()
         tmp = arcade.SpriteList()
-        tmp.append(self.game_view.card_banner)
+        tmp.append(self.game_view.dest_cards_banner)
+        tmp.append(self.game_view.train_cards_banner)
         tmp.append(self.game_view.leaderboard_banner)
         tmp.append(self.game_view.info_button)
         tmp.draw()
@@ -811,10 +812,15 @@ class GameView(arcade.View):
             self.card_list.append(card)
 
         # Banners
-        self.card_banner = arcade.Sprite("images/card_banner.png", scale=0.435)
+        self.train_cards_banner = arcade.Sprite("images/train_cards_banner.png", scale=0.435)
         cx, cy = self.board_renderer.img_to_screen(2840, 910, top_left=True)
-        self.card_banner.center_x = cx
-        self.card_banner.center_y = cy
+        self.train_cards_banner.center_x = cx
+        self.train_cards_banner.center_y = cy
+
+        self.dest_cards_banner = arcade.Sprite("images/dest_cards_banner.png", scale=0.435)
+        cx, cy = self.board_renderer.img_to_screen(2840, -35, top_left=True)
+        self.dest_cards_banner.center_x = cx
+        self.dest_cards_banner.center_y = cy
 
         self.leaderboard_banner = arcade.Sprite("images/leaderboard_banner.png", scale=0.40)
         lx, ly = self.board_renderer.img_to_screen(1250, -40, top_left=True)
@@ -829,7 +835,7 @@ class GameView(arcade.View):
 
         # Destination deck sprite set up
         self.dest_deck = arcade.Sprite("images/dest_deck.png", scale=0.37)
-        sx, sy = self.board_renderer.img_to_screen(2560, 280, top_left=True)
+        sx, sy = self.board_renderer.img_to_screen(2560, 240, top_left=True)
         self.dest_deck.center_x = sx
         self.dest_deck.center_y = sy
 
