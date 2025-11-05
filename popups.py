@@ -224,6 +224,7 @@ def faceup_card_pop_up(game_view, card_index):
         exit_button_y + exit_button_height // 2  # top
     )
 
+
 def route_popup(game_view, city1, city2):
     """
     Show a white rectangle pop-up with color selection buttons using card images
@@ -246,96 +247,205 @@ def route_popup(game_view, city1, city2):
         )
     )
 
+    city_pair = (city1, city2)
+    reverse_pair = (city2, city1)
+
+    if city_pair in c.TRAINS:
+        routes_data = c.TRAINS[city_pair]
+        pair = city_pair
+    elif reverse_pair in c.TRAINS:
+        routes_data = c.TRAINS[reverse_pair]
+        pair = reverse_pair
+
+    # Check if this should be the SECOND popup (after locomotive was saved)
+    is_second_popup = (game_view.selected_color == "locomotive" and
+                       hasattr(game_view, 'showing_route_selection') and
+                       game_view.showing_route_selection)
+
     # Use pre loaded color textures
     card_textures = game_view.color_textures
-
-    # Button dimensions and layout
-    button_width = popup_width * 0.18
-    button_height = popup_height * 0.15
-    horizontal_spacing = popup_width * 0.1
-    vertical_spacing = popup_height * 0.03
-
-    # Starting position for the grid
-    start_x = popup_x - popup_width * 0.3
-    start_y = popup_y - popup_height * -0.2
-
-    # Store button positions for click detection
+    # buttons for click detection
     game_view.color_buttons = []
 
-    # Define colors
-    color_cards = [
-        ("RED", "red.png"),
-        ("BLUE", "blue.png"),
-        ("GREEN", "green.png"),
-        ("YELLOW", "yellow.png"),
-        ("ORANGE", "orange.png"),
-        ("PINK", "pink.png"),
-        ("BLACK", "black.png"),
-        ("WHITE", "white.png"),
-        ("LOCOMOTIVE", "wild.png")
-    ]
+    if is_second_popup:
+        # SECOND POPUP: Route selection after locomotive was chosen
+        arcade.draw_text(
+            "Select which route to claim:",
+            popup_x, popup_y + popup_height * 0.35,
+            arcade.color.BLACK,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center",
+        )
 
-    # Draw cards
-    for row in range(3):
-        row_x = start_x
+        button_width = popup_width * 0.2
+        button_height = popup_height * 0.2
+        button_spacing = popup_width * 0.03
 
-        for col in range(3):
-            index = row * 3 + col
-            # Calculate button position
-            button_x = row_x + col * (button_width + horizontal_spacing)
-            button_y = start_y - row * (button_height + vertical_spacing)
-            color_name = color_cards[index][0]
-            texture = card_textures[color_name]
+        available_routes = []
+        for i, route_data in enumerate(routes_data):
+            route_taken = game_view.route_taken[pair][i]
+            if not route_taken and route_data["color"] != "colorless":
+                available_routes.append((i, route_data))
 
-            # Draw card image
-            rect = arcade.LBWH(
-                button_x - button_width // 2,
-                button_y - button_height // 2,
-                button_width,
-                button_height
-            )
-            arcade.draw_texture_rect(texture, rect)
+        total_width = len(available_routes) * button_width + (
+                len(available_routes) - 1) * button_spacing
+        start_x = popup_x - total_width / 2
 
-            # draw border
-            if game_view.selected_color == color_name.lower():
-                border_color = arcade.color.YELLOW
-                border_width = 4
-            else:
-                border_color = arcade.color.BLACK
-                border_width = 2
+        for idx, (route_index, route_data) in enumerate(available_routes):
+            button_x = start_x + idx * (button_width + button_spacing) + button_width / 2
+            button_y = popup_y - popup_height * 0.03
 
-            arcade.draw_rect_outline(
-                rect,
-                border_color,
-                border_width=border_width
-            )
+            color_name = route_data["color"].upper()
+            if color_name in card_textures:
+                texture = card_textures[color_name]
 
-            # Add text label
-            text_color = arcade.color.WHITE
-            # Black text for light-colored cards
-            if color_name in ["WHITE", "YELLOW"]:
-                text_color = arcade.color.BLACK
-
-            arcade.draw_text(
-                color_name,
-                button_x, button_y,
-                text_color,
-                font_size=10,
-                anchor_x="center",
-                anchor_y="center",
-                bold=True
-            )
-
-            # Store button info for click detection
-            game_view.color_buttons.append({
-                'color': color_name.lower(),
-                'bounds': (
-                    button_x - button_width // 2,  # left
-                    button_x + button_width // 2,  # right
-                    button_y - button_height // 2,  # bottom
-                    button_y + button_height // 2  # top
+                # Draw card image
+                rect = arcade.LBWH(
+                    button_x - button_width / 2,
+                    button_y - button_height / 2,
+                    button_width,
+                    button_height
                 )
-            })
+                arcade.draw_texture_rect(texture, rect)
+
+                # Highlight border for selected route
+                selected_route_index = getattr(game_view, 'selected_route_index', None)
+                if selected_route_index == route_index:
+                    border_color = arcade.color.YELLOW
+                    border_width = 4
+                else:
+                    border_color = arcade.color.BLACK
+                    border_width = 2
+
+                arcade.draw_rect_outline(
+                    rect,
+                    border_color,
+                    border_width=border_width
+                )
+
+                # Add text label
+                text_color = arcade.color.WHITE
+                if color_name in ["WHITE", "YELLOW"]:
+                    text_color = arcade.color.BLACK
+
+                arcade.draw_text(
+                    color_name,
+                    button_x, button_y,
+                    text_color,
+                    font_size=12,
+                    anchor_x="center",
+                    anchor_y="center",
+                    bold=True
+                )
+
+                game_view.color_buttons.append({
+                    'color': "locomotive",
+                    'bounds': (
+                        button_x - button_width / 2,
+                        button_x + button_width / 2,
+                        button_y - button_height / 2,
+                        button_y + button_height / 2
+                    ),
+                    'route_index': route_index
+                })
+
+    else:
+        # Button dimensions and layout
+        button_width = popup_width * 0.18
+        button_height = popup_height * 0.15
+        horizontal_spacing = popup_width * 0.1
+        vertical_spacing = popup_height * 0.03
+
+        # Starting position for the grid
+        start_x = popup_x - popup_width * 0.3
+        start_y = popup_y - popup_height * -0.2
+
+        # Define colors
+        color_cards = [
+            ("RED", "red.png"),
+            ("BLUE", "blue.png"),
+            ("GREEN", "green.png"),
+            ("YELLOW", "yellow.png"),
+            ("ORANGE", "orange.png"),
+            ("PINK", "pink.png"),
+            ("BLACK", "black.png"),
+            ("WHITE", "white.png"),
+            ("LOCOMOTIVE", "wild.png")
+        ]
+
+        # Draw cards
+        for row in range(3):
+            row_x = start_x
+
+            for col in range(3):
+                index = row * 3 + col
+                # Calculate button position
+                button_x = row_x + col * (button_width + horizontal_spacing)
+                button_y = start_y - row * (button_height + vertical_spacing)
+                color_name = color_cards[index][0]
+                texture = card_textures[color_name]
+
+                # Draw card image
+                rect = arcade.LBWH(
+                    button_x - button_width // 2,
+                    button_y - button_height // 2,
+                    button_width,
+                    button_height
+                )
+                arcade.draw_texture_rect(texture, rect)
+
+                # draw border
+                if game_view.selected_color == color_name.lower():
+                    border_color = arcade.color.YELLOW
+                    border_width = 4
+                else:
+                    border_color = arcade.color.BLACK
+                    border_width = 2
+
+                arcade.draw_rect_outline(
+                    rect,
+                    border_color,
+                    border_width=border_width
+                )
+
+                # Add text label
+                text_color = arcade.color.WHITE
+                # Black text for light-colored cards
+                if color_name in ["WHITE", "YELLOW"]:
+                    text_color = arcade.color.BLACK
+
+                arcade.draw_text(
+                    color_name,
+                    button_x, button_y,
+                    text_color,
+                    font_size=10,
+                    anchor_x="center",
+                    anchor_y="center",
+                    bold=True
+                )
+
+                # Store button info for click detection
+                game_view.color_buttons.append({
+                    'color': color_name.lower(),
+                    'bounds': (
+                        button_x - button_width // 2,  # left
+                        button_x + button_width // 2,  # right
+                        button_y - button_height // 2,  # bottom
+                        button_y + button_height // 2  # top
+                    )
+                })
+
+        # Add color selection prompt
+        color_text = "Which color would you like to use?"
+        arcade.draw_text(
+            color_text,
+            popup_x, popup_y + popup_height * 0.35,
+            arcade.color.BLACK,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center"
+        )
 
     # Add exit button in lower right corner
     exit_button_width = popup_width * 0.2
@@ -375,10 +485,18 @@ def route_popup(game_view, city1, city2):
         exit_button_y + exit_button_height // 2  # top
     )
 
-    # Only show save button if a color has been selected
-    if (game_view.selected_color and
-            game_view.valid_route_colors(game_view.selected_color, city1, city2)):
+    # Only show save button if appropriate
+    can_save = False
+    if is_second_popup:
+        # Second popup
+        selected_route_index = getattr(game_view, 'selected_route_index', None)
+        can_save = (selected_route_index is not None)
+    else:
+        # First popup
+        if game_view.selected_color:
+            can_save = game_view.valid_route_colors(game_view.selected_color, city1, city2)
 
+    if can_save:
         save_button_width = popup_width * 0.2
         save_button_height = popup_height * 0.1
         save_button_x = popup_x + popup_width * 0.25 - save_button_width // 2
@@ -433,20 +551,23 @@ def route_popup(game_view, city1, city2):
         width=popup_width * 0.8
     )
 
-    # Add color selection prompt
-    color_text = "Which color would you like to use?"
-    arcade.draw_text(
-        color_text,
-        popup_x, popup_y + popup_height * 0.35,
-        arcade.color.BLACK,
-        font_size=12,
-        anchor_x="center",
-        anchor_y="center"
-    )
-
     # Add selection status text
-    if game_view.selected_color:
-        status_text = f"Selected: {game_view.selected_color.upper()}"
+    if is_second_popup:
+        # Show selected route
+        selected_route_index = getattr(game_view, 'selected_route_index', None)
+        if selected_route_index is not None and selected_route_index < len(routes_data):
+            route_data = routes_data[selected_route_index]
+            status_text = f"Selected route: {route_data['color'].upper()}"
+        else:
+            status_text = "Select a route"
+    else:
+        # First popup: show selected color
+        if game_view.selected_color:
+            status_text = f"Selected: {game_view.selected_color.upper()}"
+        else:
+            status_text = ""
+
+    if status_text:
         arcade.draw_text(
             status_text,
             popup_x, popup_y + popup_height * -0.3,
@@ -456,9 +577,11 @@ def route_popup(game_view, city1, city2):
             anchor_y="center",
             bold=True
         )
-    # invalid color
+
+    # invalid color/route
     if (game_view.selected_color and
-            not game_view.valid_route_colors(game_view.selected_color, city1, city2)):
+            not game_view.valid_route_colors(game_view.selected_color, city1, city2) and
+            not is_second_popup):
         error_text = f"Cannot use {game_view.selected_color.upper()} card on this route!"
         arcade.draw_text(
             error_text,
@@ -470,6 +593,7 @@ def route_popup(game_view, city1, city2):
             anchor_y="center",
             bold=True
         )
+
 
 def show_dest_pop_up(self, dest_list, num):
     """

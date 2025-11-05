@@ -125,8 +125,8 @@ TRAINS = {
         {"positions": [(2232, 256, 220), (2301, 313, 220)], "color": "colorless"}
     ],
     ("Boston", "New York"): [
-        {"positions": [(2320, 394, 123), (2273, 470, 123)], "color": "red"},
-        {"positions": [(2346, 414, 123), (2298, 488, 123)], "color": "yellow"}
+        {"positions": [(2320, 394, 123), (2273, 470, 123)], "color": "yellow"},
+        {"positions": [(2346, 414, 123), (2298, 488, 123)], "color": "red"}
     ],
     ("Montreal", "New York"): [
         {"positions": [(2182, 280, 80), (2196, 367, 80), (2210, 456, 80)], "color": "blue"}
@@ -271,9 +271,9 @@ TRAINS = {
     ],
     ("Portland", "San Francisco"): [
         {"positions": [(198, 579, 116), (171, 664, 103), (161, 752, 90),
-                       (163, 840, 85), (178, 926, 76)], "color": "green"},
+                       (163, 840, 85), (178, 926, 76)], "color": "pink"},
         {"positions": [(165, 574, 116), (139, 659, 103), (128, 747, 90),
-                       (129, 835, 85), (146, 921, 76)], "color": "pink"}
+                       (129, 835, 85), (146, 921, 76)], "color": "green"}
     ],
     ("New Orleans", "Atlanta"): [
         {"positions": [(1760, 1324, 109), (1801, 1246, 119),
@@ -373,8 +373,8 @@ TRAINS = {
         {"positions": [(1355, 820, 64)], "color": "colorless"}
     ],
     ("Kansas City", "Saint Louis"): [
-        {"positions": [(1537, 885, 0), (1450, 886, 0)], "color": "blue"},
-        {"positions": [(1539, 849, 0), (1450, 853, 0)], "color": "pink"}
+        {"positions": [(1537, 885, 0), (1450, 886, 0)], "color": "pink"},
+        {"positions": [(1539, 849, 0), (1450, 853, 0)], "color": "blue"}
     ],
     ("Kansas City", "Denver"): [
         {"positions": [(1315, 878, 160), (1233, 906, 170),

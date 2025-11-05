@@ -279,21 +279,29 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    if (self.game_view.selected_color and
-                            self.game_view.valid_route_colors(
-                            self.game_view.selected_color, self.game_view.popup_city1,
-                                self.game_view.popup_city2)):
+                    if self.game_view.selected_color == "locomotive" and not hasattr(self.game_view,
+                                                                                     'showing_route_selection'):
+                        self.game_view.showing_route_selection = True
+                        return
+                    else:
                         self.game_view.showing_popup = False
-                        self.game_view.claim_route(self.game_view.popup_city1,
-                                                   self.game_view.popup_city2)
+                        self.game_view.claim_route(self.game_view.popup_city1, self.game_view.popup_city2)
                         self.game_view.deselect_all_cities()
                         self.game_view.selected_color = None
+                        # Clean up route selection state
+                        if hasattr(self.game_view, 'showing_route_selection'):
+                            del self.game_view.showing_route_selection
+                        if hasattr(self.game_view, 'selected_route_index'):
+                            del self.game_view.selected_route_index
                     return
 
             # Check if color button was clicked
-            selected_color = self.game_view.handle_color_selection(x, y)
-            if selected_color:
-                self.game_view.selected_color = selected_color
+            selected_color_info = self.game_view.handle_color_selection(x, y)
+            if selected_color_info:
+                self.game_view.selected_color = selected_color_info['color']
+                # Store route index if available (for locomotive on double routes)
+                if 'route_index' in selected_color_info:
+                    self.game_view.selected_route_index = selected_color_info['route_index']
                 return
             # If neither button was pressed keep going
             return
@@ -470,7 +478,7 @@ class MouseHandler:
 
         for button in self.game_view.color_buttons:
             if self.is_point_in_button(x, y, button['bounds']):
-                return button['color']
+                return button
         return None
 
     def handle_dest_selection(self, x, y):
@@ -499,29 +507,49 @@ class RouteController:
         self.game_view.selected_cities.clear()
 
     def claim_route(self, city1, city2):
-        """Claim the route after pop-up interaction"""
+        """Claim the route after pop-up interaction - match color when possible"""
         city_pair = (city1, city2)
         reverse_pair = (city2, city1)
 
-        # Determine which pair exists
-        if city_pair in self.game_view.train_map:
+        if city_pair in c.TRAINS:
+            routes_data = c.TRAINS[city_pair]
             pair = city_pair
-        elif reverse_pair in self.game_view.train_map:
+        elif reverse_pair in c.TRAINS:
+            routes_data = c.TRAINS[reverse_pair]
             pair = reverse_pair
-        else:
-            return
+        selected_color = self.game_view.selected_color
 
-        # Find first available route and claim it
-        for i, taken in enumerate(self.game_view.route_taken[pair]):
-            if not taken:
-                # Mark this route as taken
-                self.game_view.route_taken[pair][i] = True
+        # Check if we have a specific route index selected (for locomotive on double routes)
+        selected_route_index = getattr(self.game_view, 'selected_route_index', None)
 
-                # Make all sprites for this route visible
-                for train_sprite in self.game_view.train_map[pair][i]:
+        if selected_route_index is not None:
+            # Claim the specifically selected route
+            if not self.game_view.route_taken[pair][selected_route_index]:
+                self.game_view.route_taken[pair][selected_route_index] = True
+                for train_sprite in self.game_view.train_map[pair][selected_route_index]:
                     train_sprite.set_texture(0)
                     train_sprite.alpha = 255
-                break
+            # Clear the selected route index
+            self.game_view.selected_route_index = None
+
+        elif selected_color == "locomotive":
+            # For locomotive without specific selection, claim first available
+            for i, taken in enumerate(self.game_view.route_taken[pair]):
+                if not taken:
+                    self.game_view.route_taken[pair][i] = True
+                    for train_sprite in self.game_view.train_map[pair][i]:
+                        train_sprite.set_texture(0)
+                        train_sprite.alpha = 255
+                    break
+        else:
+            # Regular card
+            for i, (taken, route_data) in enumerate(zip(self.game_view.route_taken[pair], routes_data)):
+                if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
+                    self.game_view.route_taken[pair][i] = True
+                    for train_sprite in self.game_view.train_map[pair][i]:
+                        train_sprite.set_texture(0)
+                        train_sprite.alpha = 255
+                    break
 
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route"""
