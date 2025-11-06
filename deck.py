@@ -53,10 +53,10 @@ class Deck:
         self.cards.append(card)
 
     def has_cards(self, color, count):
-        """# Checks if the passed cards are in the deck"""
+        """Checks if the passed cards are in the deck"""
         if self.get_count(color) >= count:
             return True
-        if self.get_count("wild") + self.get_count(color) >= count:
+        if self.get_count("wild") + self.get_count(color) >= count and color != "wild":
             return True
         return False
 

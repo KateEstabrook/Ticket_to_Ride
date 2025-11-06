@@ -258,7 +258,7 @@ def route_popup(game_view, city1, city2):
         pair = reverse_pair
 
     # Check if this should be the second popup
-    is_second_popup = (game_view.selected_color == "locomotive" and
+    is_second_popup = (game_view.selected_color == "wild" and
                        hasattr(game_view, 'showing_route_selection') and
                        game_view.showing_route_selection)
 
@@ -268,7 +268,7 @@ def route_popup(game_view, city1, city2):
     game_view.color_buttons = []
 
     if is_second_popup:
-        # Route selection after locomotive was chosen
+        # Route selection after wild was chosen
         arcade.draw_text(
             "Select which route to claim:",
             popup_x, popup_y + popup_height * 0.35,
@@ -340,7 +340,7 @@ def route_popup(game_view, city1, city2):
                 )
 
                 game_view.color_buttons.append({
-                    'color': "locomotive",
+                    'color': "wild",
                     'bounds': (
                         button_x - button_width / 2,
                         button_x + button_width / 2,
@@ -371,7 +371,7 @@ def route_popup(game_view, city1, city2):
             ("PINK", "pink.png"),
             ("BLACK", "black.png"),
             ("WHITE", "white.png"),
-            ("LOCOMOTIVE", "wild.png")
+            ("WILD", "wild.png")
         ]
 
         # Draw cards
@@ -500,8 +500,8 @@ def route_popup(game_view, city1, city2):
                 routes_data = c.TRAINS[city_pair]
                 route_taken = game_view.route_taken[city_pair]
 
-                # For locomotive, we just need any available route
-                if game_view.selected_color == "locomotive":
+                # For wild, we just need any available route
+                if game_view.selected_color == "wild":
                     can_save = any(
                         not taken for taken, route_data in zip(route_taken, routes_data))
                 else:
