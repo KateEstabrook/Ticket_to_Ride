@@ -4,9 +4,12 @@ Stores all of the pop ups during game play
 import arcade
 import constants as c
 import globals
-import start_menu as sm
 #import cards
 #import board
+
+def _centered_rect(cx, cy, w, h):
+    """LBWH rect centered at (cx, cy)."""
+    return arcade.LBWH(cx - w / 2, cy - h / 2, w, h)
 
 def deck_pop_up(game_view):
     """
@@ -15,19 +18,16 @@ def deck_pop_up(game_view):
     # Calculate dimensions and positions
     popup_width = c.WINDOW_WIDTH * 0.4
     popup_height = c.WINDOW_HEIGHT * 0.4
-    popup_x = c.SCREEN_WIDTH * 0.5
-    popup_y = c.SCREEN_HEIGHT * 0.5
+    popup_x = c.SCREEN_WIDTH // 2
+    popup_y = c.SCREEN_HEIGHT // 2
+
+    deck_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
 
     # Draw white rectangle using cached texture
     white_texture = game_view.popup_textures['white_bg']
     arcade.draw_texture_rect(
         white_texture,
-        arcade.LBWH(
-            popup_x - popup_width // 2,
-            popup_y - popup_height // 2,
-            popup_width,
-            popup_height
-        )
+        deck_rect
     )
 
     if game_view.drawn_card is not None:
