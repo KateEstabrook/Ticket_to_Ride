@@ -4,6 +4,7 @@ Stores all of the pop ups during game play
 import arcade
 import constants as c
 import globals
+import start_menu as sm
 #import cards
 #import board
 
@@ -14,8 +15,8 @@ def deck_pop_up(game_view):
     # Calculate dimensions and positions
     popup_width = c.WINDOW_WIDTH * 0.4
     popup_height = c.WINDOW_HEIGHT * 0.4
-    popup_x = c.WINDOW_WIDTH // 2
-    popup_y = c.WINDOW_HEIGHT // 2
+    popup_x = c.SCREEN_WIDTH * 0.5
+    popup_y = c.SCREEN_HEIGHT * 0.5
 
     # Draw white rectangle using cached texture
     white_texture = game_view.popup_textures['white_bg']
