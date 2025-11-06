@@ -932,11 +932,11 @@ class GameView(arcade.View):
         self.card_controller.update_card_counts() # Initialize card count display
 
         # Info button
-        self.info_button = arcade.Sprite("images/info_button.jpg", scale=0.1)
+        self.info_button = arcade.Sprite("images/info_button.png", scale=0.1)
         self.info_button.center_x = 50  # Top left position
         self.info_button.center_y = c.WINDOW_HEIGHT - 50
         self.info_button_bounds = None
-        self.showing_info_popup = False
+        self.showing_info_popup = True
 
         # Calculate info button bounds
         info_button_width = self.info_button.width
