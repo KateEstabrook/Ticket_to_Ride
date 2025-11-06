@@ -176,8 +176,8 @@ class BoardRenderer:
 
 
         # Starting positions for two columns
-        start_x1, start_y = self.img_to_screen(900, -35, top_left=True)
-        start_x2, _ = self.img_to_screen(1800, -35, top_left=True)
+        start_x1, start_y = self.img_to_screen(850, -35, top_left=True)
+        start_x2, _ = self.img_to_screen(1650, -35, top_left=True)
         line_height = 25  # Space between lines
 
         # Clear existing leaderboard lines
