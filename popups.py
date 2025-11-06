@@ -7,6 +7,14 @@ import globals
 #import cards
 #import board
 
+def _vw(game_view) -> float:
+    """Window width (falls back to constants if needed)."""
+    return getattr(game_view.window, "width", c.SCREEN_WIDTH)
+
+def _vh(game_view) -> float:
+    """Window height (falls back to constants if needed)."""
+    return getattr(game_view.window, "height", c.WINDOW_HEIGHT)
+
 def _centered_rect(cx, cy, w, h):
     """LBWH rect centered at (cx, cy)."""
     return arcade.LBWH(cx - w / 2, cy - h / 2, w, h)
@@ -15,11 +23,13 @@ def deck_pop_up(game_view):
     """
     Show a white rectangle pop-up with color selection buttons using card images
     """
+    vw, vh = _vw(game_view), _vh(game_view)
+
     # Calculate dimensions and positions
-    popup_width = c.WINDOW_WIDTH * 0.4
-    popup_height = c.WINDOW_HEIGHT * 0.4
-    popup_x = c.SCREEN_WIDTH // 2
-    popup_y = c.SCREEN_HEIGHT // 2
+    popup_width = vw * 0.4
+    popup_height = vh * 0.4
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
 
     deck_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
 
@@ -59,13 +69,13 @@ def deck_pop_up(game_view):
     # Add exit button in lower right corner
     continue_button_width = popup_width * 0.2
     continue_button_height = popup_height * 0.1
-    continue_button_x = popup_x + popup_width * 0.48 - continue_button_width // 2
-    continue_button_y = popup_y - popup_height * 0.45 + continue_button_height // 2
+    continue_button_x = popup_x + popup_width * 0.38
+    continue_button_y = popup_y - popup_height * 0.42
 
     exit_texture = game_view.popup_textures['save_button']
-    exit_rect = arcade.LBWH(
-        continue_button_x - continue_button_width // 2,
-        continue_button_y - continue_button_height // 2,
+    exit_rect = _centered_rect(
+        continue_button_x,
+        continue_button_y,
         continue_button_width,
         continue_button_height
     )
@@ -88,10 +98,10 @@ def deck_pop_up(game_view):
     )
 
     game_view.continue_button_bounds = (
-        continue_button_x - continue_button_width // 2,  # left
-        continue_button_x + continue_button_width // 2,  # right
-        continue_button_y - continue_button_height // 2,  # bottom
-        continue_button_y + continue_button_height // 2  # top
+        exit_rect.left,  # left
+        exit_rect.left + exit_rect.width,  # right
+        exit_rect.bottom,  # bottom
+        exit_rect.bottom + exit_rect.height  # top
     )
 
 
@@ -99,22 +109,25 @@ def faceup_card_pop_up(game_view, card_index):
     """
     Show a white rectangle pop-up when a face-up card is clicked
     """
+    vw, vh = _vw(game_view), _vh(game_view)
+
     # Calculate dimensions and positions
-    popup_width = c.WINDOW_WIDTH * 0.4
-    popup_height = c.WINDOW_HEIGHT * 0.4
-    popup_x = c.WINDOW_WIDTH // 2
-    popup_y = c.WINDOW_HEIGHT // 2
+    popup_width = vw * 0.4
+    popup_height = vh * 0.4
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
+
+    # Draw shadow rectangle using cached texture
+    shadow_tex = game_view.popup_textures['shadow']
+    shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 3, popup_height * 3)
+    arcade.draw_texture_rect(shadow_tex, shadow_rect)
 
     # Draw white rectangle using cached texture
     white_texture = game_view.popup_textures['white_bg']
+    faceup_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
     arcade.draw_texture_rect(
         white_texture,
-        arcade.LBWH(
-            popup_x - popup_width // 2,
-            popup_y - popup_height // 2,
-            popup_width,
-            popup_height
-        )
+        faceup_rect
     )
 
     # Get the selected face up card
@@ -134,7 +147,7 @@ def faceup_card_pop_up(game_view, card_index):
         card_h = card_w * aspect_ratio
 
         # Center it nicely inside the popup
-        card_rect = arcade.LBWH(popup_x - card_w / 2, popup_y - card_h / 2, card_w, card_h)
+        card_rect = _centered_rect(popup_x, popup_y, card_w, card_h)
         arcade.draw_texture_rect(tex, card_rect)
 
         # Draw card info text
@@ -152,13 +165,13 @@ def faceup_card_pop_up(game_view, card_index):
     # Add take button
     take_button_width = popup_width * 0.2
     take_button_height = popup_height * 0.1
-    take_button_x = popup_x + popup_width * 0.25 - take_button_width // 2
-    take_button_y = popup_y - popup_height * 0.45 + take_button_height // 2
+    take_button_x = popup_x + popup_width * 0.16
+    take_button_y = popup_y - popup_height * 0.42
 
     take_texture = game_view.popup_textures['save_button']
-    take_rect = arcade.LBWH(
-        take_button_x - take_button_width // 2,
-        take_button_y - take_button_height // 2,
+    take_rect = _centered_rect(
+        take_button_x,
+        take_button_y,
         take_button_width,
         take_button_height
     )
@@ -181,22 +194,22 @@ def faceup_card_pop_up(game_view, card_index):
     )
 
     game_view.take_button_bounds = (
-        take_button_x - take_button_width // 2,  # left
-        take_button_x + take_button_width // 2,  # right
-        take_button_y - take_button_height // 2,  # bottom
-        take_button_y + take_button_height // 2  # top
+        take_rect.left,  # left
+        take_rect.left + take_rect.width,  # right
+        take_rect.bottom,  # bottom
+        take_rect.bottom + take_rect.height  # top
     )
 
     # Add exit button in lower right corner
     exit_button_width = popup_width * 0.2
     exit_button_height = popup_height * 0.1
-    exit_button_x = popup_x + popup_width * 0.48 - exit_button_width // 2
-    exit_button_y = popup_y - popup_height * 0.45 + exit_button_height // 2
+    exit_button_x = popup_x + popup_width * 0.38
+    exit_button_y = popup_y - popup_height * 0.42
 
     exit_texture = game_view.popup_textures['exit_button']
-    exit_rect = arcade.LBWH(
-        exit_button_x - exit_button_width // 2,
-        exit_button_y - exit_button_height // 2,
+    exit_rect = _centered_rect(
+        exit_button_x,
+        exit_button_y,
         exit_button_width,
         exit_button_height
     )
@@ -219,10 +232,10 @@ def faceup_card_pop_up(game_view, card_index):
     )
 
     game_view.exit_button_bounds = (
-        exit_button_x - exit_button_width // 2,  # left
-        exit_button_x + exit_button_width // 2,  # right
-        exit_button_y - exit_button_height // 2,  # bottom
-        exit_button_y + exit_button_height // 2  # top
+        exit_rect.left,  # left
+        exit_rect.left + exit_rect.width,  # right
+        exit_rect.bottom,  # bottom
+        exit_rect.bottom + exit_rect.height  # top
     )
 
 
@@ -621,23 +634,22 @@ def show_dest_pop_up(self, dest_list, num):
     """
     Destination popup
     """
-    # Popup dimensions
-    popup_width = c.WINDOW_WIDTH * 0.4
-    popup_height = c.WINDOW_HEIGHT * 0.4
-    popup_x = c.WINDOW_WIDTH // 2
-    popup_y = c.WINDOW_HEIGHT // 2
+    vw, vh = _vw(self), _vh(self)
 
-    left = popup_x - popup_width / 2
-    bottom = popup_y - popup_height / 2
+    # Popup dimensions
+    popup_width = vw * 0.4
+    popup_height = vh * 0.4
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
 
     # Shadow under popup using cached texture
     shadow_texture = self.popup_textures['shadow']
-    shadow_rect = arcade.LBWH(left + 6, bottom - 6, popup_width, popup_height)
+    shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 3, popup_height * 3)
     arcade.draw_texture_rect(shadow_texture, shadow_rect)
 
     # Background color using cached texture
     bg_texture = self.popup_textures['white_bg']
-    bg_rect = arcade.LBWH(left, bottom, popup_width, popup_height)
+    bg_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
     arcade.draw_texture_rect(bg_texture, bg_rect)
 
     # Border
@@ -686,12 +698,7 @@ def show_dest_pop_up(self, dest_list, num):
             texture = self.destination_textures[texture_path]
 
             # Card rectangle
-            card_rect = arcade.LBWH(
-                card_x - card_width / 2,
-                card_y - card_height / 2,
-                card_width,
-                card_height
-            )
+            card_rect = _centered_rect(card_x, card_y, card_width, card_height)
 
             # Draw card
             arcade.draw_texture_rect(texture, card_rect)
@@ -712,10 +719,10 @@ def show_dest_pop_up(self, dest_list, num):
             self.dest_buttons.append({
                 'card': dest_list[index],
                 'bounds': (
-                    card_x - card_width / 2,
-                    card_x + card_width / 2,
-                    card_y - card_height / 2,
-                    card_y + card_height / 2
+                    card_rect.left,
+                    card_rect.left + card_rect.width,
+                    card_rect.bottom,
+                    card_rect.bottom + card_rect.height
                 )
             })
 
@@ -727,12 +734,7 @@ def show_dest_pop_up(self, dest_list, num):
         save_button_y = popup_y - popup_height * 0.42
 
         save_texture = self.popup_textures['save_button']
-        save_rect = arcade.LBWH(
-            save_button_x - save_button_width // 2,
-            save_button_y - save_button_height // 2,
-            save_button_width,
-            save_button_height
-        )
+        save_rect = _centered_rect(save_button_x, save_button_y, save_button_width, save_button_height)
 
         arcade.draw_texture_rect(save_texture, save_rect)
         arcade.draw_rect_outline(
@@ -752,10 +754,10 @@ def show_dest_pop_up(self, dest_list, num):
         )
 
         self.save_button_bounds = (
-            save_button_x - save_button_width // 2,  # left
-            save_button_x + save_button_width // 2,  # right
-            save_button_y - save_button_height // 2,  # bottom
-            save_button_y + save_button_height // 2  # top
+            save_rect.left,  # left
+            save_rect.left + save_rect.width,  # right
+            save_rect.bottom,  # bottom
+            save_rect.bottom + save_rect.height  # top
         )
     else:
         self.save_button_bounds = None
@@ -766,23 +768,23 @@ def show_info_pop_up(game_view):
     """
     Help menu popup
     """
-    # Popup dimensions
-    popup_width = c.WINDOW_WIDTH * 0.9
-    popup_height = c.WINDOW_HEIGHT * 0.9
-    popup_x = c.WINDOW_WIDTH // 2
-    popup_y = c.WINDOW_HEIGHT // 2
+    vw, vh = _vw(game_view), _vh(game_view)
 
-    left = popup_x - popup_width / 2
-    bottom = popup_y - popup_height / 2
+    # Popup dimensions
+    popup_width = vw * 0.95
+    popup_height = vh * 0.95
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
 
     # Shadow under popup using cached texture
     shadow_texture = game_view.popup_textures['shadow']
-    shadow_rect = arcade.LBWH(left + 6, bottom - 6, popup_width, popup_height)
+    shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 1.5, popup_height * 1.5)
+
     arcade.draw_texture_rect(shadow_texture, shadow_rect)
 
     # Background color using cached texture
     bg_texture = game_view.popup_textures['white_bg']
-    bg_rect = arcade.LBWH(left, bottom, popup_width, popup_height)
+    bg_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
     arcade.draw_texture_rect(bg_texture, bg_rect)
 
     # Border
@@ -804,16 +806,11 @@ def show_info_pop_up(game_view):
     # Add exit button in lower right corner
     exit_button_width = popup_width * 0.2
     exit_button_height = popup_height * 0.1
-    exit_button_x = popup_x + popup_width * 0.48 - exit_button_width // 2
-    exit_button_y = popup_y - popup_height * 0.45 + exit_button_height // 2
+    exit_button_x = popup_x + popup_width * 0.38
+    exit_button_y = popup_y - popup_height * 0.41
 
     exit_texture = game_view.popup_textures['exit_button']
-    exit_rect = arcade.LBWH(
-        exit_button_x - exit_button_width // 2,
-        exit_button_y - exit_button_height // 2,
-        exit_button_width,
-        exit_button_height
-    )
+    exit_rect = _centered_rect(exit_button_x, exit_button_y, exit_button_width, exit_button_height)
 
     arcade.draw_texture_rect(exit_texture, exit_rect)
     arcade.draw_rect_outline(
@@ -833,8 +830,8 @@ def show_info_pop_up(game_view):
     )
 
     game_view.exit_button_bounds = (
-        exit_button_x - exit_button_width // 2,  # left
-        exit_button_x + exit_button_width // 2,  # right
-        exit_button_y - exit_button_height // 2,  # bottom
-        exit_button_y + exit_button_height // 2  # top
+        exit_rect.left,  # left
+        exit_rect.left + exit_rect.width,  # right
+        exit_rect.bottom,  # bottom
+        exit_rect.bottom + exit_rect.height  # top
     )

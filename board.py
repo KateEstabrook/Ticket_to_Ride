@@ -81,12 +81,7 @@ class BoardRenderer:
             popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
 
 
-        # Draw leaderboard lines and card counts
-        for line in self.game_view.leaderboard_lines:
-            line.draw()
-
-        for line in self.game_view.index_cards:
-            line.draw()
+        self.draw_leaderboard()
 
         if self.game_view.showing_info_popup:
             popups.show_info_pop_up(self.game_view)
@@ -173,6 +168,56 @@ class BoardRenderer:
         x, y = self.img_to_screen(ix, iy, top_left=top_left)
         train_sprite.center_x = x
         train_sprite.center_y = y
+
+    def draw_leaderboard(self):
+        """Draws leaderboard"""
+        player_train_count = game_globals.player_obj.get_trains()
+        player_points = game_globals.player_obj.get_points()
+
+
+        # Starting positions for two columns
+        start_x1, start_y = self.img_to_screen(800, -50, top_left=True)
+        start_x2, _ = self.img_to_screen(1700, -50, top_left=True)
+        line_height = 25  # Space between lines
+
+        # Clear existing leaderboard lines
+        self.game_view.leaderboard_lines.clear()
+
+        players = [
+            {"name": "You", "score": player_points, "trains": player_train_count, "color": arcade.color.WHITE},
+            {"name": "RED", "score": 245, "trains": 32, "color": arcade.color.WHITE},
+            {"name": "GREEN", "score": 189, "trains": 28, "color": arcade.color.WHITE},
+            {"name": "YELLOW", "score": 156, "trains": 35, "color": arcade.color.WHITE}
+        ]
+
+        # Draw each player's info in 2 columns
+        for i, player_data in enumerate(players):
+            y_pos = start_y - ((i // 2) * line_height)
+
+            # Alternate between left and right columns
+            if i % 2 == 0:  # Even indices: left column
+                x_pos = start_x1
+            else:  # Odd indices: right column
+                x_pos = start_x2
+
+            player_text = f"{player_data['name']} - {player_data['score']} pts - {player_data['trains']} trains"
+
+            text_obj = arcade.Text(
+                player_text,
+                x_pos,
+                y_pos,
+                player_data["color"],
+                15,
+                anchor_x="left"
+            )
+            self.game_view.leaderboard_lines.append(text_obj)
+
+        # Draw leaderboard lines and card counts
+        for line in self.game_view.leaderboard_lines:
+            line.draw()
+
+        for line in self.game_view.index_cards:
+            line.draw()
 
 
 class MouseHandler:
@@ -720,17 +765,7 @@ class GameView(arcade.View):
         self.board_renderer = BoardRenderer(self)
         self.board_renderer._update_board_rect()  # compute once before placing sprites
 
-        # Convert image coordinates to screen coordinates for the leaderboard
-        text_x1, text_y1 = self.board_renderer.img_to_screen(1150, -55, top_left=True)
-        text_x2, text_y2 = self.board_renderer.img_to_screen(1150, 25, top_left=True)
-        text_x3, text_y3 = self.board_renderer.img_to_screen(1700, -55, top_left=True)
-        text_x4, text_y4 = self.board_renderer.img_to_screen(1700, 25, top_left=True)
-        self.leaderboard_lines = [
-            arcade.Text("BLUE - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text("GREEN - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text("RED - 232", text_x3, text_y3, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text("YELLOW - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
-        ]
+        self.leaderboard_lines = []
 
         # Train card on screen placements
         orange_num_x, orange_num_y = self.board_renderer.img_to_screen(2670, 1075, top_left=True)
