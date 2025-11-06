@@ -96,7 +96,7 @@ class StartMenuView(arcade.View):
                     cx,
                     cy,
                     arcade.color.YELLOW,
-                    font_size=int(height * 0.024),
+                    font_size=int(height * 0.023),
                     anchor_x="center",
                     anchor_y="center",
                     bold=True
