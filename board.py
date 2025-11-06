@@ -303,7 +303,7 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    if self.game_view.selected_color == "locomotive" and not hasattr(self.game_view,
+                    if self.game_view.selected_color == "wild" and not hasattr(self.game_view,
                                                                                      'showing_route_selection'):
                         # Only show second popup for double routes, not single routes
                         city_pair = (self.game_view.popup_city1, self.game_view.popup_city2)
@@ -569,8 +569,8 @@ class RouteController:
             # Clear the selected route index
             self.game_view.selected_route_index = None
 
-        elif selected_color == "locomotive":
-            # For locomotive without specific selection, claim first available
+        elif selected_color == "wild":
+            # For wild without specific selection, claim first available
             for i, taken in enumerate(self.game_view.route_taken[pair]):
                 if not taken:
                     self.game_view.route_taken[pair][i] = True
@@ -593,20 +593,25 @@ class RouteController:
         for city_pair in [(city1, city2), (city2, city1)]:
             if city_pair in c.TRAINS:
                 routes_data = c.TRAINS[city_pair]
+                len_route = len(c.TRAINS[city_pair][0]["positions"])
                 route_taken = self.game_view.route_taken[city_pair]
 
-                # Check if this is a locomotive
-                if selected_color == "locomotive":
+                # Check if this is a wild
+                if selected_color == "wild":
                     # Check if there's at least one available route
                     for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
-                        if not taken:
-                            return True
+                        if game_globals.player_obj.get_train_cards().get_count("wild") >= len_route:
+                            if not taken:
+                                game_globals.player_obj.get_train_cards().remove_cards("wild", len_route)
+                                return True
                     return False
                 # For regular colors, check if the color matches an available route
                 for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
                     # If route is not taken and color matches (or route is colorless)
-                    if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
-                        return True
+                    if game_globals.player_obj.get_train_cards().has_cards(selected_color, len_route):
+                        if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
+                            game_globals.player_obj.get_train_cards().remove_cards(selected_color, len_route)
+                            return True
                 # If we get here, no available route matches the selected color
                 return False
         return False
@@ -775,7 +780,7 @@ class GameView(arcade.View):
         color_cards = [
             ("RED", "red.png"), ("BLUE", "blue.png"), ("GREEN", "green.png"),
             ("YELLOW", "yellow.png"), ("ORANGE", "orange.png"), ("PINK", "pink.png"),
-            ("BLACK", "black.png"), ("WHITE", "white.png"), ("LOCOMOTIVE", "wild.png")
+            ("BLACK", "black.png"), ("WHITE", "white.png"), ("WILD", "wild.png")
         ]
 
         for color_name, filename in color_cards:
