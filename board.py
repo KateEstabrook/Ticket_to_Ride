@@ -80,12 +80,8 @@ class BoardRenderer:
         if self.game_view.showing_faceup_popup:
             popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
 
-        # Draw leaderboard lines and card counts
-        for line in self.game_view.leaderboard_lines:
-            line.draw()
 
-        for line in self.game_view.index_cards:
-            line.draw()
+        self.draw_leaderboard()
 
         if self.game_view.showing_info_popup:
             popups.show_info_pop_up(self.game_view)
@@ -174,12 +170,47 @@ class BoardRenderer:
         train_sprite.center_y = y
 
     def draw_leaderboard(self):
-        player_color = game_globals.player_obj.color
+        """Draws leaderboard"""
         player_train_count = game_globals.player_obj.get_trains()
+        player_points = game_globals.player_obj.get_points()
 
-        # draw player color and count always in the upper left
 
-        # draw other 3 colors (not including player color)
+        # Starting positions for two columns
+        start_x1, start_y = self.img_to_screen(800, -50, top_left=True)
+        start_x2, _ = self.img_to_screen(1700, -50, top_left=True)
+        line_height = 25  # Space between lines
+
+        # Clear existing leaderboard lines
+        self.game_view.leaderboard_lines.clear()
+
+        players = [
+            {"name": "You", "score": player_points, "trains": player_train_count, "color": arcade.color.WHITE},
+            {"name": "RED", "score": 245, "trains": 32, "color": arcade.color.WHITE},
+            {"name": "GREEN", "score": 189, "trains": 28, "color": arcade.color.WHITE},
+            {"name": "YELLOW", "score": 156, "trains": 35, "color": arcade.color.WHITE}
+        ]
+
+        # Draw each player's info in 2 columns
+        for i, player_data in enumerate(players):
+            y_pos = start_y - ((i // 2) * line_height)
+
+            # Alternate between left and right columns
+            if i % 2 == 0:  # Even indices: left column
+                x_pos = start_x1
+            else:  # Odd indices: right column
+                x_pos = start_x2
+
+            player_text = f"{player_data['name']} - {player_data['score']} pts - {player_data['trains']} trains"
+
+            text_obj = arcade.Text(
+                player_text,
+                x_pos,
+                y_pos,
+                player_data["color"],
+                15,
+                anchor_x="left"
+            )
+            self.game_view.leaderboard_lines.append(text_obj)
 
         # Draw leaderboard lines and card counts
         for line in self.game_view.leaderboard_lines:
@@ -345,6 +376,7 @@ class MouseHandler:
                             del self.game_view.showing_route_selection
                         if hasattr(self.game_view, 'selected_route_index'):
                             del self.game_view.selected_route_index
+                    self.game_view.update_card_counts()
                     return
 
         if self.game_view.showing_dest_popup:
@@ -551,9 +583,11 @@ class RouteController:
         if city_pair in c.TRAINS:
             routes_data = c.TRAINS[city_pair]
             pair = city_pair
+            len_route = len(c.TRAINS[city_pair][0]["positions"])
         elif reverse_pair in c.TRAINS:
             routes_data = c.TRAINS[reverse_pair]
             pair = reverse_pair
+            len_route = len(c.TRAINS[reverse_pair][0]["positions"])
         selected_color = self.game_view.selected_color
 
         # Check if we have a specific route index selected
@@ -587,6 +621,7 @@ class RouteController:
                         train_sprite.set_texture(0)
                         train_sprite.alpha = 255
                     break
+        removed = game_globals.player_obj.get_train_cards().remove_cards(selected_color, len_route)
 
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route and checking if double colored routes are taken"""
@@ -600,21 +635,21 @@ class RouteController:
                 if selected_color == "wild":
                     # Check if there's at least one available route
                     for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
-                        if game_globals.player_obj.get_train_cards().get_count("wild") >= len_route:
-                            if not taken:
-                                game_globals.player_obj.get_train_cards().remove_cards("wild", len_route)
-                                return True
-                    return False
+                        if not taken:
+                            if game_globals.player_obj.get_train_cards().get_count("wild") >= len_route:
+                                return 0
+                            return 1
+                        return 2
                 # For regular colors, check if the color matches an available route
                 for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
-                    # If route is not taken and color matches (or route is colorless)
-                    if game_globals.player_obj.get_train_cards().has_cards(selected_color, len_route):
-                        if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
-                            game_globals.player_obj.get_train_cards().remove_cards(selected_color, len_route)
-                            return True
+                    if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
+                        # If route is not taken and color matches (or route is colorless)
+                        if game_globals.player_obj.get_train_cards().has_cards(selected_color, len_route):
+                            return 0
+                        return 1
                 # If we get here, no available route matches the selected color
-                return False
-        return False
+                    return 2
+        return 2
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
         """
@@ -661,19 +696,16 @@ class CardController:
         """Update the displayed card counts for each color"""
         # Count cards in player's hand by color
         color_counts = {
-            "orange": 0, "black": 0, "blue": 0, "green": 0,
-            "pink": 0, "red": 0, "white": 0, "yellow": 0, "wild": 0
+            "orange": game_globals.player_obj.get_train_cards().get_count("orange"), 
+            "black": game_globals.player_obj.get_train_cards().get_count("black"),  
+            "blue": game_globals.player_obj.get_train_cards().get_count("blue"), 
+            "green": game_globals.player_obj.get_train_cards().get_count("green"), 
+            "pink": game_globals.player_obj.get_train_cards().get_count("pink"),  
+            "red": game_globals.player_obj.get_train_cards().get_count("red"),  
+            "white": game_globals.player_obj.get_train_cards().get_count("white"), 
+            "yellow": game_globals.player_obj.get_train_cards().get_count("yellow"),  
+            "wild": game_globals.player_obj.get_train_cards().get_count("wild"), 
         }
-
-        # Get the player's train cards deck
-        player_train_cards = game_globals.player_obj.get_train_cards()
-
-        # Count cards by color
-        for i in range(player_train_cards.get_len()):
-            card = player_train_cards.get_card_at_index(i)
-            color = card.get_color().lower()
-            if color in color_counts:
-                color_counts[color] += 1
 
         # Update the display text
         colors = ["orange", "black", "blue", "green", "pink", "red", "white", "yellow", "wild"]
@@ -733,17 +765,7 @@ class GameView(arcade.View):
         self.board_renderer = BoardRenderer(self)
         self.board_renderer._update_board_rect()  # compute once before placing sprites
 
-        # Convert image coordinates to screen coordinates for the leaderboard
-        text_x1, text_y1 = self.board_renderer.img_to_screen(1150, -55, top_left=True)
-        text_x2, text_y2 = self.board_renderer.img_to_screen(1150, 25, top_left=True)
-        text_x3, text_y3 = self.board_renderer.img_to_screen(1700, -55, top_left=True)
-        text_x4, text_y4 = self.board_renderer.img_to_screen(1700, 25, top_left=True)
-        self.leaderboard_lines = [
-            arcade.Text("BLUE - 312", text_x1, text_y1, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text("GREEN - 343", text_x2, text_y2, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text("RED - 232", text_x3, text_y3, arcade.color.WHITE, 15, anchor_x="left"),
-            arcade.Text("YELLOW - 123", text_x4, text_y4, arcade.color.WHITE, 15, anchor_x="left"),
-        ]
+        self.leaderboard_lines = []
 
         # Train card on screen placements
         orange_num_x, orange_num_y = self.board_renderer.img_to_screen(2670, 1075, top_left=True)
