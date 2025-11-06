@@ -88,12 +88,15 @@ class StartMenuView(arcade.View):
 
             # Show selected color
             if self.selected_color:
+                width, height = self.sw(), self.sh()
+                cx, cy = width * 0.50, height * 0.17
+
                 arcade.draw_text(
                     f"Selected: {self.selected_color}",
-                    c.SCREEN_WIDTH // 2 - 192,
-                    c.WINDOW_HEIGHT * 0.18,
+                    cx,
+                    cy,
                     arcade.color.YELLOW,
-                    font_size=20,
+                    font_size=int(height * 0.024),
                     anchor_x="center",
                     anchor_y="center",
                     bold=True
