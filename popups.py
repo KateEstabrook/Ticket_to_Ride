@@ -623,23 +623,22 @@ def show_dest_pop_up(self, dest_list, num):
     """
     Destination popup
     """
-    # Popup dimensions
-    popup_width = c.WINDOW_WIDTH * 0.4
-    popup_height = c.WINDOW_HEIGHT * 0.4
-    popup_x = c.WINDOW_WIDTH // 2
-    popup_y = c.WINDOW_HEIGHT // 2
+    vw, vh = _vw(self), _vh(self)
 
-    left = popup_x - popup_width / 2
-    bottom = popup_y - popup_height / 2
+    # Popup dimensions
+    popup_width = vw * 0.4
+    popup_height = vh * 0.4
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
 
     # Shadow under popup using cached texture
     shadow_texture = self.popup_textures['shadow']
-    shadow_rect = arcade.LBWH(left + 6, bottom - 6, popup_width, popup_height)
+    shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 3, popup_height * 3)
     arcade.draw_texture_rect(shadow_texture, shadow_rect)
 
     # Background color using cached texture
     bg_texture = self.popup_textures['white_bg']
-    bg_rect = arcade.LBWH(left, bottom, popup_width, popup_height)
+    bg_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
     arcade.draw_texture_rect(bg_texture, bg_rect)
 
     # Border
@@ -688,12 +687,7 @@ def show_dest_pop_up(self, dest_list, num):
             texture = self.destination_textures[texture_path]
 
             # Card rectangle
-            card_rect = arcade.LBWH(
-                card_x - card_width / 2,
-                card_y - card_height / 2,
-                card_width,
-                card_height
-            )
+            card_rect = _centered_rect(card_x, card_y, card_width, card_height)
 
             # Draw card
             arcade.draw_texture_rect(texture, card_rect)
@@ -714,10 +708,10 @@ def show_dest_pop_up(self, dest_list, num):
             self.dest_buttons.append({
                 'card': dest_list[index],
                 'bounds': (
-                    card_x - card_width / 2,
-                    card_x + card_width / 2,
-                    card_y - card_height / 2,
-                    card_y + card_height / 2
+                    card_rect.left,
+                    card_rect.left + card_rect.width,
+                    card_rect.bottom,
+                    card_rect.bottom + card_rect.height
                 )
             })
 
@@ -729,12 +723,7 @@ def show_dest_pop_up(self, dest_list, num):
         save_button_y = popup_y - popup_height * 0.42
 
         save_texture = self.popup_textures['save_button']
-        save_rect = arcade.LBWH(
-            save_button_x - save_button_width // 2,
-            save_button_y - save_button_height // 2,
-            save_button_width,
-            save_button_height
-        )
+        save_rect = _centered_rect(save_button_x, save_button_y, save_button_width, save_button_height)
 
         arcade.draw_texture_rect(save_texture, save_rect)
         arcade.draw_rect_outline(
@@ -754,10 +743,10 @@ def show_dest_pop_up(self, dest_list, num):
         )
 
         self.save_button_bounds = (
-            save_button_x - save_button_width // 2,  # left
-            save_button_x + save_button_width // 2,  # right
-            save_button_y - save_button_height // 2,  # bottom
-            save_button_y + save_button_height // 2  # top
+            save_rect.left,  # left
+            save_rect.left + save_rect.width,  # right
+            save_rect.bottom,  # bottom
+            save_rect.bottom + save_rect.height  # top
         )
     else:
         self.save_button_bounds = None
@@ -778,7 +767,7 @@ def show_info_pop_up(game_view):
 
     # Shadow under popup using cached texture
     shadow_texture = game_view.popup_textures['shadow']
-    shadow_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
+    shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 1.5, popup_height * 1.5)
 
     arcade.draw_texture_rect(shadow_texture, shadow_rect)
 
