@@ -23,11 +23,13 @@ def deck_pop_up(game_view):
     """
     Show a white rectangle pop-up with color selection buttons using card images
     """
+    vw, vh = _vw(game_view), _vh(game_view)
+
     # Calculate dimensions and positions
-    popup_width = _vw(game_view) * 0.4
-    popup_height = _vh(game_view) * 0.4
-    popup_x = _vw(game_view) * 0.5
-    popup_y = _vh(game_view) * 0.5
+    popup_width = vw * 0.4
+    popup_height = vh * 0.4
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
 
     deck_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
 
@@ -107,22 +109,20 @@ def faceup_card_pop_up(game_view, card_index):
     """
     Show a white rectangle pop-up when a face-up card is clicked
     """
+    vw, vh = _vw(game_view), _vh(game_view)
+
     # Calculate dimensions and positions
-    popup_width = c.WINDOW_WIDTH * 0.4
-    popup_height = c.WINDOW_HEIGHT * 0.4
-    popup_x = c.WINDOW_WIDTH // 2
-    popup_y = c.WINDOW_HEIGHT // 2
+    popup_width = vw * 0.4
+    popup_height = vh * 0.4
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
 
     # Draw white rectangle using cached texture
     white_texture = game_view.popup_textures['white_bg']
+    faceup_rect = _centered_rect(vw, vh, popup_width, popup_height)
     arcade.draw_texture_rect(
         white_texture,
-        arcade.LBWH(
-            popup_x - popup_width // 2,
-            popup_y - popup_height // 2,
-            popup_width,
-            popup_height
-        )
+        faceup_rect
     )
 
     # Get the selected face up card
@@ -768,23 +768,23 @@ def show_info_pop_up(game_view):
     """
     Help menu popup
     """
-    # Popup dimensions
-    popup_width = c.WINDOW_WIDTH * 0.9
-    popup_height = c.WINDOW_HEIGHT * 0.9
-    popup_x = c.WINDOW_WIDTH // 2
-    popup_y = c.WINDOW_HEIGHT // 2
+    vw, vh = _vw(game_view), _vh(game_view)
 
-    left = popup_x - popup_width / 2
-    bottom = popup_y - popup_height / 2
+    # Popup dimensions
+    popup_width = vw * 0.95
+    popup_height = vh * 0.95
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
 
     # Shadow under popup using cached texture
     shadow_texture = game_view.popup_textures['shadow']
-    shadow_rect = arcade.LBWH(left + 6, bottom - 6, popup_width, popup_height)
+    shadow_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
+
     arcade.draw_texture_rect(shadow_texture, shadow_rect)
 
     # Background color using cached texture
     bg_texture = game_view.popup_textures['white_bg']
-    bg_rect = arcade.LBWH(left, bottom, popup_width, popup_height)
+    bg_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
     arcade.draw_texture_rect(bg_texture, bg_rect)
 
     # Border
@@ -806,16 +806,11 @@ def show_info_pop_up(game_view):
     # Add exit button in lower right corner
     exit_button_width = popup_width * 0.2
     exit_button_height = popup_height * 0.1
-    exit_button_x = popup_x + popup_width * 0.48 - exit_button_width // 2
-    exit_button_y = popup_y - popup_height * 0.45 + exit_button_height // 2
+    exit_button_x = popup_x + popup_width * 0.38
+    exit_button_y = popup_y - popup_height * 0.41
 
     exit_texture = game_view.popup_textures['exit_button']
-    exit_rect = arcade.LBWH(
-        exit_button_x - exit_button_width // 2,
-        exit_button_y - exit_button_height // 2,
-        exit_button_width,
-        exit_button_height
-    )
+    exit_rect = _centered_rect(exit_button_x, exit_button_y, exit_button_width, exit_button_height)
 
     arcade.draw_texture_rect(exit_texture, exit_rect)
     arcade.draw_rect_outline(
@@ -835,8 +830,8 @@ def show_info_pop_up(game_view):
     )
 
     game_view.exit_button_bounds = (
-        exit_button_x - exit_button_width // 2,  # left
-        exit_button_x + exit_button_width // 2,  # right
-        exit_button_y - exit_button_height // 2,  # bottom
-        exit_button_y + exit_button_height // 2  # top
+        exit_rect.left,  # left
+        exit_rect.left + exit_rect.width,  # right
+        exit_rect.bottom,  # bottom
+        exit_rect.bottom + exit_rect.height  # top
     )
