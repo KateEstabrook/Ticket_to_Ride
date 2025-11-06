@@ -503,7 +503,7 @@ def route_popup(game_view, city1, city2):
                 # For locomotive, we just need any available route
                 if game_view.selected_color == "locomotive":
                     can_save = any(
-                        not taken for taken, route_data in zip(route_taken, routes_data))  # REMOVE colorless check
+                        not taken for taken, route_data in zip(route_taken, routes_data))
                 else:
                     # For regular colors, check if there's an available route with this color
                     can_save = any(not taken and (route_data["color"] == game_view.selected_color or

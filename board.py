@@ -530,7 +530,7 @@ class RouteController:
         self.game_view.selected_cities.clear()
 
     def claim_route(self, city1, city2):
-        """Claim the route after pop-up interaction - match color when possible"""
+        """Claim the route after pop-up interaction"""
         city_pair = (city1, city2)
         reverse_pair = (city2, city1)
 
@@ -542,7 +542,7 @@ class RouteController:
             pair = reverse_pair
         selected_color = self.game_view.selected_color
 
-        # Check if we have a specific route index selected (for locomotive on double routes)
+        # Check if we have a specific route index selected
         selected_route_index = getattr(self.game_view, 'selected_route_index', None)
 
         if selected_route_index is not None:
@@ -581,20 +581,18 @@ class RouteController:
                 routes_data = c.TRAINS[city_pair]
                 route_taken = self.game_view.route_taken[city_pair]
 
-                # Check if this is a locomotive (can be used on any available route)
+                # Check if this is a locomotive
                 if selected_color == "locomotive":
-                    # Check if there's at least one available route (including colorless)
+                    # Check if there's at least one available route
                     for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
-                        if not taken:  # REMOVE the colorless check for locomotives
+                        if not taken:
                             return True
                     return False
-
                 # For regular colors, check if the color matches an available route
                 for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
                     # If route is not taken and color matches (or route is colorless)
                     if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
                         return True
-
                 # If we get here, no available route matches the selected color
                 return False
         return False
