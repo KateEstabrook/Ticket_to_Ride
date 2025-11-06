@@ -40,13 +40,15 @@ class Deck:
     def remove_cards(self, color, count):
         """Remove a list of cards of a color + wild cards to make up for the count"""
         if self.has_cards(color, count):
+            discarded = []
             i = 0
             while i < count:
                 try:
-                    self.remove(self.get_card_index(color))
+                    discarded.append(self.remove(self.get_card_index(color)))
                 except TypeError:
-                    self.remove(self.get_card_index("wild"))
+                    discarded.append(self.remove(self.get_card_index("wild")))
                 i += 1
+            return discarded
 
     def add(self, card):
         """Adds a card to the deck"""

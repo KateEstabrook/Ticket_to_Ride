@@ -497,18 +497,21 @@ def route_popup(game_view, city1, city2):
         if game_view.selected_color:
             # make sure the specific colored route isn't already taken
             city_pair = (city1, city2) if (city1, city2) in c.TRAINS else (city2, city1)
+            len_route = len(c.TRAINS[city_pair][0]["positions"])
             if city_pair in c.TRAINS:
                 routes_data = c.TRAINS[city_pair]
                 route_taken = game_view.route_taken[city_pair]
 
                 # For wild, we just need any available route
-                if game_view.selected_color == "wild":
+                if game_view.selected_color == "wild" and globals.player_obj.get_train_cards().has_cards("wild", len_route):
                     can_save = any(
                         not taken for taken, route_data in zip(route_taken, routes_data))
                 else:
                     # For regular colors, check if there's an available route with this color
                     can_save = any(not taken and (route_data["color"] == game_view.selected_color or
                                                   route_data["color"] == "colorless")
+                                                  and globals.player_obj.get_train_cards().\
+                                                    has_cards(game_view.selected_color, len_route)
                                    for taken, route_data in zip(route_taken, routes_data))
             else:
                 can_save = False
@@ -596,9 +599,12 @@ def route_popup(game_view, city1, city2):
 
     # invalid color/route
     if (game_view.selected_color and
-            not game_view.valid_route_colors(game_view.selected_color, city1, city2) and
+            game_view.valid_route_colors(game_view.selected_color, city1, city2) != 0 and
             not is_second_popup):
-        error_text = f"Cannot use {game_view.selected_color.upper()} card on this route!"
+        if game_view.valid_route_colors(game_view.selected_color, city1, city2) == 2:
+            error_text = f"Cannot use {game_view.selected_color.upper()} card on this route!"
+        else:
+            error_text = f"Not enough {game_view.selected_color.upper()} cards for this route!"
         arcade.draw_text(
             error_text,
             popup_x - popup_width * 0.4,

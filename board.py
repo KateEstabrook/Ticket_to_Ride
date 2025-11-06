@@ -331,6 +331,7 @@ class MouseHandler:
                             del self.game_view.showing_route_selection
                         if hasattr(self.game_view, 'selected_route_index'):
                             del self.game_view.selected_route_index
+                    self.game_view.update_card_counts()
                     return
 
         if self.game_view.showing_dest_popup:
@@ -537,9 +538,11 @@ class RouteController:
         if city_pair in c.TRAINS:
             routes_data = c.TRAINS[city_pair]
             pair = city_pair
+            len_route = len(c.TRAINS[city_pair][0]["positions"])
         elif reverse_pair in c.TRAINS:
             routes_data = c.TRAINS[reverse_pair]
             pair = reverse_pair
+            len_route = len(c.TRAINS[reverse_pair][0]["positions"])
         selected_color = self.game_view.selected_color
 
         # Check if we have a specific route index selected
@@ -573,6 +576,7 @@ class RouteController:
                         train_sprite.set_texture(0)
                         train_sprite.alpha = 255
                     break
+        removed = game_globals.player_obj.get_train_cards().remove_cards(selected_color, len_route)
 
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route and checking if double colored routes are taken"""
@@ -586,21 +590,21 @@ class RouteController:
                 if selected_color == "wild":
                     # Check if there's at least one available route
                     for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
-                        if game_globals.player_obj.get_train_cards().get_count("wild") >= len_route:
-                            if not taken:
-                                game_globals.player_obj.get_train_cards().remove_cards("wild", len_route)
-                                return True
-                    return False
+                        if not taken:
+                            if game_globals.player_obj.get_train_cards().get_count("wild") >= len_route:
+                                return 0
+                            return 1
+                        return 2
                 # For regular colors, check if the color matches an available route
                 for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
-                    # If route is not taken and color matches (or route is colorless)
-                    if game_globals.player_obj.get_train_cards().has_cards(selected_color, len_route):
-                        if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
-                            game_globals.player_obj.get_train_cards().remove_cards(selected_color, len_route)
-                            return True
+                    if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
+                        # If route is not taken and color matches (or route is colorless)
+                        if game_globals.player_obj.get_train_cards().has_cards(selected_color, len_route):
+                            return 0
+                        return 1
                 # If we get here, no available route matches the selected color
-                return False
-        return False
+                    return 2
+        return 2
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
         """
@@ -647,19 +651,16 @@ class CardController:
         """Update the displayed card counts for each color"""
         # Count cards in player's hand by color
         color_counts = {
-            "orange": 0, "black": 0, "blue": 0, "green": 0,
-            "pink": 0, "red": 0, "white": 0, "yellow": 0, "wild": 0
+            "orange": game_globals.player_obj.get_train_cards().get_count("orange"), 
+            "black": game_globals.player_obj.get_train_cards().get_count("black"),  
+            "blue": game_globals.player_obj.get_train_cards().get_count("blue"), 
+            "green": game_globals.player_obj.get_train_cards().get_count("green"), 
+            "pink": game_globals.player_obj.get_train_cards().get_count("pink"),  
+            "red": game_globals.player_obj.get_train_cards().get_count("red"),  
+            "white": game_globals.player_obj.get_train_cards().get_count("white"), 
+            "yellow": game_globals.player_obj.get_train_cards().get_count("yellow"),  
+            "wild": game_globals.player_obj.get_train_cards().get_count("wild"), 
         }
-
-        # Get the player's train cards deck
-        player_train_cards = game_globals.player_obj.get_train_cards()
-
-        # Count cards by color
-        for i in range(player_train_cards.get_len()):
-            card = player_train_cards.get_card_at_index(i)
-            color = card.get_color().lower()
-            if color in color_counts:
-                color_counts[color] += 1
 
         # Update the display text
         colors = ["orange", "black", "blue", "green", "pink", "red", "white", "yellow", "wild"]
