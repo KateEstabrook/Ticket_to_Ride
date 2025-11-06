@@ -414,7 +414,7 @@ class GameView(arcade.View):
             ("PINK", "purple.png"),
             ("BLACK", "black.png"),
             ("WHITE", "white.png"),
-            ("LOCOMOTIVE", "locomotive.png")
+            ("WILD", "wild.png")
         ]
 
         # Card textures (images)
@@ -679,7 +679,7 @@ class GameView(arcade.View):
         for city_pair in [(city1, city2), (city2, city1)]:
             if city_pair in c.TRAINS:
                 available_colors = {route_data["color"] for route_data in c.TRAINS[city_pair]}
-                if selected_color == "locomotive":
+                if selected_color == "wild":
                     return True
                 return (selected_color in available_colors or
                         "colorless" in available_colors)
