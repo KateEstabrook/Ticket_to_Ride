@@ -72,7 +72,7 @@ class BoardRenderer:
                 game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
 
         if self.game_view.showing_dest_popup:
-            popups.show_dest_pop_up(self.game_view, game_globals.dest_draw, 2)
+            popups.show_dest_pop_up(self.game_view, game_globals.dest_draw, self.game_view.min_dest_cards_to_keep)
 
         if self.game_view.showing_deck_popup:
             popups.deck_pop_up(self.game_view)
@@ -435,6 +435,10 @@ class MouseHandler:
                         game_globals.dest_draw.clear()
                         self.game_view.showing_dest_popup = False
                         self.game_view.selected_dests = []
+
+                        # From now on, only 1 dest required next times
+                        self.game_view.dest_first_time = False
+
                     return
 
             # Check if dest card was clicked
@@ -473,7 +477,7 @@ class MouseHandler:
                 # Maximum of 8 destination cards allowed
                 max_dest_cards = 8
                 # If player already has 8 or more, don't allow drawing more
-                if current_dest_cards >= max_dest_cards or current_dest_cards >= (max_dest_cards - 1):
+                if current_dest_cards >= max_dest_cards or current_dest_cards >= (max_dest_cards):
                     return
                 # Calculate how many cards the player can keep (but still draw 4 to show)
                 remaining_slots = max_dest_cards - current_dest_cards
@@ -485,8 +489,10 @@ class MouseHandler:
 
                 # Store how many cards can be kept (e.g., if player has 6, they can only keep 2 more)
                 self.game_view.max_dest_cards_to_keep = remaining_slots
-                # Minimum to keep is 2, or all remaining slots if less than 2
-                self.game_view.min_dest_cards_to_keep = min(2, remaining_slots)
+
+                # First time require 2, later only 1; clamp by remaining slots
+                min_required = 2 if self.game_view.dest_first_time else 1
+                self.game_view.min_dest_cards_to_keep = min(min_required, remaining_slots)
 
                 self.game_view.showing_dest_popup = True
                 return
@@ -1023,6 +1029,7 @@ class GameView(arcade.View):
         )
 
         self.layout_ui()
+        self.dest_first_time = True
 
     def reset(self):
         """Restart the game"""
