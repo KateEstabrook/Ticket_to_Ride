@@ -641,7 +641,6 @@ def route_popup(game_view, city1, city2):
             bold=True
         )
 
-
 def show_dest_pop_up(self, dest_list, num):
     """
     Destination popup
