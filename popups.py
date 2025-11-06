@@ -257,7 +257,7 @@ def route_popup(game_view, city1, city2):
         routes_data = c.TRAINS[reverse_pair]
         pair = reverse_pair
 
-    # Check if this should be the SECOND popup (after locomotive was saved)
+    # Check if this should be the second popup
     is_second_popup = (game_view.selected_color == "locomotive" and
                        hasattr(game_view, 'showing_route_selection') and
                        game_view.showing_route_selection)
@@ -268,7 +268,7 @@ def route_popup(game_view, city1, city2):
     game_view.color_buttons = []
 
     if is_second_popup:
-        # SECOND POPUP: Route selection after locomotive was chosen
+        # Route selection after locomotive was chosen
         arcade.draw_text(
             "Select which route to claim:",
             popup_x, popup_y + popup_height * 0.35,
@@ -285,7 +285,7 @@ def route_popup(game_view, city1, city2):
         available_routes = []
         for i, route_data in enumerate(routes_data):
             route_taken = game_view.route_taken[pair][i]
-            if not route_taken and route_data["color"] != "colorless":
+            if not route_taken:
                 available_routes.append((i, route_data))
 
         total_width = len(available_routes) * button_width + (
@@ -494,7 +494,23 @@ def route_popup(game_view, city1, city2):
     else:
         # First popup
         if game_view.selected_color:
-            can_save = game_view.valid_route_colors(game_view.selected_color, city1, city2)
+            # make sure the specific colored route isn't already taken
+            city_pair = (city1, city2) if (city1, city2) in c.TRAINS else (city2, city1)
+            if city_pair in c.TRAINS:
+                routes_data = c.TRAINS[city_pair]
+                route_taken = game_view.route_taken[city_pair]
+
+                # For locomotive, we just need any available route
+                if game_view.selected_color == "locomotive":
+                    can_save = any(
+                        not taken for taken, route_data in zip(route_taken, routes_data))  # REMOVE colorless check
+                else:
+                    # For regular colors, check if there's an available route with this color
+                    can_save = any(not taken and (route_data["color"] == game_view.selected_color or
+                                                  route_data["color"] == "colorless")
+                                   for taken, route_data in zip(route_taken, routes_data))
+            else:
+                can_save = False
 
     if can_save:
         save_button_width = popup_width * 0.2
@@ -561,7 +577,6 @@ def route_popup(game_view, city1, city2):
         else:
             status_text = "Select a route"
     else:
-        # First popup: show selected color
         if game_view.selected_color:
             status_text = f"Selected: {game_view.selected_color.upper()}"
         else:
