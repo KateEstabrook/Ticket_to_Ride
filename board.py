@@ -80,7 +80,6 @@ class BoardRenderer:
         if self.game_view.showing_faceup_popup:
             popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
 
-
         # Draw leaderboard lines and card counts
         for line in self.game_view.leaderboard_lines:
             line.draw()
@@ -173,6 +172,21 @@ class BoardRenderer:
         x, y = self.img_to_screen(ix, iy, top_left=top_left)
         train_sprite.center_x = x
         train_sprite.center_y = y
+
+    def draw_leaderboard(self):
+        player_color = game_globals.player_obj.color
+        player_train_count = game_globals.player_obj.get_trains()
+
+        # draw player color and count always in the upper left
+
+        # draw other 3 colors (not including player color)
+
+        # Draw leaderboard lines and card counts
+        for line in self.game_view.leaderboard_lines:
+            line.draw()
+
+        for line in self.game_view.index_cards:
+            line.draw()
 
 
 class MouseHandler:

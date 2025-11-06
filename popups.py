@@ -7,6 +7,14 @@ import globals
 #import cards
 #import board
 
+def _vw(game_view) -> float:
+    """Window width (falls back to constants if needed)."""
+    return getattr(game_view.window, "width", c.SCREEN_WIDTH)
+
+def _vh(game_view) -> float:
+    """Window height (falls back to constants if needed)."""
+    return getattr(game_view.window, "height", c.WINDOW_HEIGHT)
+
 def _centered_rect(cx, cy, w, h):
     """LBWH rect centered at (cx, cy)."""
     return arcade.LBWH(cx - w / 2, cy - h / 2, w, h)
@@ -16,10 +24,10 @@ def deck_pop_up(game_view):
     Show a white rectangle pop-up with color selection buttons using card images
     """
     # Calculate dimensions and positions
-    popup_width = c.WINDOW_WIDTH * 0.4
-    popup_height = c.WINDOW_HEIGHT * 0.4
-    popup_x = c.SCREEN_WIDTH // 2
-    popup_y = c.SCREEN_HEIGHT // 2
+    popup_width = _vw(game_view) * 0.4
+    popup_height = _vh(game_view) * 0.4
+    popup_x = _vw(game_view) * 0.5
+    popup_y = _vh(game_view) * 0.5
 
     deck_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
 
@@ -59,13 +67,13 @@ def deck_pop_up(game_view):
     # Add exit button in lower right corner
     continue_button_width = popup_width * 0.2
     continue_button_height = popup_height * 0.1
-    continue_button_x = popup_x + popup_width * 0.48 - continue_button_width // 2
-    continue_button_y = popup_y - popup_height * 0.45 + continue_button_height // 2
+    continue_button_x = popup_x + popup_width * 0.38
+    continue_button_y = popup_y - popup_height * 0.42
 
     exit_texture = game_view.popup_textures['save_button']
-    exit_rect = arcade.LBWH(
-        continue_button_x - continue_button_width // 2,
-        continue_button_y - continue_button_height // 2,
+    exit_rect = _centered_rect(
+        continue_button_x,
+        continue_button_y,
         continue_button_width,
         continue_button_height
     )
@@ -88,10 +96,10 @@ def deck_pop_up(game_view):
     )
 
     game_view.continue_button_bounds = (
-        continue_button_x - continue_button_width // 2,  # left
-        continue_button_x + continue_button_width // 2,  # right
-        continue_button_y - continue_button_height // 2,  # bottom
-        continue_button_y + continue_button_height // 2  # top
+        exit_rect.left,  # left
+        exit_rect.left + exit_rect.width,  # right
+        exit_rect.bottom,  # bottom
+        exit_rect.bottom + exit_rect.height  # top
     )
 
 
