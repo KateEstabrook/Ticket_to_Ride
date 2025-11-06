@@ -176,8 +176,8 @@ class BoardRenderer:
 
 
         # Starting positions for two columns
-        start_x1, start_y = self.img_to_screen(800, -50, top_left=True)
-        start_x2, _ = self.img_to_screen(1700, -50, top_left=True)
+        start_x1, start_y = self.img_to_screen(900, -35, top_left=True)
+        start_x2, _ = self.img_to_screen(1800, -35, top_left=True)
         line_height = 25  # Space between lines
 
         # Clear existing leaderboard lines
@@ -218,6 +218,39 @@ class BoardRenderer:
 
         for line in self.game_view.index_cards:
             line.draw()
+
+    def ui_scale(self, px: float) -> float:
+        """Scale a pixel value from board-image space to current board size."""
+        # Choose height (or width) as your canonical axis; height is fine:
+        return px * (self.game_view.board_rect.height / self.game_view.background.height)
+
+    def place_ui_anchor(self, sprite: arcade.Sprite, *, anchor: str, margin_x: float, margin_y: float,
+                        base_scale: float):
+        """
+        Position + scale a UI sprite relative to board_rect corners/edges.
+        anchor in {"topleft","topright","bottomleft","bottomright","topcenter","rightcenter","leftcenter","bottomcenter"}
+        margin_* are in BOARD-IMAGE pixels (will be scaled with ui_scale()).
+        """
+        br = self.game_view.board_rect
+        mx = self.ui_scale(margin_x)
+        my = self.ui_scale(margin_y)
+
+        # Scale sprite proportionally to board
+        sprite.scale = base_scale * (br.height / self.game_view.background.height)
+
+        anchors = {
+            "topleft": (br.left + mx, br.top - my),
+            "topright": (br.right - mx, br.top - my),
+            "bottomleft": (br.left + mx, br.bottom + my),
+            "bottomright": (br.right - mx, br.bottom + my),
+            "topcenter": ((br.left + br.right) / 2, br.top - my),
+            "bottomcenter": ((br.left + br.right) / 2, br.bottom + my),
+            "leftcenter": (br.left + mx, (br.bottom + br.top) / 2),
+            "rightcenter": (br.right - mx, (br.bottom + br.top) / 2),
+        }
+        cx, cy = anchors[anchor]
+        sprite.center_x = cx
+        sprite.center_y = cy
 
 
 class MouseHandler:
@@ -989,6 +1022,8 @@ class GameView(arcade.View):
             self.info_button.center_y + info_button_height / 2
         )
 
+        self.layout_ui()
+
     def reset(self):
         """Restart the game"""
         self.game_initializer.reset()
@@ -1048,6 +1083,29 @@ class GameView(arcade.View):
         """Update card counts"""
         self.card_controller.update_card_counts()
 
+    def layout_ui(self):
+        # Example margins in board-image pixels (tweak to taste)
+        # These are distances from the board edges, not the window edges.
+        self.board_renderer.place_ui_anchor(self.info_button,
+                                            anchor="topleft", margin_x=-50, margin_y=-20, base_scale=0.20)
+
+        self.board_renderer.place_ui_anchor(self.train_cards_banner,
+                                            anchor="bottomright", margin_x=160, margin_y=770, base_scale=1)
+
+        self.board_renderer.place_ui_anchor(self.dest_cards_banner,
+                                            anchor="topright", margin_x=160, margin_y=-20, base_scale=1)
+
+        self.board_renderer.place_ui_anchor(self.leaderboard_banner,
+                                            anchor="topleft", margin_x=1252, margin_y=-25, base_scale=0.975)
+
+        # Update bounds after moving/scaling the info button
+        w, h = self.info_button.width, self.info_button.height
+        self.info_button_bounds = (
+            self.info_button.center_x - w / 2,
+            self.info_button.center_x + w / 2,
+            self.info_button.center_y - h / 2,
+            self.info_button.center_y + h / 2
+        )
 
 def main(self):
     """Main function to initialize and run the game."""
