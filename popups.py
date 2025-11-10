@@ -56,8 +56,12 @@ def deck_pop_up(game_view):
 
     if game_view.drawn_card is not None:
         color_name = game_view.drawn_card.get_color().upper()
+        if color_name == "ORANGE":
+            message = f"You got an {color_name} card!"
+        else:
+            message = f"You got a {color_name} card!"
         arcade.draw_text(
-            f"You got a(n) {color_name} card!",
+            message,
             popup_x, popup_y + popup_height * 0.35,
             arcade.color.BLACK,
             font_size=18,
@@ -152,8 +156,12 @@ def faceup_card_pop_up(game_view, card_index):
 
         # Draw card info text
         color_name = selected_card.get_color().upper()
+        if color_name == "ORANGE":
+            message = f"You selected an {color_name} card!"
+        else:
+            message = f"You selected a {color_name} card!"
         arcade.draw_text(
-            f"You selected a(n) {color_name} card!",
+            message,
             popup_x, popup_y + popup_height * 0.35,
             arcade.color.BLACK,
             font_size=18,
@@ -643,7 +651,7 @@ def route_popup(game_view, city1, city2):
         )
 
 
-def show_dest_pop_up(self, dest_list, num):
+def show_dest_popup(self, dest_list, num):
     """
     Destination popup
     """
@@ -856,7 +864,8 @@ def show_info_pop_up(game_view):
     draw_paragraph("Score the most points by claiming train routes and completing Destination Tickets.")
 
     draw_section_title("Starting Setup:")
-    draw_paragraph("Each player starts with:\n• 45 colored train pieces\n• 4 Train Cards")
+    draw_paragraph("Each player starts with:\n• 45 train pieces\n• 4" \
+                   " Train Cards\n• Draw 4 tickets to start, keep at least 2.")
 
     draw_section_title("On Your Turn (choose one):")
     draw_paragraph(
@@ -864,10 +873,12 @@ def show_info_pop_up(game_view):
         "Taking a face-up wild counts as both cards. "
         "If 3 of 5 face-up cards are wild, replace all 5 cards.\n\n"
         "2. Claim a Route – Select two cities and choose the color of cards used. "
-        "Gray routes can use any single color.\n\n"
+        "Gray routes can use any single color. If you don't have enough cards"
+        " to claim a route, it will automatically use any wild cards you have.\n\n"
         "3. Draw Destination Tickets – Draw 4 new tickets, keep at least 1."
     )
 
+    current_y -= 15
     draw_section_title("Route Scoring Table:")
 
     # Route Scoring Table
