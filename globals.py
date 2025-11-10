@@ -18,11 +18,14 @@ players = []
 player_obj = player.Player("none")
 
 def initialize_game():
-    global faceup_deck, train_deck, dest_deck, routes, players, player_obj, dest_draw, discard_deck
+    global faceup_deck, train_deck, dest_deck, routes, players, player_obj, \
+    dest_draw, discard_deck, num_choose
     # Initailize Train Card Deck
     train_deck = deck.Deck('Draw')
     faceup_deck = deck.Deck('Faceup')
     discard_deck = deck.Deck('Discard')
+
+    num_choose = 2
 
     # Add color cards
     for color in c.COLORS:

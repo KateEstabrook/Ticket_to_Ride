@@ -56,8 +56,12 @@ def deck_pop_up(game_view):
 
     if game_view.drawn_card is not None:
         color_name = game_view.drawn_card.get_color().upper()
+        if color_name == "ORANGE":
+            message = f"You got an {color_name} card!"
+        else:
+            message = f"You got a {color_name} card!"
         arcade.draw_text(
-            f"You got a(n) {color_name} card!",
+            message,
             popup_x, popup_y + popup_height * 0.35,
             arcade.color.BLACK,
             font_size=18,
@@ -152,8 +156,12 @@ def faceup_card_pop_up(game_view, card_index):
 
         # Draw card info text
         color_name = selected_card.get_color().upper()
+        if color_name == "ORANGE":
+            message = f"You selected an {color_name} card!"
+        else:
+            message = f"You selected a {color_name} card!"
         arcade.draw_text(
-            f"You selected a(n) {color_name} card!",
+            message,
             popup_x, popup_y + popup_height * 0.35,
             arcade.color.BLACK,
             font_size=18,
@@ -641,7 +649,8 @@ def route_popup(game_view, city1, city2):
             bold=True
         )
 
-def show_dest_pop_up(self, dest_list, num):
+
+def show_dest_popup(self, dest_list, num):
     """
     Destination popup
     """
@@ -814,7 +823,98 @@ def show_info_pop_up(game_view):
         bold=True
     )
 
-    # Add exit button in lower right corner
+    # Formating 
+    left_margin = popup_x - popup_width * 0.45
+    text_width = popup_width * 0.85
+    current_y = popup_y + popup_height * 0.36
+    line_gap = 20  # standard line spacing
+    section_gap = 30  # slightly more for visual breathing room
+
+    def draw_section_title(title):
+        nonlocal current_y
+        arcade.draw_text(
+            title,
+            left_margin,
+            current_y,
+            arcade.color.DARK_BROWN,
+            font_size=14,
+            bold=True,
+            anchor_x="left",
+            anchor_y="top"
+        )
+        current_y -= section_gap
+
+    def draw_paragraph(text):
+        nonlocal current_y
+        arcade.draw_text(
+            text,
+            left_margin,
+            current_y,
+            arcade.color.BLACK,
+            font_size=12,
+            anchor_x="left",
+            anchor_y="top",
+            width=int(text_width),
+            multiline=True
+        )
+        # adjust vertical position based on text height
+        lines = text.count('\n') + 1
+        current_y -= lines * line_gap + 6
+
+    # Content Sections
+    draw_section_title("Goal:")
+    draw_paragraph("Score the most points by claiming train routes and completing Destination Tickets.")
+
+    draw_section_title("Starting Setup:")
+    draw_paragraph("Each player starts with:\n• 45 train pieces\n• 4" \
+                   " Train Cards\n• Draw 4 tickets to start, keep at least 2.")
+
+    draw_section_title("On Your Turn (choose one):")
+    draw_paragraph(
+        "1. Draw Train Cards – Take 2 cards (from face-up or deck). "
+        "Taking a face-up wild counts as both cards. "
+        "If 3 of 5 face-up cards are wild, replace all 5 cards.\n\n"
+        "2. Claim a Route – Select two cities and choose the color of cards used. "
+        "Gray routes can use any single color. If you don't have enough cards"
+        " to claim a route, it will automatically use any wild cards you have.\n\n"
+        "3. Draw Destination Tickets – Draw 4 new tickets, keep at least 1."
+    )
+
+    current_y -= 15
+    draw_section_title("Route Scoring Table:")
+
+    # Route Scoring Table
+    current_y -= 10
+    table_x = left_margin + 50
+    table_y = current_y
+    row_height = 24
+
+    # Headers
+    arcade.draw_text("Length", table_x, table_y, arcade.color.DARK_BROWN, 13, bold=True)
+    arcade.draw_text("1    2    3    4    5    6", table_x + 95, table_y, arcade.color.BLACK, 13)
+    table_y -= row_height
+    arcade.draw_text("Points", table_x, table_y, arcade.color.DARK_BROWN, 13, bold=True)
+    arcade.draw_text("1    2    4    7   10   15", table_x + 95, table_y, arcade.color.BLACK, 13)
+
+    # Adjust spacing below table
+    current_y = table_y - section_gap
+
+    draw_section_title("Game End:")
+    draw_paragraph(
+        "When a player finishes their turn with 2 or fewer train pieces left, "
+        "each player (including that one) gets one final turn. Then the game ends."
+    )
+
+    draw_section_title("Final Scoring:")
+    draw_paragraph(
+        "• Points are scored automatically.\n"
+        "• Completed tickets = gain points shown.\n"
+        "• Incomplete tickets = lose points shown.\n"
+        "• Longest continuous route = +10 points.\n"
+        "Highest total wins!\n"
+    )
+
+    # Exit Button
     exit_button_width = popup_width * 0.2
     exit_button_height = popup_height * 0.1
     exit_button_x = popup_x + popup_width * 0.38

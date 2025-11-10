@@ -72,7 +72,8 @@ class BoardRenderer:
                 game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
 
         if self.game_view.showing_dest_popup:
-            popups.show_dest_pop_up(self.game_view, game_globals.dest_draw, self.game_view.min_dest_cards_to_keep)
+            #popups.show_dest_popup(self.game_view, game_globals.dest_draw, game_globals.num_choose)
+            popups.show_dest_popup(self.game_view, game_globals.dest_draw, self.game_view.min_dest_cards_to_keep)
 
         if self.game_view.showing_deck_popup:
             popups.deck_pop_up(self.game_view)
@@ -417,7 +418,7 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    min_required = getattr(self.game_view, 'min_dest_cards_to_keep', 2)
+                    min_required = getattr(self.game_view, 'min_dest_cards_to_keep', game_globals.num_choose)
                     max_allowed = getattr(self.game_view, 'max_dest_cards_to_keep', 8)
 
                     # Check if player selected the right amount
@@ -472,6 +473,7 @@ class MouseHandler:
 
             # Show the destination deck popup
             if hit_dest_deck:
+                game_globals.num_choose = 1
                 # Check how many destination cards the player currently has
                 current_dest_cards = game_globals.player_obj.get_destination_cards().get_len()
                 # Maximum of 8 destination cards allowed
@@ -673,21 +675,21 @@ class RouteController:
                 # Check if this is a wild
                 if selected_color == "wild":
                     # Check if there's at least one available route
-                    for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
+                    for taken, route_data in zip(route_taken, routes_data):
                         if not taken:
                             if game_globals.player_obj.get_train_cards().get_count("wild") >= len_route:
                                 return 0
                             return 1
-                        return 2
+                    return 2
                 # For regular colors, check if the color matches an available route
-                for i, (taken, route_data) in enumerate(zip(route_taken, routes_data)):
+                for taken, route_data in zip(route_taken, routes_data):
+                    # If route is not taken and color matches (or route is colorless)
                     if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
-                        # If route is not taken and color matches (or route is colorless)
                         if game_globals.player_obj.get_train_cards().has_cards(selected_color, len_route):
                             return 0
                         return 1
                 # If we get here, no available route matches the selected color
-                    return 2
+                return 2
         return 2
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
@@ -996,7 +998,7 @@ class GameView(arcade.View):
         self.popup_route_length = 0
         self.color_buttons = []
         self.dest_buttons = []
-        self.min_dest_cards_to_keep = 2
+        self.min_dest_cards_to_keep = game_globals.num_choose
         self.max_dest_cards_to_keep = 8
         self.showing_faceup_popup = False # Don't show face up popup
         self.selected_faceup_card_index = None # Face up card that was clicked
