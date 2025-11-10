@@ -167,19 +167,18 @@ class WinScreenView(arcade.View):
         """Draw instructions at bottom with styled rectangle"""
         instructions_w = max(300, min(400, int(width * 0.3)))
         instructions_h = max(40, min(60, int(height * 0.06)))
-        cx, cy = width // 2, height * 0.28
+        cx, cy = width // 2, height * 0.27
 
         # Instructions background
-        instructions_tex = arcade.make_soft_square_texture(2, (40, 40, 40, 200), outer_alpha=255)
+        instructions_tex = arcade.make_soft_square_texture(2, (250, 250, 250, 200), outer_alpha=255)
         instructions_rect = self._centered_rect(cx, cy, instructions_w, instructions_h)
         arcade.draw_texture_rect(instructions_tex, instructions_rect)
-        arcade.draw_rect_outline(instructions_rect, arcade.color.LIGHT_GRAY, border_width=2)
+        arcade.draw_rect_outline(instructions_rect, arcade.color.WHITE, border_width=2)
 
         arcade.draw_text("Press ESC to close",
                         cx, cy,
-                        arcade.color.LIGHT_GRAY, 16,
-                        anchor_x="center", anchor_y="center",
-                        font_name="Arial")
+                        arcade.color.BLACK, 16,
+                        anchor_x="center", anchor_y="center")
 
     def on_key_press(self, symbol: int, modifiers: int):
         """Handle key presses"""
