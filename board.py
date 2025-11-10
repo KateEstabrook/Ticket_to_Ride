@@ -72,8 +72,8 @@ class BoardRenderer:
                 game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
 
         if self.game_view.showing_dest_popup:
-            popups.show_dest_popup(self.game_view, game_globals.dest_draw, game_globals.num_choose)
-            popups.show_dest_pop_up(self.game_view, game_globals.dest_draw, self.game_view.min_dest_cards_to_keep)
+            #popups.show_dest_popup(self.game_view, game_globals.dest_draw, game_globals.num_choose)
+            popups.show_dest_popup(self.game_view, game_globals.dest_draw, self.game_view.min_dest_cards_to_keep)
 
         if self.game_view.showing_deck_popup:
             popups.deck_pop_up(self.game_view)
