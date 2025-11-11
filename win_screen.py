@@ -14,9 +14,9 @@ class WinScreenView(arcade.View):
         # Use provided players or default data
         self.players = [
             {"name": "You", "color": arcade.color.WHITE, "points": 127, "longest_path": True},
-            {"name": "Red", "color": arcade.color.RED, "points": 115, "longest_path": False},
-            {"name": "Blue", "color": arcade.color.BLUE, "points": 98, "longest_path": False},
-            {"name": "Green", "color": arcade.color.GREEN, "points": 85, "longest_path": False}
+            {"name": "Red", "color": (171, 38, 2), "points": 115, "longest_path": False},
+            {"name": "Blue", "color": (10, 85, 161), "points": 98, "longest_path": False},
+            {"name": "Green", "color": (115, 143, 43), "points": 85, "longest_path": False}
         ]
 
         # Store the longest route length
@@ -64,15 +64,14 @@ class WinScreenView(arcade.View):
     def draw_results_container(self, width, height):
         """Draw the main results container with styled rectangle"""
         # Main container background
-        container_w = max(500, min(700, int(width * 0.8)))
-        container_h = max(400, min(500, int(height * 0.7)))
+        container_w = max(500, min(850, int(width * 0.8)))
+        container_h = max(400, min(650, int(height * 0.7)))
         cx, cy = width // 2, height // 2
 
         # Create styled container
-        tex = arcade.make_soft_square_texture(2, (40, 40, 80, 200), outer_alpha=255)
+        tex = arcade.make_soft_square_texture(2, (251, 238, 204, 200), outer_alpha=255)
         rect = self._centered_rect(cx, cy, container_w, container_h)
         arcade.draw_texture_rect(tex, rect)
-        arcade.draw_rect_outline(rect, arcade.color.GOLD, border_width=4)
 
         # Title section with its own styled rectangle
         self.draw_title_section(width, height, container_w, container_h, cx, cy)
@@ -116,8 +115,8 @@ class WinScreenView(arcade.View):
                 entry_color = (255, 215, 0, 180)  # Gold
                 border_color = arcade.color.YELLOW
             else:
-                entry_color = (60, 60, 80, 180)  # Dark
-                border_color = arcade.color.LIGHT_GRAY
+                entry_color = (207, 192, 192)  # Light
+                border_color = arcade.color.WHITE
 
             entry_tex = arcade.make_soft_square_texture(2, entry_color, outer_alpha=255)
             entry_rect = self._centered_rect(container_cx, entry_y, entry_w, entry_h)
@@ -141,26 +140,26 @@ class WinScreenView(arcade.View):
 
             # Longest path indicator with numerical value
             if player["longest_path"]:
-                longest_tex = arcade.make_soft_square_texture(2, (0, 100, 100, 180), outer_alpha=255)
+                longest_tex = arcade.make_soft_square_texture(2, (250, 250, 250, 180), outer_alpha=255)
                 longest_w = 270
                 longest_h = 30
                 longest_rect = self._centered_rect(container_cx, entry_y - entry_h * 0.1,
                                                  longest_w, longest_h)
                 arcade.draw_texture_rect(longest_tex, longest_rect)
-                arcade.draw_rect_outline(longest_rect, arcade.color.CYAN, border_width=2)
+                arcade.draw_rect_outline(longest_rect, arcade.color.WHITE, border_width=2)
 
                 # Display longest route with numerical value
                 longest_text = f"Longest Route ({self.longest_route_length} trains)"
                 arcade.draw_text(longest_text,
                                container_cx, entry_y - entry_h * 0.1,
-                               arcade.color.CYAN, 16,
+                               arcade.color.FOREST_GREEN, 16,
                                anchor_x="center", anchor_y="center", bold=True)
 
     def draw_instructions(self, width, height):
         """Draw instructions at bottom with styled rectangle"""
         instructions_w = max(300, min(400, int(width * 0.3)))
         instructions_h = max(40, min(60, int(height * 0.06)))
-        cx, cy = width // 2, height * 0.27
+        cx, cy = width // 2, height * 0.22
 
         # Instructions background
         instructions_tex = arcade.make_soft_square_texture(2, (250, 250, 250, 200), outer_alpha=255)
@@ -187,7 +186,7 @@ def main():
     test_players = [
         {"name": "You", "color": arcade.color.WHITE, "points": 156, "longest_path": True},
         {"name": "Red", "color": arcade.color.RED, "points": 142, "longest_path": False},
-        {"name": "Blue", "color": arcade.color.BLUE, "points": 134, "longest_path": False},
+        {"name": "Blue", "color": (52, 71, 83), "points": 134, "longest_path": False},
         {"name": "Green", "color": arcade.color.GREEN, "points": 121, "longest_path": False}
     ]
 
