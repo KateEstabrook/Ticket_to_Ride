@@ -435,7 +435,7 @@ PLAYER_CARDS = {
     "Red" : [3120, 1330, CARDS[5]],
     "White" : [2560, 1510, CARDS[6]],
     "Yellow" : [2840, 1510, CARDS[7]],
-    "Locomotive" : [3120, 1510, CARDS[8]]
+    "Wild" : [3120, 1510, CARDS[8]]
 }
 
 FACEUP_CARDS = {

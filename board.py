@@ -84,6 +84,10 @@ class BoardRenderer:
 
         self.draw_leaderboard()
 
+        for line in self.game_view.index_cards:
+            if line.text != "0":
+                line.draw()
+
         if self.game_view.showing_info_popup:
             popups.show_info_pop_up(self.game_view)
 
@@ -215,9 +219,6 @@ class BoardRenderer:
 
         # Draw leaderboard lines and card counts
         for line in self.game_view.leaderboard_lines:
-            line.draw()
-
-        for line in self.game_view.index_cards:
             line.draw()
 
     def ui_scale(self, px: float) -> float:
@@ -761,6 +762,12 @@ class CardController:
             if i < len(self.game_view.index_cards):
                 self.game_view.index_cards[i].text = str(color_counts[color])
 
+        # Toggle visibility of the hand sprites using normalized (lowercase) color keys
+        for color_key, spr in self.game_view.hand_card_sprite_by_color.items():
+            # use the counts we already computed; fallback to querying the deck if missing
+            count = color_counts.get(color_key, game_globals.player_obj.get_train_cards().get_count(color_key))
+            spr.alpha = 255 if count > 0 else 0
+
 
 class KeyboardHandler:
     """Handles keyboard input for the game."""
@@ -956,11 +963,20 @@ class GameView(arcade.View):
             self.card_list.append(card)
             i += 1
 
+        self.hand_card_sprite_by_color = {}
         # Player's hand card set up
         for name, (sx, sy, filename) in c.PLAYER_CARDS.items():
             card = arcade.Sprite()
             card.texture = self.card_textures[name]
             self.board_renderer.place_card(card, sx, sy, top_left=True, scale=0.37)
+            # Normalize the deck color key
+            color_key = name.lower()
+
+            # show only if the player has at least 1 of this color
+            count = game_globals.player_obj.get_train_cards().get_count(color_key)
+            card.alpha = 255 if count > 0 else 0
+
+            self.hand_card_sprite_by_color[color_key] = card
             self.card_list.append(card)
 
         # Banners
