@@ -53,7 +53,15 @@ class Deck:
     def add(self, card):
         """Adds a card to the deck"""
         self.cards.append(card)
-    
+
+    def add_cards(self, cards_list):
+        for card in cards_list:
+            self.add(card)
+
+    def clear(self):
+        self.num_cards = STARTING_NUM_CARDS
+        self.cards = []
+
     def has_cards(self, color, count):
         """Checks if the passed cards are in the deck including wild cards"""
         if self.get_count(color) >= count:
@@ -65,6 +73,12 @@ class Deck:
     def sort(self):
         """Sorts the deck"""
         self.cards.sort(key=operator.attrgetter('color'))
+
+    def refresh_deck(self, input_deck):
+        for card in input_deck.get_cards:
+            self.add(card)
+        input_deck.clear()
+        self.shuffle()
 
     def get_count(self, color):
         """Gets the number of cards with that color"""
@@ -94,6 +108,9 @@ class Deck:
         for _ in self.cards:
             count += 1
         return count
+    
+    def get_cards(self):
+        return self.cards
 
     def __str__(self):
         """To String"""

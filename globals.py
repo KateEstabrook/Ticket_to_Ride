@@ -30,13 +30,13 @@ def initialize_game():
     # Add color cards
     for color in c.COLORS:
         i = 0
-        while i < 12:
+        while i < 5:
             train_deck.add(cards.TrainCard(color))
             i += 1
 
     # Add wild cards
     i = 0
-    while i < 14:
+    while i < 5:
         train_deck.add(cards.TrainCard("wild"))
         i += 1
 

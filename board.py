@@ -324,7 +324,9 @@ class MouseHandler:
                                 new_card = game_globals.train_deck.remove(-1)  # Draw from top
                                 # Insert the new card at the same position we removed from
                                 game_globals.faceup_deck.cards.insert(replacement_index, new_card)
-
+                            # elif game_globals.discard_deck.get_len() > 0:
+                            #     game_globals.train_deck.refresh_deck(game_globals.discard_deck)
+                        
                             # Refresh the face-up cards display
                             self.game_view.refresh_faceup_cards()
                             # Update the card count display
@@ -663,6 +665,7 @@ class RouteController:
                         train_sprite.alpha = 255
                     break
         removed = game_globals.player_obj.get_train_cards().remove_cards(selected_color, len_route)
+        game_globals.discard_deck.add_cards(removed)
 
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route and checking if double colored routes are taken"""
