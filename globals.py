@@ -19,24 +19,25 @@ player_obj = player.Player("none")
 
 def initialize_game():
     global faceup_deck, train_deck, dest_deck, routes, players, player_obj, \
-    dest_draw, discard_deck, num_choose
+    dest_draw, discard_deck, num_choose, turn_end, turn_val
     # Initailize Train Card Deck
     train_deck = deck.Deck('Draw')
     faceup_deck = deck.Deck('Faceup')
     discard_deck = deck.Deck('Discard')
 
     num_choose = 2
-
+    turn_end = False
+    turn_val = None
     # Add color cards
     for color in c.COLORS:
         i = 0
-        while i < 5:
+        while i < 12:
             train_deck.add(cards.TrainCard(color))
             i += 1
 
     # Add wild cards
     i = 0
-    while i < 5:
+    while i < 14:
         train_deck.add(cards.TrainCard("wild"))
         i += 1
 

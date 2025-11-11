@@ -300,7 +300,7 @@ class MouseHandler:
                         self.game_view.update_card_counts()
                     self.game_view.showing_deck_popup = False
                     self.game_view.selected_color = None
-                    return
+                    return 1
             # If click is elsewhere while popup is up, just consume it
             return
 
@@ -334,7 +334,9 @@ class MouseHandler:
                     # Close pop up
                     self.game_view.showing_faceup_popup = False
                     self.game_view.selected_faceup_card_index = None
-                    return
+                    if taken_card.get_color() == "wild" and game_globals.turn_val != 1: 
+                        return 2
+                    return 1
 
             # Handle exit button click
             if hasattr(self.game_view, 'exit_button_bounds'):
@@ -1049,7 +1051,17 @@ class GameView(arcade.View):
         self.mouse_handler.on_mouse_motion(x, y, dx, dy)
 
     def on_update(self, delta_time):
-        """Update game state (currently empty)."""
+        """Update game state (currently empty)."""   
+        if game_globals.turn_val != None:
+            if game_globals.turn_val >= 2:
+                game_globals.turn_end = True
+                game_globals.turn_val = None
+
+        if game_globals.turn_end == True:
+            # set curr player_obj to next player
+            print("Turn ended")
+            game_globals.turn_end = False
+            game_globals.turn_val = None
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
         """Get city name from sprite"""
@@ -1057,7 +1069,11 @@ class GameView(arcade.View):
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Handle mouse press"""
-        self.mouse_handler.on_mouse_press(x, y, button, modifiers)
+        return_val = self.mouse_handler.on_mouse_press(x, y, button, modifiers)
+        if game_globals.turn_val == None and return_val > 0:
+            game_globals.turn_val = return_val
+        elif game_globals.turn_val != None and return_val != None: 
+            game_globals.turn_val += return_val
 
     def on_key_press(self, symbol: int, modifiers: int):
         """Handle key press"""
@@ -1070,6 +1086,7 @@ class GameView(arcade.View):
     def claim_route(self, city1, city2):
         """Claim route"""
         self.route_controller.claim_route(city1, city2)
+        game_globals.turn_end = True
 
     def is_point_in_button(self, x, y, button_bounds):
         """Check if point is in button"""
