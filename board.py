@@ -79,7 +79,7 @@ class BoardRenderer:
             popups.deck_pop_up(self.game_view)
 
         if self.game_view.showing_faceup_popup:
-            popups.faceup_card_pop_up(self.game_view, self.game_view.selected_faceup_card_index)
+            popups.faceup_card_popup(self.game_view, self.game_view.selected_faceup_card_index)
 
 
         self.draw_leaderboard()
@@ -334,7 +334,7 @@ class MouseHandler:
                     # Close pop up
                     self.game_view.showing_faceup_popup = False
                     self.game_view.selected_faceup_card_index = None
-                    if taken_card.get_color() == "wild" and game_globals.turn_val != 1: 
+                    if taken_card.get_color() == "wild" and game_globals.turn_val != 1:
                         return 2
                     return 1
 
@@ -442,8 +442,10 @@ class MouseHandler:
                         self.game_view.selected_dests = []
 
                         # From now on, only 1 dest required next times
-                        self.game_view.dest_first_time = False
-
+                        if self.game_view.dest_first_time == True:
+                            self.game_view.dest_first_time = False
+                            return
+                        return 2
                     return
 
             # Check if dest card was clicked
@@ -1070,10 +1072,12 @@ class GameView(arcade.View):
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Handle mouse press"""
         return_val = self.mouse_handler.on_mouse_press(x, y, button, modifiers)
-        if game_globals.turn_val == None and return_val > 0:
-            game_globals.turn_val = return_val
+        if game_globals.turn_val == None and return_val == None: 
+            0
         elif game_globals.turn_val != None and return_val != None: 
             game_globals.turn_val += return_val
+        elif game_globals.turn_val == None and return_val > 0:
+            game_globals.turn_val = return_val
 
     def on_key_press(self, symbol: int, modifiers: int):
         """Handle key press"""

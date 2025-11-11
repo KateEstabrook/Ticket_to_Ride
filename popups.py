@@ -109,7 +109,7 @@ def deck_pop_up(game_view):
     )
 
 
-def faceup_card_pop_up(game_view, card_index):
+def faceup_card_popup(game_view, card_index):
     """
     Show a white rectangle pop-up when a face-up card is clicked
     """
@@ -170,43 +170,46 @@ def faceup_card_pop_up(game_view, card_index):
             bold=True
         )
 
-    # Add take button
-    take_button_width = popup_width * 0.2
-    take_button_height = popup_height * 0.1
-    take_button_x = popup_x + popup_width * 0.16
-    take_button_y = popup_y - popup_height * 0.42
+    if globals.turn_val == 1 and selected_card.get_color() == "wild":
+        0
+    else:
+        # Add take button
+        take_button_width = popup_width * 0.2
+        take_button_height = popup_height * 0.1
+        take_button_x = popup_x + popup_width * 0.16
+        take_button_y = popup_y - popup_height * 0.42
 
-    take_texture = game_view.popup_textures['save_button']
-    take_rect = _centered_rect(
-        take_button_x,
-        take_button_y,
-        take_button_width,
-        take_button_height
-    )
+        take_texture = game_view.popup_textures['save_button']
+        take_rect = _centered_rect(
+            take_button_x,
+            take_button_y,
+            take_button_width,
+            take_button_height
+        )
 
-    arcade.draw_texture_rect(take_texture, take_rect)
-    arcade.draw_rect_outline(
-        take_rect,
-        arcade.color.BLACK,
-        border_width=2
-    )
+        arcade.draw_texture_rect(take_texture, take_rect)
+        arcade.draw_rect_outline(
+            take_rect,
+            arcade.color.BLACK,
+            border_width=2
+        )
 
-    arcade.draw_text(
-        "TAKE CARD",
-        take_button_x, take_button_y,
-        arcade.color.WHITE,
-        font_size=12,
-        anchor_x="center",
-        anchor_y="center",
-        bold=True
-    )
+        arcade.draw_text(
+            "TAKE CARD",
+            take_button_x, take_button_y,
+            arcade.color.WHITE,
+            font_size=12,
+            anchor_x="center",
+            anchor_y="center",
+            bold=True
+        )
 
-    game_view.take_button_bounds = (
-        take_rect.left,  # left
-        take_rect.left + take_rect.width,  # right
-        take_rect.bottom,  # bottom
-        take_rect.bottom + take_rect.height  # top
-    )
+        game_view.take_button_bounds = (
+            take_rect.left,  # left
+            take_rect.left + take_rect.width,  # right
+            take_rect.bottom,  # bottom
+            take_rect.bottom + take_rect.height  # top
+        )
 
     # Add exit button in lower right corner
     exit_button_width = popup_width * 0.2
@@ -536,18 +539,21 @@ def route_popup(game_view, city1, city2):
         if game_view.selected_color:
             # make sure the specific colored route isn't already taken
             city_pair = (city1, city2) if (city1, city2) in c.TRAINS else (city2, city1)
+            len_route = len(c.TRAINS[city_pair][0]["positions"])
             if city_pair in c.TRAINS:
                 routes_data = c.TRAINS[city_pair]
                 route_taken = game_view.route_taken[city_pair]
 
                 # For wild, we just need any available route
-                if game_view.selected_color == "wild":
+                if game_view.selected_color == "wild" and globals.player_obj.get_train_cards().has_cards("wild", len_route):
                     can_save = any(
                         not taken for taken, route_data in zip(route_taken, routes_data))
                 else:
                     # For regular colors, check if there's an available route with this color
                     can_save = any(not taken and (route_data["color"] == game_view.selected_color or
                                                   route_data["color"] == "colorless")
+                                                  and globals.player_obj.get_train_cards().\
+                                                    has_cards(game_view.selected_color, len_route)
                                    for taken, route_data in zip(route_taken, routes_data))
             else:
                 can_save = False
@@ -634,18 +640,20 @@ def route_popup(game_view, city1, city2):
 
     # invalid color/route
     if (game_view.selected_color and
-            not _can_use_color_here(game_view, game_view.selected_color, city1, city2) and
+            game_view.valid_route_colors(game_view.selected_color, city1, city2) != 0 and
             not is_second_popup):
-        error_text = f"Cannot use {game_view.selected_color.upper()} card on this route!"
+        if game_view.valid_route_colors(game_view.selected_color, city1, city2) == 2:
+            error_text = f"Cannot use {game_view.selected_color.upper()} card on this route!"
+        else:
+            error_text = f"Not enough {game_view.selected_color.upper()} cards for this route!"
         arcade.draw_text(
             error_text,
-            popup_x,
-            popup_y - popup_height * 0.41,
+            popup_x - popup_width * 0.4,
+            popup_y - popup_height * 0.4,
             arcade.color.RED,
             font_size=14,
-            anchor_x="center",
+            anchor_x="left",
             anchor_y="center",
-            align="center",
             bold=True
         )
 
