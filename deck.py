@@ -66,7 +66,7 @@ class Deck:
         """Checks if the passed cards are in the deck including wild cards"""
         if self.get_count(color) >= count:
             return True
-        if self.get_count("wild") + self.get_count(color) >= count and color != "wild":
+        if self.get_count("wild") + self.get_count(color) >= count:
             return True
         return False
 
