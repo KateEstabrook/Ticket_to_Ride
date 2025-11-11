@@ -12,7 +12,7 @@ class WinScreenView(arcade.View):
         super().__init__()
 
         # Use provided players or default data
-        self.players = players or [
+        self.players = [
             {"name": "You", "color": arcade.color.WHITE, "points": 127, "longest_path": True},
             {"name": "Red", "color": arcade.color.RED, "points": 115, "longest_path": False},
             {"name": "Blue", "color": arcade.color.BLUE, "points": 98, "longest_path": False},
@@ -21,8 +21,6 @@ class WinScreenView(arcade.View):
 
         # Store the longest route length
         self.longest_route_length = longest_route_length
-
-
         self.bg_tex = arcade.load_texture("images/menu_screen.png")
 
 
@@ -100,11 +98,6 @@ class WinScreenView(arcade.View):
                         arcade.color.GOLD, 32,
                         anchor_x="center", anchor_y="center")
 
-        arcade.draw_text("Final Scores",
-                        title_cx, title_cy - 15,
-                        arcade.color.WHITE, 20,
-                        anchor_x="center", anchor_y="center")
-
     def draw_player_results(self, width, height, container_w, container_h, container_cx, container_cy):
         """Draw player results with styled entries"""
         # Sort players by points
@@ -120,10 +113,10 @@ class WinScreenView(arcade.View):
 
             # Player entry background - different color for winner
             if i == 0:  # Winner
-                entry_color = (255, 215, 0, 180)  # Gold with transparency
+                entry_color = (255, 215, 0, 180)  # Gold
                 border_color = arcade.color.YELLOW
             else:
-                entry_color = (60, 60, 80, 180)  # Dark with transparency
+                entry_color = (60, 60, 80, 180)  # Dark
                 border_color = arcade.color.LIGHT_GRAY
 
             entry_tex = arcade.make_soft_square_texture(2, entry_color, outer_alpha=255)
@@ -149,7 +142,7 @@ class WinScreenView(arcade.View):
             # Longest path indicator with numerical value
             if player["longest_path"]:
                 longest_tex = arcade.make_soft_square_texture(2, (0, 100, 100, 180), outer_alpha=255)
-                longest_w = 270  # Wider to accommodate the number
+                longest_w = 270
                 longest_h = 30
                 longest_rect = self._centered_rect(container_cx, entry_y - entry_h * 0.1,
                                                  longest_w, longest_h)
@@ -167,19 +160,18 @@ class WinScreenView(arcade.View):
         """Draw instructions at bottom with styled rectangle"""
         instructions_w = max(300, min(400, int(width * 0.3)))
         instructions_h = max(40, min(60, int(height * 0.06)))
-        cx, cy = width // 2, height * 0.28
+        cx, cy = width // 2, height * 0.27
 
         # Instructions background
-        instructions_tex = arcade.make_soft_square_texture(2, (40, 40, 40, 200), outer_alpha=255)
+        instructions_tex = arcade.make_soft_square_texture(2, (250, 250, 250, 200), outer_alpha=255)
         instructions_rect = self._centered_rect(cx, cy, instructions_w, instructions_h)
         arcade.draw_texture_rect(instructions_tex, instructions_rect)
-        arcade.draw_rect_outline(instructions_rect, arcade.color.LIGHT_GRAY, border_width=2)
+        arcade.draw_rect_outline(instructions_rect, arcade.color.WHITE, border_width=2)
 
         arcade.draw_text("Press ESC to close",
                         cx, cy,
-                        arcade.color.LIGHT_GRAY, 16,
-                        anchor_x="center", anchor_y="center",
-                        font_name="Arial")
+                        arcade.color.BLACK, 16,
+                        anchor_x="center", anchor_y="center")
 
     def on_key_press(self, symbol: int, modifiers: int):
         """Handle key presses"""
