@@ -93,7 +93,7 @@ class Deck:
         for card in self.cards:
             if card.get_color() == color:
                 return int(self.cards.index(card))
-        return -1
+        return None
 
     def get_card_at_index(self, index):
         """Returns the card at a certain index in the deck"""

@@ -397,6 +397,7 @@ class MouseHandler:
                         # For colorless routes, just claim directly without second popup
                         if len(available_routes) > 1:
                             self.game_view.showing_route_selection = True
+                            self.game_view.update_card_counts()
                             return
                         else:
                             # For single available route
@@ -404,6 +405,7 @@ class MouseHandler:
                             self.game_view.claim_route(self.game_view.popup_city1, self.game_view.popup_city2)
                             self.game_view.deselect_all_cities()
                             self.game_view.selected_color = None
+                            self.game_view.update_card_counts()
                             return
                     else:
                         self.game_view.showing_popup = False
