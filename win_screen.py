@@ -69,7 +69,7 @@ class WinScreenView(arcade.View):
         cx, cy = width // 2, height // 2
 
         # Create styled container
-        tex = arcade.make_soft_square_texture(2, (251, 238, 204, 200), outer_alpha=255)
+        tex = arcade.make_soft_square_texture(2, (0, 0, 0, 0), outer_alpha=0)
         rect = self._centered_rect(cx, cy, container_w, container_h)
         arcade.draw_texture_rect(tex, rect)
 
