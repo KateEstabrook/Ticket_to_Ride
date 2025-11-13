@@ -227,6 +227,9 @@ class StartMenuView(arcade.View):
                         # Create and show game view with selected color
                         player_obj = player.Player(self.selected_color)
                         globals.player_obj.set_player(player_obj)
+                        for color in c.PLAYER_COLORS:
+                            if color.title() != self.selected_color:
+                                globals.players.append(player.Player(color.title()))
                         for _ in range(c.STARTING_CARDS):
                             globals.player_obj.get_train_cards().add(globals.train_deck.remove(-1))
                         game_view = GameView()

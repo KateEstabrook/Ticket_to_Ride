@@ -66,7 +66,7 @@ class Deck:
         """Checks if the passed cards are in the deck including wild cards"""
         if self.get_count(color) >= count:
             return True
-        if self.get_count("wild") + self.get_count(color) >= count:
+        if self.get_count("wild") + self.get_count(color) >= count and color != "wild":
             return True
         return False
 
@@ -75,7 +75,7 @@ class Deck:
         self.cards.sort(key=operator.attrgetter('color'))
 
     def refresh_deck(self, input_deck):
-        for card in input_deck.get_cards:
+        for card in input_deck.get_cards():
             self.add(card)
         input_deck.clear()
         self.shuffle()

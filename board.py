@@ -325,9 +325,6 @@ class MouseHandler:
                                 new_card = game_globals.train_deck.remove(-1)  # Draw from top
                                 # Insert the new card at the same position we removed from
                                 game_globals.faceup_deck.cards.insert(replacement_index, new_card)
-                            # elif game_globals.discard_deck.get_len() > 0:
-                            #     game_globals.train_deck.refresh_deck(game_globals.discard_deck)
-                        
                             # Refresh the face-up cards display
                             self.game_view.refresh_faceup_cards()
                             # Update the card count display
@@ -1071,7 +1068,16 @@ class GameView(arcade.View):
         self.mouse_handler.on_mouse_motion(x, y, dx, dy)
 
     def on_update(self, delta_time):
-        """Update game state (currently empty)."""   
+        """Update game state"""  
+        if game_globals.discard_deck.get_len() > 0 and game_globals.train_deck.get_len() < 5:
+            game_globals.train_deck.refresh_deck(game_globals.discard_deck)
+            self.card_controller.refresh_faceup_cards()
+        
+        if game_globals.faceup_deck.get_len() < 5 \
+            and game_globals.train_deck.get_len() > 0:
+            new_card = game_globals.train_deck.remove(-1)
+            game_globals.faceup_deck.cards.insert(4, new_card)
+
         if game_globals.turn_val != None:
             if game_globals.turn_val >= 2:
                 game_globals.turn_end = True
@@ -1082,6 +1088,7 @@ class GameView(arcade.View):
             print("Turn ended")
             game_globals.turn_end = False
             game_globals.turn_val = None
+            
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
         """Get city name from sprite"""
