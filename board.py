@@ -1069,6 +1069,7 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time):
         """Update game state"""  
+        game_globals.train_deck.shuffle()
         if game_globals.discard_deck.get_len() > 0 and game_globals.train_deck.get_len() < 5:
             game_globals.train_deck.refresh_deck(game_globals.discard_deck)
             self.card_controller.refresh_faceup_cards()
