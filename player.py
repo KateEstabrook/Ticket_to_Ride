@@ -10,7 +10,7 @@ Player class:
 import deck
 
 # Constants
-INIT_TRAIN_PEICES = 45
+INIT_TRAIN_PIECES = 45
 STARTING_POINTS = 0
 
 class Player:
@@ -18,7 +18,7 @@ class Player:
     # Constructor
     def __init__(self, color):
         self.color = color
-        self.train_peices = INIT_TRAIN_PEICES
+        self.train_pieces = INIT_TRAIN_PIECES
         self.points = STARTING_POINTS
         self.train_cards = deck.Deck('train_cards')
         self.destination_cards = deck.Deck('destination_cards')
@@ -38,7 +38,7 @@ class Player:
 
     def remove_trains(self, trains):
         """Remove train pieces from player"""
-        self.train_peices -= trains
+        self.train_pieces -= trains
 
     def remove_card(self, deck_, index):
         """Remove cards from player deck"""
@@ -50,7 +50,7 @@ class Player:
 
     def get_trains(self):
         """Getter for trains"""
-        return self.train_peices
+        return self.train_pieces
 
     def get_color(self):
         """Getter for color"""
@@ -73,7 +73,7 @@ class Player:
 
     def set_player(self, player_):
         self.color = player_.get_color()
-        self.train_peices = player_.get_trains()
+        self.train_pieces = player_.get_trains()
         self.points = player_.get_points()
         self.train_cards = player_.get_train_cards()
         self.destination_cards = player_.get_destination_cards()
