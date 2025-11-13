@@ -66,6 +66,10 @@ class Player:
     def get_destination_cards(self):
         """Getter for destination cards"""
         return self.destination_cards
+    
+    def get_map(self):
+        """Getter for player's claimed map"""
+        return self.map
 
     def get_sprite(self):
         """Getter for sprite"""

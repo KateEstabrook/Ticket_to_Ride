@@ -2,52 +2,38 @@
 Computer players
 """
 
+import player
+import deck
+import cards
+import globals as game_globals
+
 class Computer:
     def __init__(self, player):
         self.player = player
-        self.cards_needed
+        self.cards_needed = {"pink":0, "blue":0, "orange":0, "white":0, "green":0, 
+                             "yellow":0, "black":0, "red":0, "colorless":0}
 
-    def play(self, map):
-        pass
+    def play(self, game_map):
+        # Player turn decision logic
+        if len(self.player.get_uncompleted()) == 0 and game_globals.dest_deck.get_len() != 0: # No dest cards, draw 1
+            player.add_card(player.get_destination_cards(), game_globals.dest_deck.remove(-1))
+        elif False: # Can play a route, play it
+            0
+        elif False: # Sees a useful faceup card, draw it
+            0
+            if False: # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
+                0
+            else: # Draw from the deck
+                player.add_card(player.get_train_cards(), game_globals.train_deck.remove(-1))
+        else: # Draw from the train card deck if no better options
+            player.add_card(player.get_train_cards(), game_globals.train_deck.remove(-1))
+            if False: # Sees a useful faceup card (and it isn't a faceup rainbow), draw it
+                0
+            else: # Draw from the deck
+                player.add_card(player.get_train_cards(), game_globals.train_deck.remove(-1))
+        
 
-
-"""
-def dijkstra(V, edges, src):
-    # Create adjacency list
-    adj = constructAdj(edges, V)
-
-    # Create a priority queue to store vertices that
-    # are being preprocessed.
-    pq = []
-    
-    # Create a list for distances and initialize all
-    # distances as infinite
-    dist = [sys.maxsize] * V
-
-    # Insert source itself in priority queue and initialize
-    # its distance as 0.
-    heapq.heappush(pq, [0, src])
-    dist[src] = 0
-
-    # Looping till priority queue becomes empty (or all
-    # distances are not finalized) 
-    while pq:
-        # The first vertex in pair is the minimum distance
-        # vertex, extract it from priority queue.
-        u = heapq.heappop(pq)[1]
-
-        # Get all adjacent of u.
-        for x in adj[u]:
-            # Get vertex label and weight of current
-            # adjacent of u.
-            v, weight = x[0], x[1]
-
-            # If there is shorter path to v through u.
-            if dist[v] > dist[u] + weight:
-                # Updating distance of v
-                dist[v] = dist[u] + weight
-                heapq.heappush(pq, [dist[v], v])
-
-    # Return the shortest distance array
-    return dist
-"""
+        # Update whether player's dest cards are completed
+        for card in self.player.get_uncompleted():
+            if map.check_completed(card):
+                card.completed()

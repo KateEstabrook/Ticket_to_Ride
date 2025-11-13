@@ -109,6 +109,13 @@ class Deck:
             count += 1
         return count
     
+    def get_uncompleted(self):
+        rtn_lst = []
+        for card in self.cards:
+            if not card.get_completed():
+                rtn_lst.append(card)
+        return rtn_lst
+    
     def get_cards(self):
         return self.cards
 

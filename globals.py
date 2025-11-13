@@ -6,6 +6,7 @@ import deck
 import cards
 import route
 import player
+import graph
 import constants as c
 
 faceup_deck = []
@@ -16,6 +17,7 @@ dest_draw = []
 routes = []
 players = []
 player_obj = player.Player("none")
+game_map = graph.Graph(c.CITIES_KEYS, c.ROUTES_LST)
 
 def initialize_game():
     global faceup_deck, train_deck, dest_deck, routes, players, player_obj, \
