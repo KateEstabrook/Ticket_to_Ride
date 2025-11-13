@@ -8,20 +8,15 @@ import constants as c
 class WinScreenView(arcade.View):
     """Win screen showing final results"""
 
-    def __init__(self, players=None, longest_route_length=0):
+    def __init__(self, longest_route_length=0):
         super().__init__()
-
-        # Use provided players or default data
-        self.players = [
-            {"name": "You", "color": arcade.color.WHITE, "points": 127, "longest_path": True},
-            {"name": "Red", "color": (171, 38, 2), "points": 115, "longest_path": False},
-            {"name": "Blue", "color": (10, 85, 161), "points": 98, "longest_path": False},
-            {"name": "Green", "color": (115, 143, 43), "points": 85, "longest_path": False}
-        ]
 
         # Store the longest route length
         self.longest_route_length = longest_route_length
         self.bg_tex = arcade.load_texture("images/menu_screen.png")
+
+        # Initialize players as None, will be set from main
+        self.players = None
 
 
     def sw(self) -> int:
@@ -83,7 +78,7 @@ class WinScreenView(arcade.View):
         """Draw the title section with styled background"""
         title_w = container_w * 0.9
         title_h = max(80, min(120, int(container_h * 0.2)))
-        title_cx, title_cy = container_cx, container_cy + container_h * 0.35
+        title_cx, title_cy = container_cx, container_cy + container_h * 0.45
 
         # Title background
         title_tex = arcade.make_soft_square_texture(2, (154, 30, 31), outer_alpha=255)
@@ -94,7 +89,7 @@ class WinScreenView(arcade.View):
         # Title text
         arcade.draw_text("JOURNEY COMPLETE!",
                         title_cx, title_cy + 10,
-                        arcade.color.GOLD, 32,
+                        arcade.color.GOLD, 42,
                         anchor_x="center", anchor_y="center")
 
     def draw_player_results(self, width, height, container_w, container_h, container_cx, container_cy):
@@ -105,55 +100,61 @@ class WinScreenView(arcade.View):
         # Player entry dimensions
         entry_w = container_w * 0.85
         entry_h = max(60, min(80, int(container_h * 0.12)))
-        start_y = container_cy + container_h * 0.15
+        start_y = container_cy + container_h * 0.25
 
         for i, player in enumerate(sorted_players):
-            entry_y = start_y - (i * (entry_h + 10))
+            entry_y = start_y - (i * (entry_h + 25))
 
-            # Player entry background - different color for winner
-            if i == 0:  # Winner
-                entry_color = (255, 215, 0, 180)  # Gold
-                border_color = arcade.color.YELLOW
+            # Player entry background
+            if i == 0:  # 1st place
+                entry_color = (251, 238, 204)
+                border_color = arcade.color.GOLD
+                border_width = 6
             else:
-                entry_color = (207, 192, 192)  # Light
-                border_color = arcade.color.WHITE
+                entry_color = (251, 238, 204)
+                border_color = arcade.color.DARK_BROWN
+                border_width = 3  #
 
             entry_tex = arcade.make_soft_square_texture(2, entry_color, outer_alpha=255)
             entry_rect = self._centered_rect(container_cx, entry_y, entry_w, entry_h)
             arcade.draw_texture_rect(entry_tex, entry_rect)
-            arcade.draw_rect_outline(entry_rect, border_color, border_width=3)
+            arcade.draw_rect_outline(entry_rect, border_color, border_width=border_width)
 
             # Player rank and name
-            rank_text = f"{i+1}. {player['name']}"
+            rank_text = f"{i + 1}. {player['name']}"
             arcade.draw_text(rank_text,
-                           entry_rect.left + 20, entry_y,
-                           player["color"], 24,
-                           anchor_y="center",bold=True)
+                             entry_rect.left + 20, entry_y,
+                             player["color"], 24,
+                             anchor_y="center", bold=True)
 
             # Points
             points_text = f"{player['points']} pts"
             arcade.draw_text(points_text,
-                           entry_rect.right - 20, entry_y,
-                           arcade.color.WHITE, 24,
-                           anchor_x="right", anchor_y="center",
-                           bold=True)
+                             entry_rect.right - 20, entry_y,
+                             arcade.color.BLACK, 24,
+                             anchor_x="right", anchor_y="center",
+                             bold=True)
 
-            # Longest path indicator with numerical value
+            # Longest path indicator
             if player["longest_path"]:
-                longest_tex = arcade.make_soft_square_texture(2, (250, 250, 250, 180), outer_alpha=255)
-                longest_w = 270
-                longest_h = 30
-                longest_rect = self._centered_rect(container_cx, entry_y - entry_h * 0.1,
-                                                 longest_w, longest_h)
-                arcade.draw_texture_rect(longest_tex, longest_rect)
-                arcade.draw_rect_outline(longest_rect, arcade.color.WHITE, border_width=2)
+                # Position rectangle to the right of the player entry
+                badge_x = entry_rect.right + 150
+                badge_y = entry_y
+                badge_w = 250
+                badge_h = 35
 
-                # Display longest route with numerical value
-                longest_text = f"Longest Route ({self.longest_route_length} trains)"
-                arcade.draw_text(longest_text,
-                               container_cx, entry_y - entry_h * 0.1,
-                               arcade.color.FOREST_GREEN, 16,
-                               anchor_x="center", anchor_y="center", bold=True)
+                # Draw the badge
+                badge_tex = arcade.make_soft_square_texture(2, arcade.color.FOREST_GREEN, outer_alpha=255)
+                badge_rect = self._centered_rect(badge_x, badge_y, badge_w, badge_h)
+                arcade.draw_texture_rect(badge_tex, badge_rect)
+                arcade.draw_rect_outline(badge_rect, arcade.color.WHITE, border_width=2)
+
+                # Draw text inside the badge
+                arcade.draw_text("Longest Continuous Route!",
+                                 badge_x, badge_y,
+                                 arcade.color.WHITE, 14,
+                                 anchor_x="center", anchor_y="center",
+                                 bold=True)
 
     def draw_instructions(self, width, height):
         """Draw instructions at bottom with styled rectangle"""
@@ -162,10 +163,10 @@ class WinScreenView(arcade.View):
         cx, cy = width // 2, height * 0.22
 
         # Instructions background
-        instructions_tex = arcade.make_soft_square_texture(2, (250, 250, 250, 200), outer_alpha=255)
+        instructions_tex = arcade.make_soft_square_texture(2, (251, 238, 204), outer_alpha=255)
         instructions_rect = self._centered_rect(cx, cy, instructions_w, instructions_h)
         arcade.draw_texture_rect(instructions_tex, instructions_rect)
-        arcade.draw_rect_outline(instructions_rect, arcade.color.WHITE, border_width=2)
+        arcade.draw_rect_outline(instructions_rect, arcade.color.BLACK, border_width=3)
 
         arcade.draw_text("Press ESC to close",
                         cx, cy,
@@ -180,18 +181,20 @@ class WinScreenView(arcade.View):
 
 def main():
     """Main function to run the win screen independently"""
-    window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, "Ticket to Ride - Game Results")
+    window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, "Ticket to Ride - Results")
 
-    # Test with custom data including longest route length
-    test_players = [
-        {"name": "You", "color": arcade.color.WHITE, "points": 156, "longest_path": True},
-        {"name": "Red", "color": arcade.color.RED, "points": 142, "longest_path": False},
-        {"name": "Blue", "color": (52, 71, 83), "points": 134, "longest_path": False},
-        {"name": "Green", "color": arcade.color.GREEN, "points": 121, "longest_path": False}
+    # Test data
+    players = [
+        {"name": "You", "color": (171, 38, 2), "points": 127, "longest_path": False},
+        {"name": "Yellow", "color": (241, 193, 19), "points": 115, "longest_path": True},
+        {"name": "Blue", "color": (10, 85, 161), "points": 98, "longest_path": False},
+        {"name": "Green", "color": (115, 143, 43), "points": 85, "longest_path": False}
     ]
 
-    # Create win screen with players and longest route length
-    win_view = WinScreenView(test_players, longest_route_length=45)
+    # Create win screen with longest route length
+    win_view = WinScreenView(longest_route_length=45)
+    # Set players after creating the view
+    win_view.players = players
     window.show_view(win_view)
     arcade.run()
 
