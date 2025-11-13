@@ -16,7 +16,7 @@ class Computer:
     def play(self, game_map):
         # Player turn decision logic
         if len(self.player.get_uncompleted()) == 0 and game_globals.dest_deck.get_len() != 0: # No dest cards, draw 1
-            player.add_card(player.get_destination_cards(), game_globals.dest_deck.remove(-1))
+            self.player.add_card(self.player.get_destination_cards(), game_globals.dest_deck.remove(-1))
         elif False: # Can play a route, play it
             0
         elif False: # Sees a useful faceup card, draw it
@@ -24,16 +24,16 @@ class Computer:
             if False: # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
                 0
             else: # Draw from the deck
-                player.add_card(player.get_train_cards(), game_globals.train_deck.remove(-1))
+                self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
         else: # Draw from the train card deck if no better options
-            player.add_card(player.get_train_cards(), game_globals.train_deck.remove(-1))
+            self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
             if False: # Sees a useful faceup card (and it isn't a faceup rainbow), draw it
                 0
             else: # Draw from the deck
-                player.add_card(player.get_train_cards(), game_globals.train_deck.remove(-1))
+                self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
         
 
         # Update whether player's dest cards are completed
         for card in self.player.get_uncompleted():
-            if map.check_completed(card):
+            if self.player.get_map().check_completed(card):
                 card.complete()
