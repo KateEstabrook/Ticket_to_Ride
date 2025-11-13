@@ -1116,7 +1116,20 @@ class GameView(arcade.View):
     def claim_route(self, city1, city2):
         """Claim route"""
         self.route_controller.claim_route(city1, city2)
+        player_map = game_globals.player_obj.get_map()
+        if city1 not in player_map.get_nodes():
+            player_map.add_node(city1)
+        if city2 not in player_map.get_nodes():
+            player_map.add_node(city2)
+        player_map.add_path(game_globals.game_map.remove_route(city1, city2))
         game_globals.turn_end = True
+        for dest_card in game_globals.player_obj.get_destination_cards().get_uncompleted():
+            if player_map.check_completed(dest_card):
+                dest_card.complete()
+        #print(game_globals.player_obj.get_destination_cards().get_uncompleted())
+        #print(player_map.check_completed(cards.DestinationCard(("Boston", "Miami", 12))))
+        #print(player_map.get_nodes())
+        #print(player_map)
 
     def is_point_in_button(self, x, y, button_bounds):
         """Check if point is in button"""

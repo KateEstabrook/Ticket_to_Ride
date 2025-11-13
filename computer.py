@@ -36,4 +36,4 @@ class Computer:
         # Update whether player's dest cards are completed
         for card in self.player.get_uncompleted():
             if map.check_completed(card):
-                card.completed()
+                card.complete()

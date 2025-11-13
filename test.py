@@ -225,3 +225,21 @@ if __name__ == "__main__":
 
     #print(train_deck.get_card_index("blue"))
 """
+
+import globals as game_globals
+import cards
+
+print(game_globals.game_map.check_completed(cards.DestinationCard(("Boston", "Miami", 12))))
+
+
+import graph
+import route
+
+player_map = graph.Graph([], [])
+city1,city2='Boston','New York'
+
+player_map.add_path(game_globals.game_map.remove_route(city1, city2))
+
+print(player_map)
+print()
+print(game_globals.game_map)

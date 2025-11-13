@@ -528,6 +528,7 @@ ROUTES_LST = [("Vancouver", "Seattle", 1, "colorless"), ("Vancouver", "Seattle",
           ("New York", "Boston", 2, "yellow"), ("Boston", "Montreal", 2, "colorless"),
           ("Boston", "Montreal", 2, "colorless")]
 
+
 DESTINATIONS = [("Boston", "Miami", 12), ("Calgary", "Phoenix", 13),
                 ("Calgary", "Salt Lake City", 7),
                 ("Chicago", "New Orleans", 7), ("Chicago", "Santa Fe", 9),

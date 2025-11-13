@@ -19,7 +19,7 @@ class DestinationCard:
         self.sprite = f"images/Dest_cards/{card_info[0].replace(' ', '')}" \
             f"_{card_info[1].replace(' ', '')}.png"
 
-    def completed(self):
+    def complete(self):
         self.completed = True
 
     # Getters
