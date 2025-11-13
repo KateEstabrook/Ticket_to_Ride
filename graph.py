@@ -5,6 +5,7 @@ Graph class:
 """
 
 import route
+import constants as c
 
 class Graph:
     # Constructor
@@ -20,6 +21,33 @@ class Graph:
 
     def get_paths(self):
         return self.paths
+    
+    # Setters
+    def set_path(self, paths):
+        self.paths = paths
+
+    def set_nodes(self, nodes):
+        self.nodes = nodes
+
+    def add_route(self, city1, city2):
+        city_pair = (city1, city2)
+        reverse_pair = (city2, city1)
+        for route in c.ROUTES_LST:
+            if tuple(route[:2]) == city_pair or tuple(route[:2]) == reverse_pair:
+                self.paths.append(route)
+                break
+        else:
+            print("lol you added a path")
+    
+    def remove_route(self, city1, city2):
+        city_pair = (city1, city2)
+        reverse_pair = (city2, city1)
+        for route in self.paths:
+            if tuple(route[:2]) == city_pair or tuple(route[:2]) == reverse_pair:
+                return self.paths.remove(route)
+        else:
+            print("lol you removed a path")
+            return None
 
     # To string
     def __str__(self):

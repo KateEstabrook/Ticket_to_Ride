@@ -71,6 +71,15 @@ CITIES = {
     "Montreal": {"CITY_IMG_X": 2189, "CITY_IMG_Y": 200}
 }
 
+CITIES_KEYS = ['Calgary', 'Vancouver', 'Seattle', 'Portland', 
+               'San Francisco', 'Los Angeles', 'Helena', 'Salt Lake City', 
+               'Las Vegas', 'Phoenix', 'Winnipeg', 'Denver', 'Santa Fe', 
+               'El Paso', 'Duluth', 'Omaha', 'Kansas City', 'Oklahoma City', 
+               'Dallas', 'Houston', 'Sault St. Marie', 'Chicago', 
+               'Saint Louis', 'Little Rock', 'New Orleans', 'Toronto', 
+               'Pittsburgh', 'Nashville', 'Atlanta', 'Charleston', 
+               'Miami', 'Raleigh', 'Washington', 'New York', 'Boston', 'Montreal']
+
 ROUTES = {
     "Vancouver": {"Seattle": 1, "Calgary": 3},
     "Seattle": {"Portland": 1, "Calgary": 4, "Vancouver": 1, "Helena": 6},
