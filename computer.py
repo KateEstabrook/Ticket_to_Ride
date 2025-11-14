@@ -13,9 +13,9 @@ class Computer:
         self.cards_needed = {"pink":0, "blue":0, "orange":0, "white":0, "green":0, 
                              "yellow":0, "black":0, "red":0, "colorless":0}
 
-    def play(self, game_map):
+    def play(self):
         # Player turn decision logic
-        if len(self.player.get_uncompleted()) == 0 and game_globals.dest_deck.get_len() != 0: # No dest cards, draw 1
+        if len(self.player.get_destination_cards().get_uncompleted()) == 0 and game_globals.dest_deck.get_len() != 0: # No dest cards, draw 1
             self.player.add_card(self.player.get_destination_cards(), game_globals.dest_deck.remove(-1))
         elif self.can_claim(): # Can play a route, play it
             0
@@ -32,9 +32,11 @@ class Computer:
             else: # Draw from the deck
                 self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
         
+        print(f"{self.player} computer played")
+        
 
         # Update whether player's dest cards are completed
-        for card in self.player.get_uncompleted():
+        for card in self.player.get_destination_cards().get_uncompleted():
             if self.player.get_map().check_completed(card):
                 card.complete()
 
