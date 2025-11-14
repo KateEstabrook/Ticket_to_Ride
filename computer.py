@@ -17,11 +17,11 @@ class Computer:
         # Player turn decision logic
         if len(self.player.get_uncompleted()) == 0 and game_globals.dest_deck.get_len() != 0: # No dest cards, draw 1
             self.player.add_card(self.player.get_destination_cards(), game_globals.dest_deck.remove(-1))
-        elif False: # Can play a route, play it
+        elif self.can_claim(): # Can play a route, play it
             0
-        elif False: # Sees a useful faceup card, draw it
+        elif self.useful_faceup(): # Sees a useful faceup card, draw it
             0
-            if False: # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
+            if self.useful_faceup(): # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
                 0
             else: # Draw from the deck
                 self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
@@ -37,3 +37,12 @@ class Computer:
         for card in self.player.get_uncompleted():
             if self.player.get_map().check_completed(card):
                 card.complete()
+
+    def can_claim(self):
+        """"Returns boolean whether or not comp can claim a route 
+        that helps to complete a destination card"""
+        return False
+    
+    def useful_faceup(self):
+        """"Returns boolean whether or not there is a useful faceup card"""
+        return False

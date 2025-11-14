@@ -9,6 +9,7 @@ import constants as c
 import cards
 import player
 import popups
+import computer
 
 
 class BoardRenderer:
@@ -1089,6 +1090,10 @@ class GameView(arcade.View):
             print("Turn ended")
             game_globals.turn_end = False
             game_globals.turn_val = None
+
+            for comp in game_globals.computers:
+                comp.play()
+            
             
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:

@@ -16,6 +16,7 @@ dest_deck = []
 dest_draw = []
 routes = []
 players = []
+computers = []
 player_obj = player.Player("none")
 game_map = graph.Graph(c.CITIES_KEYS, c.ROUTES_LST)
 
