@@ -8,16 +8,13 @@ import constants as c
 class WinScreenView(arcade.View):
     """Win screen showing final results"""
 
-    def __init__(self, longest_route_length=0):
+    def __init__(self):
         super().__init__()
 
-        # Store the longest route length
-        self.longest_route_length = longest_route_length
         self.bg_tex = arcade.load_texture("images/menu_screen.png")
 
         # Initialize players as None, will be set from main
         self.players = None
-
 
     def sw(self) -> int:
         """Window width (falls back to constants if needed)."""
@@ -59,8 +56,8 @@ class WinScreenView(arcade.View):
     def draw_results_container(self, width, height):
         """Draw the main results container with styled rectangle"""
         # Main container background
-        container_w = max(500, min(850, int(width * 0.8)))
-        container_h = max(400, min(650, int(height * 0.7)))
+        container_w = width * 0.8
+        container_h = height * 0.7
         cx, cy = width // 2, height // 2
 
         # Create styled container
@@ -68,16 +65,18 @@ class WinScreenView(arcade.View):
         rect = self._centered_rect(cx, cy, container_w, container_h)
         arcade.draw_texture_rect(tex, rect)
 
-        # Title section with its own styled rectangle
+        # Title section
         self.draw_title_section(width, height, container_w, container_h, cx, cy)
 
         # Player results section
-        self.draw_player_results(width, height, container_w, container_h, cx, cy)
+        self.draw_player_results(width, height, container_w,
+                                 container_h, cx, cy)
 
-    def draw_title_section(self, width, height, container_w, container_h, container_cx, container_cy):
+    def draw_title_section(self, width, height, container_w, container_h,
+                           container_cx, container_cy):
         """Draw the title section with styled background"""
         title_w = container_w * 0.9
-        title_h = max(80, min(120, int(container_h * 0.2)))
+        title_h = container_h * 0.2
         title_cx, title_cy = container_cx, container_cy + container_h * 0.45
 
         # Title background
@@ -87,33 +86,37 @@ class WinScreenView(arcade.View):
         arcade.draw_rect_outline(title_rect, arcade.color.WHITE, border_width=3)
 
         # Title text
+        title_font_size = max(24, int(height * 0.04))
         arcade.draw_text("JOURNEY COMPLETE!",
-                        title_cx, title_cy + 10,
-                        arcade.color.GOLD, 42,
-                        anchor_x="center", anchor_y="center")
+                        title_cx, title_cy,
+                        arcade.color.GOLD, title_font_size,
+                        anchor_x="center", anchor_y="center",
+                        bold=True)
 
-    def draw_player_results(self, width, height, container_w, container_h, container_cx, container_cy):
+    def draw_player_results(self, width, height, container_w, container_h,
+                            container_cx, container_cy):
         """Draw player results with styled entries"""
         # Sort players by points
         sorted_players = sorted(self.players, key=lambda x: x["points"], reverse=True)
 
         # Player entry dimensions
         entry_w = container_w * 0.85
-        entry_h = max(60, min(80, int(container_h * 0.12)))
+        entry_h = container_h * 0.12
+        spacing = entry_h * 0.4
         start_y = container_cy + container_h * 0.25
 
         for i, player in enumerate(sorted_players):
-            entry_y = start_y - (i * (entry_h + 25))
+            entry_y = start_y - (i * (entry_h + spacing))
 
             # Player entry background
             if i == 0:  # 1st place
                 entry_color = (251, 238, 204)
                 border_color = arcade.color.GOLD
-                border_width = 6
+                border_width = max(4, int(height * 0.01))
             else:
                 entry_color = (251, 238, 204)
                 border_color = arcade.color.DARK_BROWN
-                border_width = 3  #
+                border_width = max(2, int(height * 0.005))
 
             entry_tex = arcade.make_soft_square_texture(2, entry_color, outer_alpha=255)
             entry_rect = self._centered_rect(container_cx, entry_y, entry_w, entry_h)
@@ -121,45 +124,60 @@ class WinScreenView(arcade.View):
             arcade.draw_rect_outline(entry_rect, border_color, border_width=border_width)
 
             # Player rank and name
+            name_font_size = max(18, int(height * 0.025))
             rank_text = f"{i + 1}. {player['name']}"
             arcade.draw_text(rank_text,
-                             entry_rect.left + 20, entry_y,
-                             player["color"], 24,
+                             entry_rect.left + entry_w * 0.05, entry_y,
+                             player["color"], name_font_size,
                              anchor_y="center", bold=True)
 
             # Points
             points_text = f"{player['points']} pts"
             arcade.draw_text(points_text,
-                             entry_rect.right - 20, entry_y,
-                             arcade.color.BLACK, 24,
+                             entry_rect.right - entry_w * 0.05, entry_y,
+                             arcade.color.BLACK, name_font_size,
                              anchor_x="right", anchor_y="center",
                              bold=True)
 
             # Longest path indicator
             if player["longest_path"]:
-                # Position rectangle to the right of the player entry
-                badge_x = entry_rect.right + 150
+                # Position badge to the right of the player entry
+                badge_w = max(120, int(width * 0.1))
+                badge_h = max(60, int(height * 0.08))
+                badge_x = entry_rect.right + badge_w * 0.6
                 badge_y = entry_y
-                badge_w = 250
-                badge_h = 35
 
                 # Draw the badge
-                badge_tex = arcade.make_soft_square_texture(2, arcade.color.FOREST_GREEN, outer_alpha=255)
+                badge_tex = arcade.make_soft_square_texture(
+                    2,arcade.color.FOREST_GREEN, outer_alpha=255)
                 badge_rect = self._centered_rect(badge_x, badge_y, badge_w, badge_h)
                 arcade.draw_texture_rect(badge_tex, badge_rect)
                 arcade.draw_rect_outline(badge_rect, arcade.color.WHITE, border_width=2)
 
-                # Draw text inside the badge
-                arcade.draw_text("Longest Continuous Route!",
-                                 badge_x, badge_y,
-                                 arcade.color.WHITE, 14,
-                                 anchor_x="center", anchor_y="center",
-                                 bold=True)
+                # Draw text on multiple lines
+                badge_font_size = max(10, int(height * 0.015))
+                line_height = badge_font_size * 1.2
+
+                # Split the text into words
+                words = ["Longest", "Continuous", "Route!"]
+
+                # Calculate starting Y position to center the text block vertically
+                total_text_height = len(words) * line_height
+                start_text_y = badge_y + total_text_height / 2 - line_height / 2
+
+                # Draw each word on its own line
+                for j, word in enumerate(words):
+                    text_y = start_text_y - (j * line_height)
+                    arcade.draw_text(word,
+                                     badge_x, text_y,
+                                     arcade.color.WHITE, badge_font_size,
+                                     anchor_x="center", anchor_y="center",
+                                     bold=True)
 
     def draw_instructions(self, width, height):
         """Draw instructions at bottom with styled rectangle"""
-        instructions_w = max(300, min(400, int(width * 0.3)))
-        instructions_h = max(40, min(60, int(height * 0.06)))
+        instructions_w = width * 0.3  # 30% of screen width
+        instructions_h = height * 0.06  # 6% of screen height
         cx, cy = width // 2, height * 0.22
 
         # Instructions background
@@ -168,10 +186,13 @@ class WinScreenView(arcade.View):
         arcade.draw_texture_rect(instructions_tex, instructions_rect)
         arcade.draw_rect_outline(instructions_rect, arcade.color.BLACK, border_width=3)
 
+        # Instruction text
+        instruction_font_size = max(12, int(height * 0.02))
         arcade.draw_text("Press ESC to close",
                         cx, cy,
-                        arcade.color.BLACK, 16,
-                        anchor_x="center", anchor_y="center")
+                        arcade.color.BLACK, instruction_font_size,
+                        anchor_x="center", anchor_y="center",
+                        bold=True)
 
     def on_key_press(self, symbol: int, modifiers: int):
         """Handle key presses"""
@@ -191,8 +212,8 @@ def main():
         {"name": "Green", "color": (115, 143, 43), "points": 85, "longest_path": False}
     ]
 
-    # Create win screen with longest route length
-    win_view = WinScreenView(longest_route_length=45)
+    # Create win screen
+    win_view = WinScreenView()
     # Set players after creating the view
     win_view.players = players
     window.show_view(win_view)
