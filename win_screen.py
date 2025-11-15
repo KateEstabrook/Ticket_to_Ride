@@ -4,6 +4,7 @@ Win Screen for Ticket to Ride
 
 import arcade
 import constants as c
+import platform
 
 class WinScreenView(arcade.View):
     """Win screen showing final results"""
@@ -202,7 +203,12 @@ class WinScreenView(arcade.View):
 
 def main():
     """Main function to run the win screen independently"""
-    window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, "Ticket to Ride - Results")
+    if platform.system() == "Darwin":  # macOS
+        window = arcade.Window(c.SCREEN_WIDTH, c.WINDOW_HEIGHT, c.WINDOW_TITLE, resizable=False)
+        window.set_location(0, 0)
+    else:
+        window = arcade.Window(c.SCREEN_WIDTH, c.SCREEN_HEIGHT, c.WINDOW_TITLE,
+                               fullscreen=True, resizable=False)
 
     # Test data
     players = [
