@@ -1121,6 +1121,26 @@ class GameView(arcade.View):
     def claim_route(self, city1, city2):
         """Claim route"""
         self.route_controller.claim_route(city1, city2)
+
+        game_globals.player_obj.remove_trains(self.popup_route_length)
+        if self.popup_route_length == 1:
+            game_globals.player_obj.add_points(1)
+
+        elif self.popup_route_length == 2:
+            game_globals.player_obj.add_points(2)
+
+        elif self.popup_route_length == 3:
+            game_globals.player_obj.add_points(4)
+
+        elif self.popup_route_length == 4:
+            game_globals.player_obj.add_points(7)
+
+        elif self.popup_route_length == 5:
+            game_globals.player_obj.add_points(10)
+
+        elif self.popup_route_length == 6:
+            game_globals.player_obj.add_points(13)
+
         player_map = game_globals.player_obj.get_map()
         if city1 not in player_map.get_nodes():
             player_map.add_node(city1)
