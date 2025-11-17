@@ -235,11 +235,9 @@ print(game_globals.game_map.check_completed(cards.DestinationCard(("Boston", "Mi
 import graph
 import route
 
-player_map = graph.Graph([], [])
-city1,city2='Boston','New York'
-
-player_map.add_path(game_globals.game_map.remove_route(city1, city2))
-
-print(player_map)
-print()
-print(game_globals.game_map)
+#player_map = graph.Graph([], [])
+#city1,city2='Boston','New York'
+#player_map.add_path(game_globals.game_map.remove_route(city1, city2))
+#print(player_map)
+#print()
+#print(game_globals.game_map)

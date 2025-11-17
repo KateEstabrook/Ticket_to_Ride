@@ -41,7 +41,11 @@ class Graph:
             if city1 in path.get_cities() and city2 in path.get_cities():
                 return True
         return False
-
+    
+    def get_path_reqs(self, city1, city2):
+        for path in self.paths:
+            if city1 in path.get_cities() and city2 in path.get_cities():
+                return path.get_weight(), path.get_color()
 
     def add_route(self, city1, city2):
         city_pair = (city1, city2)
@@ -63,16 +67,15 @@ class Graph:
         """"Check if a graph contains the routes required to complete a dest card"""
         if dest_card.get_city_1() in self.nodes and dest_card.get_city_2() in self.nodes:
             src = dest_card.get_city_1()
-            dist = self.djikstra(src)
-            print(dist)
+            dist, route_lists = self.djikstra(src)
             if dist[dest_card.get_city_2()] >= 999:
                 return False
             return True
         else:
             return False
-        
 
-    def djikstra(self, src):
+    def djikstra(self, src): # Should change to pass in the adjacency list instead of using c.ROUTES, create the adjacency list elsewhere
+        """Djikstra's algorithm to find shortest path from source to all other nodes in graph"""
         # create an adjacency list with just city names (dictionairy of lists)
         adj = {}
         for city1 in c.ROUTES: # not ROUTE_LST
@@ -82,33 +85,42 @@ class Graph:
                     if city2 in self.nodes:
                         if self.has_path(city1, city2):
                             adj[city1].append((city2, c.ROUTES[city1][city2]))
+        for route in self.paths: # add self paths with weight 0
+            cities = route.get_cities()
+            adj[cities[0]].append((cities[1], 0))
+            adj[cities[1]].append((cities[0], 0))
         # Creating priority queue for routes
         pq = []
         # create dict for all distances from src node
         dist = {}
+        route_lists = {}
 
-        for city in self.nodes:
-            dist[city] = 999
+        for node in self.nodes:
+            dist[node] = 999
+            route_lists[node] = []
 
         heapq.heappush(pq, [0, src])
         dist[src] = 0
 
         while pq:
-            u = heapq.heappop(pq)[1]
+            curr_city = heapq.heappop(pq)[1]
 
             # Get all adjacent of u.
-            for x in adj[u]:
+            for adjacents in adj[curr_city]:
                 # Get vertex label and weight of current
                 # adjacent of u.
-                v, weight = x[0], x[1]
+                city, weight = adjacents[0], adjacents[1]
 
                 # If there is shorter path to v through u.
-                if dist[v] > dist[u] + weight:
+                if dist[city] > dist[curr_city] + weight:
                     # Updating distance of v
-                    dist[v] = dist[u] + weight
-                    heapq.heappush(pq, [dist[v], v])
+                    dist[city] = dist[curr_city] + weight
+                    new_path = route_lists[curr_city].copy()
+                    new_path.append(city)
+                    route_lists[city] = new_path
+                    heapq.heappush(pq, [dist[city], city])
         # Return the shortest distance array
-        return dist
+        return dist, route_lists
 
     # To string
     def __str__(self):
