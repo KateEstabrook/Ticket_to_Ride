@@ -1093,6 +1093,7 @@ class GameView(arcade.View):
 
             for comp in game_globals.computers:
                 comp.play()
+                self.game_view.refresh_faceup_cards()
             
             
 

@@ -10,7 +10,8 @@ import globals as game_globals
 class Computer:
     def __init__(self, player):
         self.player = player
-        self.cards_needed = []
+        self.cards_needed = {"pink":0, "blue":0, "orange":0, "white":0, "green":0, "yellow":0, "black":0, "red":0, "wild":0}
+        self.routes_needed = []
         self.curr_dest = None
 
     def play(self):
@@ -39,13 +40,11 @@ class Computer:
                     break
 
         if self.useful_faceup() and not turn_finished: # Sees a useful faceup card, draw it
-            0
-            # if rainbow_card: turn_finished = True
-
             if self.useful_faceup() and not turn_finished: # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
                 0
             elif not turn_finished: # Draw from the deck
                 self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
+                turn_finished = True
 
         if not turn_finished: # Draw from the train card deck if no better options
             self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
@@ -62,5 +61,18 @@ class Computer:
         return False
     
     def useful_faceup(self):
-        """"Returns boolean whether or not there is a useful faceup card"""
+        """"Returns boolean for if it successfully drew a useful faceup card"""
+        for i in range(game_globals.faceup_deck.get_len()):
+            if self.cards_needed[game_globals.faceup_deck[i].get_color()] > 0:
+                # Remove the card from face-up deck
+                taken_card = game_globals.faceup_deck.remove(i)
+                game_globals.self.player.get_train_cards().add(taken_card)
+                if taken_card.get_color() == "wild":
+                    self.turn_finished = True
+                # Replenish the face-up deck
+                if game_globals.train_deck.get_len() > 0:
+                    new_card = game_globals.train_deck.remove(-1)  # Draw from top
+                    # Insert the new card at the same position we removed from
+                    game_globals.faceup_deck.cards.insert(i, new_card)
+                return True
         return False
