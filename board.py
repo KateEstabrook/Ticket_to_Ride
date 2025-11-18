@@ -1093,6 +1093,7 @@ class GameView(arcade.View):
 
             for comp in game_globals.computers:
                 print(f"Computer {comp.get_color()} playing.")
+                print(comp.get_player().get_train_cards())
                 comp.play()
                 self.refresh_faceup_cards()
                 print(f"{comp.get_map()}")

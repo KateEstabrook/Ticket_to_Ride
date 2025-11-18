@@ -30,7 +30,7 @@ TRAIN_SCALE = 0.06
 COLORS = ["pink", "blue", "orange", "white", "green", "yellow", "black", "red"]
 
 PLAYER_COLORS = ["red", "yellow", "green", "blue"]
-STARTING_CARDS = 10
+STARTING_CARDS = 4
 
 CITIES = {
     "Calgary": {"CITY_IMG_X": 587, "CITY_IMG_Y": 212},

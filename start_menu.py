@@ -231,6 +231,9 @@ class StartMenuView(arcade.View):
                         for color in c.PLAYER_COLORS:
                             if color.title() != self.selected_color:
                                 globals.players.append(player.Player(color.title()))
+                        for p in globals.players:
+                            for _ in range(c.STARTING_CARDS):
+                                p.get_train_cards().add(globals.train_deck.remove(-1))
                         for comp in globals.players:
                             globals.computers.append(computer.Computer(comp))
                         for _ in range(c.STARTING_CARDS):
