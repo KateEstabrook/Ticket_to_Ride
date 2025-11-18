@@ -229,6 +229,8 @@ if __name__ == "__main__":
 import globals as game_globals
 import cards
 
+game_globals.initialize_game()
+
 print(game_globals.game_map.check_completed(cards.DestinationCard(("Boston", "Miami", 12))))
 
 
@@ -244,5 +246,15 @@ import route
 
 import computer
 import player
+test_player = player.Player("test")
+comp = computer.Computer(test_player)
 
-comp = computer.Computer(player.Player("test"))
+test_player.get_destination_cards().add(cards.DestinationCard(("Boston", "Miami", 12)))
+
+for _ in range(10):
+    test_player.get_train_cards().add(cards.TrainCard("wild"))
+
+
+comp.play()
+
+print(test_player.get_map())
