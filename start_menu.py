@@ -225,7 +225,7 @@ class StartMenuView(arcade.View):
                     if left <= x <= right and bottom <= y <= top:
                         # Import GameView here to avoid circular import
 
-                        # Create and show game view with selected color
+                        # Initalize player and computers
                         player_obj = player.Player(self.selected_color)
                         globals.player_obj.set_player(player_obj)
                         for color in c.PLAYER_COLORS:
@@ -234,6 +234,8 @@ class StartMenuView(arcade.View):
                         for p in globals.players:
                             for _ in range(c.STARTING_CARDS):
                                 p.get_train_cards().add(globals.train_deck.remove(-1))
+                            for _ in range(c.COMPUTER_DEST_CARDS):
+                                p.get_destination_cards().add(globals.dest_deck.remove(-1))
                         for comp in globals.players:
                             globals.computers.append(computer.Computer(comp))
                         for _ in range(c.STARTING_CARDS):

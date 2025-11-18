@@ -31,6 +31,7 @@ COLORS = ["pink", "blue", "orange", "white", "green", "yellow", "black", "red"]
 
 PLAYER_COLORS = ["red", "yellow", "green", "blue"]
 STARTING_CARDS = 4
+COMPUTER_DEST_CARDS = 2
 
 CITIES = {
     "Calgary": {"CITY_IMG_X": 587, "CITY_IMG_Y": 212},

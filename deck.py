@@ -62,6 +62,11 @@ class Deck:
         self.num_cards = STARTING_NUM_CARDS
         self.cards = []
 
+    def discard(self, discard_deck):
+        for card in self.get_cards():
+            discard_deck.add(card)
+        self.clear()
+
     def has_cards(self, color, count):
         """Checks if the passed cards are in the deck including wild cards"""
         if self.get_count(color) >= count:

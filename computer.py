@@ -27,9 +27,16 @@ class Computer:
         """Getter for player map"""
         return self.player
 
+    def set_curr_dest(self, dest):
+        """Getter for player map"""
+        self.curr_dest = dest
+
     def play(self):
         # use turn finished instead of big if elif else
         turn_finished = False
+
+        if self.curr_dest == None:
+            self.player.get_destination_cards()
         
         # Player turn decision logic
         # Update whether comp's dest card is completed and draw new card
@@ -96,13 +103,25 @@ class Computer:
         for route in game_globals.game_map.get_paths():
             cities = route.get_cities()
             weight = route.get_weight()
-            adj[cities[0]].append((cities[1], weight))
-            adj[cities[1]].append((cities[0], weight))
+            if cities[0] not in adj:
+                adj[cities[0]] = [(cities[1], weight)]
+            else:
+                adj[cities[0]].append((cities[1], weight))
+            if cities[1] not in adj:
+                adj[cities[1]] = [(cities[0], weight)]
+            else:
+                adj[cities[1]].append((cities[0], weight))
                             
         for route in map.get_paths(): # add self paths with weight 0
             cities = route.get_cities()
-            adj[cities[0]].append((cities[1], 0))
-            adj[cities[1]].append((cities[0], 0))
+            if cities[0] not in adj:
+                adj[cities[0]] = [(cities[1], 0)]
+            else:
+                adj[cities[0]].append((cities[1], 0))
+            if cities[1] not in adj:
+                adj[cities[1]] = [(cities[0], 0)]
+            else:
+                adj[cities[1]].append((cities[0], 0))
 
         return adj
     

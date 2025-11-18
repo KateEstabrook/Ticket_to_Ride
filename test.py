@@ -249,7 +249,11 @@ import player
 test_player = player.Player("test")
 comp = computer.Computer(test_player)
 
-test_player.get_destination_cards().add(cards.DestinationCard(("Boston", "Miami", 12)))
+dest = cards.DestinationCard(("Boston", "Miami", 12))
+
+test_player.get_destination_cards().add(dest)
+
+comp.set_curr_dest(dest)
 
 for _ in range(10):
     test_player.get_train_cards().add(cards.TrainCard("wild"))
@@ -257,4 +261,9 @@ for _ in range(10):
 
 comp.play()
 
-print(test_player.get_map())
+
+print(comp.create_adjacency_list_global())
+
+comp.update_cards_routes_needed()
+
+#print(test_player.get_map())
