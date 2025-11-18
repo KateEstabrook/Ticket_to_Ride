@@ -23,6 +23,11 @@ class Graph:
     def get_paths(self):
         return self.paths
     
+    def get_path_by_cities(self, city1, city2):
+        for path in self.paths:
+            if city1 in path.get_cities() and city2 in path.get_cities():
+                return path
+    
     # Setters
     def set_path(self, paths):
         self.paths = paths
@@ -42,20 +47,19 @@ class Graph:
                 return True
         return False
     
+    def get_nodes(self):
+        return self.nodes
+    
+    def get_paths(self):
+        return self.paths
+    
     def get_path_reqs(self, city1, city2):
         for path in self.paths:
             if city1 in path.get_cities() and city2 in path.get_cities():
                 return path.get_weight(), path.get_color()
 
-    def add_route(self, city1, city2):
-        city_pair = (city1, city2)
-        reverse_pair = (city2, city1)
-        for route in c.ROUTES_LST:
-            if tuple(route[:2]) == city_pair or tuple(route[:2]) == reverse_pair:
-                self.paths.append(route)
-                break
-        else:
-            print("lol you added a path")
+    def add_route(self, route):
+        self.paths.append(route)
     
     def remove_route(self, city1, city2):
         for route in self.paths:
@@ -63,32 +67,38 @@ class Graph:
                 self.paths.remove(route)
                 return route
         
+    # This is used by all players to check if they have completed a destination card
     def check_completed(self, dest_card):
         """"Check if a graph contains the routes required to complete a dest card"""
-        if dest_card.get_city_1() in self.nodes and dest_card.get_city_2() in self.nodes:
-            src = dest_card.get_city_1()
-            dist, route_lists = self.djikstra(src)
-            if dist[dest_card.get_city_2()] >= 999:
-                return False
-            return True
-        else:
+        if dest_card == None:
             return False
-
-    def djikstra(self, src): # Should change to pass in the adjacency list instead of using c.ROUTES, create the adjacency list elsewhere
-        """Djikstra's algorithm to find shortest path from source to all other nodes in graph"""
-        # create an adjacency list with just city names (dictionairy of lists)
         adj = {}
-        for city1 in c.ROUTES: # not ROUTE_LST
-            if city1 in self.nodes:
-                adj[city1] = []
-                for city2 in c.ROUTES[city1]:
-                    if city2 in self.nodes:
-                        if self.has_path(city1, city2):
-                            adj[city1].append((city2, c.ROUTES[city1][city2]))
+
         for route in self.paths: # add self paths with weight 0
             cities = route.get_cities()
-            adj[cities[0]].append((cities[1], 0))
-            adj[cities[1]].append((cities[0], 0))
+            if cities[0] not in adj:
+                adj[cities[0]] = [(cities[1], 0)]
+            else:
+                adj[cities[0]].append((cities[1], 0))
+            if cities[1] not in adj:
+                adj[cities[1]] = [(cities[0], 0)]
+            else:
+                adj[cities[1]].append((cities[0], 0))
+
+        src = dest_card.get_city_1()
+        dist, route_lists = self.djikstra(src, adj)
+
+        if dest_card.get_city_2() not in dist:
+            return False
+        if dist[dest_card.get_city_2()] >= 999:
+            return False
+        return True
+
+    # pass in src, adjacency list
+    def djikstra(self, src, adj):
+        """Djikstra's algorithm to find shortest path from source to all other nodes in graph"""
+        if src not in adj:
+            return {}, {}
         # Creating priority queue for routes
         pq = []
         # create dict for all distances from src node
@@ -104,6 +114,8 @@ class Graph:
 
         while pq:
             curr_city = heapq.heappop(pq)[1]
+
+
 
             # Get all adjacent of u.
             for adjacents in adj[curr_city]:
@@ -128,44 +140,3 @@ class Graph:
         for path in self.paths:
             s += str(path) + '\n'
         return f"{s}"
-
-"""
-def dijkstra(V, edges, src):
-    # Create adjacency list
-    adj = constructAdj(edges, V)
-
-    # Create a priority queue to store vertices that
-    # are being preprocessed.
-    pq = []
-    
-    # Create a list for distances and initialize all
-    # distances as infinite
-    dist = [sys.maxsize] * V
-
-    # Insert source itself in priority queue and initialize
-    # its distance as 0.
-    heapq.heappush(pq, [0, src])
-    dist[src] = 0
-
-    # Looping till priority queue becomes empty (or all
-    # distances are not finalized) 
-    while pq:
-        # The first vertex in pair is the minimum distance
-        # vertex, extract it from priority queue.
-        u = heapq.heappop(pq)[1]
-
-        # Get all adjacent of u.
-        for x in adj[u]:
-            # Get vertex label and weight of current
-            # adjacent of u.
-            v, weight = x[0], x[1]
-
-            # If there is shorter path to v through u.
-            if dist[v] > dist[u] + weight:
-                # Updating distance of v
-                dist[v] = dist[u] + weight
-                heapq.heappush(pq, [dist[v], v])
-
-    # Return the shortest distance array
-    return dist
-"""

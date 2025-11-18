@@ -40,7 +40,7 @@ class DestinationCard:
 
     # To string
     def __str__(self):
-        return f"{self.city_1} to {self.city_2}: {self.points}"
+        return f"{self.city_1} to {self.city_2}: {self.points}, Completed: {self.completed}"
     
     def __eq__(self, other):
         # It's good practice to first check if 'other' is an instance of the same class

@@ -241,3 +241,8 @@ import route
 #print(player_map)
 #print()
 #print(game_globals.game_map)
+
+import computer
+import player
+
+comp = computer.Computer(player.Player("test"))

@@ -1092,8 +1092,12 @@ class GameView(arcade.View):
             game_globals.turn_val = None
 
             for comp in game_globals.computers:
+                print(f"Computer {comp.get_color()} playing.")
                 comp.play()
-                self.game_view.refresh_faceup_cards()
+                self.refresh_faceup_cards()
+                print(f"{comp.get_map()}")
+                print(f"Computer {comp.get_color()} completed its turn.")
+
             
             
 
@@ -1152,6 +1156,8 @@ class GameView(arcade.View):
         for dest_card in game_globals.player_obj.get_destination_cards().get_uncompleted():
             if player_map.check_completed(dest_card):
                 dest_card.complete()
+                game_globals.player_obj.add_points(dest_card.get_points())
+        print(game_globals.player_obj.get_destination_cards())
         #print(game_globals.player_obj.get_destination_cards().get_uncompleted())
         #print(player_map.check_completed(cards.DestinationCard(("Boston", "Miami", 12))))
         #print(player_map.get_nodes())
