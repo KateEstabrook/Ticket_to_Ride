@@ -43,7 +43,7 @@ class BoardRenderer:
                 card.texture = arcade.load_texture(game_globals.player_obj.
                                                    get_destination_cards().get_card_at_index(i).get_sprite())
 
-                self.place_card(card, sx, sy, top_left=True, scale=0.38)
+                self.place_card(card, sx, sy, top_left=True, scale=c.DEST_SCALE)
                 dest_list.append(card)
                 i += 1
 
@@ -959,7 +959,7 @@ class GameView(arcade.View):
             card.texture = arcade.load_texture(game_globals.faceup_deck.
                                                get_card_at_index(i).get_sprite())
 
-            self.board_renderer.place_card(card, sx, sy, top_left=True, scale = 0.37)
+            self.board_renderer.place_card(card, sx, sy, top_left=True, scale = c.CARD_SCALE)
             self.card_list.append(card)
             i += 1
 
@@ -968,7 +968,7 @@ class GameView(arcade.View):
         for name, (sx, sy, filename) in c.PLAYER_CARDS.items():
             card = arcade.Sprite()
             card.texture = self.card_textures[name]
-            self.board_renderer.place_card(card, sx, sy, top_left=True, scale=0.37)
+            self.board_renderer.place_card(card, sx, sy, top_left=True, scale=c.CARD_SCALE)
             # Normalize the deck color key
             color_key = name.lower()
 
@@ -996,13 +996,13 @@ class GameView(arcade.View):
         self.leaderboard_banner.center_y = ly
 
         # Deck sprite set up
-        self.deck = arcade.Sprite("images/deck.png", scale=0.37)
+        self.deck = arcade.Sprite("images/deck.png", scale=c.CARD_SCALE)
         sx, sy = self.board_renderer.img_to_screen(-60, 280, top_left=True)
         self.deck.center_x = sx
         self.deck.center_y = sy
 
         # Destination deck sprite set up
-        self.dest_deck = arcade.Sprite("images/dest_deck.png", scale=0.37)
+        self.dest_deck = arcade.Sprite("images/dest_deck.png", scale=c.CARD_SCALE)
         sx, sy = self.board_renderer.img_to_screen(2560, 240, top_left=True)
         self.dest_deck.center_x = sx
         self.dest_deck.center_y = sy
