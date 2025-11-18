@@ -67,14 +67,15 @@ class Computer:
 
         if not self.turn_finished and self.useful_faceup(): # Sees a useful faceup card, draw it
             if not self.turn_finished and self.useful_faceup(): # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
-                0
+                self.turn_finished = True
             elif not self.turn_finished: # Draw from the deck
                 self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
                 print('Drew from deck')
                 self.turn_finished = True
 
-        if not self.turn_finished: # Draw from the train card deck if no better options
+        elif not self.turn_finished: # Draw from the train card deck if no better options
             self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
+            print('Drew from deck')
             if self.useful_faceup(): # Sees a useful faceup card (and it isn't a faceup rainbow), draw it
                 self.turn_finished = True
             else: # Draw from the deck
@@ -107,7 +108,8 @@ class Computer:
                 self.taken_card = game_globals.faceup_deck.get_card_at_index(i)
                 if self.taken_card:
                     if color == "colorless":
-                        return False
+                        break
+                # Remove the card from face-up deck
                 self.taken_card = game_globals.faceup_deck.remove(i)
                 self.player.get_train_cards().add(self.taken_card)
                 if self.taken_card.get_color() == "wild":
