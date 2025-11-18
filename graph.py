@@ -105,7 +105,7 @@ class Graph:
         dist = {}
         route_lists = {}
 
-        for node in self.nodes:
+        for node in list(adj.keys()):
             dist[node] = 999
             route_lists[node] = []
 

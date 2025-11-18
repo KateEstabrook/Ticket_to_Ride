@@ -11,9 +11,11 @@ import constants as c
 class Computer:
     def __init__(self, player):
         self.player = player
-        self.cards_needed = {"pink":0, "blue":0, "orange":0, "white":0, "green":0, "yellow":0, "black":0, "red":0, "wild":0}
+        self.cards_needed = {"pink":0, "blue":0, "orange":0, "white":0, "green":0, "yellow":0, "black":0, "red":0, "colorless":0}
         self.routes_needed = []
         self.curr_dest = None
+        self.turn_finished = False
+        self.taken_card = None
 
     def get_color(self):
         """Getter for player color"""
@@ -33,39 +35,52 @@ class Computer:
 
     def play(self):
         # use turn finished instead of big if elif else
-        turn_finished = False
+        self.turn_finished = False
+        self.taken_card = None
 
+        # Setting current destination (at the start of game)
         if self.curr_dest == None:
-            self.player.get_destination_cards()
+            self.curr_dest = self.player.get_destination_cards().get_cards()[0]
         
+
         # Player turn decision logic
         # Update whether comp's dest card is completed and draw new card
-        if self.player.get_map().check_completed(self.curr_dest):
+        elif self.player.get_map().check_completed(self.curr_dest):
             self.curr_dest.complete()
-            new_card = game_globals.dest_deck.remove(-1)
-            self.player.add_card(self.player.get_destination_cards(), new_card)
-            self.curr_dest = new_card
-            turn_finished = True
+            # Setting current destination if first dest is complete
+            if not self.player.get_destination_cards().get_uncompleted():
+                    self.curr_dest = self.player.get_destination_cards().get_uncompleted()[0]
+            else:
+                new_card = game_globals.dest_deck.remove(-1)
+                self.player.add_card(self.player.get_destination_cards(), new_card)
+                self.curr_dest = new_card
+                self.turn_finished = True
+
+        print(self.curr_dest)
 
         # if the curr_dest of the comp is not completed, we must find the weights of paths, and if we can claim one, then claim it and end turn
-        if self.curr_dest != None and not turn_finished:
+        if not self.turn_finished:
             self.update_cards_routes_needed()
+            # Check if we can claim and claim
             if self.can_claim():
-                turn_finished = True
+                self.turn_finished = True
 
-        if self.useful_faceup() and not turn_finished: # Sees a useful faceup card, draw it
-            if self.useful_faceup() and not turn_finished: # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
+        if not self.turn_finished and self.useful_faceup(): # Sees a useful faceup card, draw it
+            if not self.turn_finished and self.useful_faceup(): # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
                 0
-            elif not turn_finished: # Draw from the deck
+            elif not self.turn_finished: # Draw from the deck
                 self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
-                turn_finished = True
+                print('Drew from deck')
+                self.turn_finished = True
 
-        if not turn_finished: # Draw from the train card deck if no better options
+        if not self.turn_finished: # Draw from the train card deck if no better options
             self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
             if self.useful_faceup(): # Sees a useful faceup card (and it isn't a faceup rainbow), draw it
-                0
+                self.turn_finished = True
             else: # Draw from the deck
                 self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
+                print('Drew from deck')
+                self.turn_finished = True
 
     def can_claim(self):
         """"Returns boolean whether or not comp can claim a route 
@@ -74,23 +89,35 @@ class Computer:
             if self.player.get_train_cards().has_cards(route.get_color(), route.get_weight()):
                 game_globals.game_map.remove_route(route.get_cities()[0], route.get_cities()[1])
                 self.player.get_map().add_route(route)
+                # Remove train cards
+                removed = self.player.get_train_cards().remove_cards(route.get_color(), route.get_weight())
+                game_globals.discard_deck.add_cards(removed)
+                self.turn_finished = True
                 return True
         return False
     
     def useful_faceup(self):
         """"Returns boolean for if it successfully drew a useful faceup card"""
         for i in range(game_globals.faceup_deck.get_len()):
-            if self.cards_needed[game_globals.faceup_deck.cards[i].get_color()] > 0:
+            color = game_globals.faceup_deck.cards[i].get_color()
+            if color == 'wild':
+                color = 'colorless'
+            if self.cards_needed[color] > 0:
                 # Remove the card from face-up deck
-                taken_card = game_globals.faceup_deck.remove(i)
-                game_globals.self.player.get_train_cards().add(taken_card)
-                if taken_card.get_color() == "wild":
+                self.taken_card = game_globals.faceup_deck.get_card_at_index(i)
+                if self.taken_card:
+                    if color == "colorless":
+                        return False
+                self.taken_card = game_globals.faceup_deck.remove(i)
+                self.player.get_train_cards().add(self.taken_card)
+                if self.taken_card.get_color() == "wild":
                     self.turn_finished = True
                 # Replenish the face-up deck
                 if game_globals.train_deck.get_len() > 0:
                     new_card = game_globals.train_deck.remove(-1)  # Draw from top
                     # Insert the new card at the same position we removed from
                     game_globals.faceup_deck.cards.insert(i, new_card)
+                print('took faceup card')
                 return True
         return False
     
@@ -127,7 +154,7 @@ class Computer:
     
     def update_cards_routes_needed(self):
         """"Updates the cards needed and routes needed dictionary based on current destination card"""
-        self.cards_needed = {"pink":0, "blue":0, "orange":0, "white":0, "green":0, "yellow":0, "black":0, "red":0, "wild":0}
+        self.cards_needed = {"pink":0, "blue":0, "orange":0, "white":0, "green":0, "yellow":0, "black":0, "red":0, "colorless":0}
 
         src = self.curr_dest.get_city_1()
         dest = self.curr_dest.get_city_2()
@@ -141,9 +168,11 @@ class Computer:
         for cur_city in route_lists[dest]:
             cur_city
             
-            if map.has_path(prev_city, cur_city):
+            route = game_globals.game_map.get_path_by_cities(prev_city, cur_city)
+
+
+            if map.has_path(prev_city, cur_city) or route == None:
                 prev_city = cur_city
             else:
-                route = game_globals.game_map.get_path_by_cities(prev_city, cur_city)
                 self.cards_needed[route.get_color()] += route.get_weight()
                 self.routes_needed.append(route)
