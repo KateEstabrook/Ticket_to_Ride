@@ -717,7 +717,34 @@ class CardController:
 
     def refresh_faceup_cards(self):
         """Refresh the face-up card sprites after changes"""
-        # Update the first 5 cards
+        wild_card_count = 0
+
+        for i in range(min(5, game_globals.faceup_deck.get_len())):
+            card = game_globals.faceup_deck.get_card_at_index(i)
+            if card and card.get_color() == "wild":
+                wild_card_count += 1
+
+        if wild_card_count >= 3:
+            print(f"Refreshing face-up cards due to {wild_card_count} wild cards")
+
+            # Move current face-up cards to discard deck
+            game_globals.faceup_deck.discard(game_globals.discard_deck)
+
+            # refresh deck
+            if game_globals.train_deck.get_len() == 0 and game_globals.discard_deck.get_len() > 0:
+                game_globals.train_deck.refresh_deck(game_globals.discard_deck)
+                print("Refreshed train deck for face-up card replacement")
+
+            # Re-populate 5 face-up cards
+            for i in range(5):
+                if game_globals.train_deck.get_len() > 0:
+                    new_card = game_globals.train_deck.remove(-1)
+                    game_globals.faceup_deck.add(new_card)
+                else:
+                    print("Not enough cards to fully refill face-up deck")
+                    break
+
+        # Update the first 5 cards display
         for i in range(5):
             if i < len(self.game_view.card_list):
                 card_sprite = self.game_view.card_list[i]
@@ -727,8 +754,7 @@ class CardController:
                     sprite_path = faceup_card.get_sprite()
 
                     # Cache the texture to avoid repeated loading
-                    if not hasattr(self.game_view, ''
-                                                   'faceup_textures'):
+                    if not hasattr(self.game_view, 'faceup_textures'):
                         self.game_view.faceup_textures = {}
 
                     if sprite_path not in self.game_view.faceup_textures:
@@ -1092,6 +1118,10 @@ class GameView(arcade.View):
             game_globals.turn_val = None
 
             for comp in game_globals.computers:
+                if game_globals.train_deck.get_len() == 0 and game_globals.discard_deck.get_len() > 0:
+                    game_globals.train_deck.refresh_deck(game_globals.discard_deck)
+                    print("Refreshed train deck before computer turn")
+
                 print(f"Computer {comp.get_color()} playing.")
                 print(comp.get_player().get_train_cards())
                 print(comp.get_player().get_destination_cards())
