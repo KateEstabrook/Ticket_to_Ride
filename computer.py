@@ -22,6 +22,10 @@ class Computer:
     def get_map(self):
         """Getter for player map"""
         return self.player.get_map()
+    
+    def get_player(self):
+        """Getter for player map"""
+        return self.player
 
     def play(self):
         # use turn finished instead of big if elif else
