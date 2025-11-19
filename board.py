@@ -679,8 +679,13 @@ class RouteController:
                         train_sprite.set_texture(0)
                         train_sprite.alpha = 255
                     break
+        # Remove train cards
         removed = game_globals.player_obj.get_train_cards().remove_cards(selected_color, len_route)
         game_globals.discard_deck.add_cards(removed)
+
+        # Remove route from deck
+        game_globals.player_obj.get_map().add_path(game_globals.game_map.remove_route(city1, city2))
+
 
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route and checking if double colored routes are taken"""
@@ -1196,10 +1201,13 @@ class GameView(arcade.View):
             player_map.add_node(city2)
         player_map.add_path(game_globals.game_map.remove_route(city1, city2))
         game_globals.turn_end = True
+        """
+        # THIS IS FOR FINDING PLAYER POINTS AND UPSATING COMPLETED ROUTES
         for dest_card in game_globals.player_obj.get_destination_cards().get_uncompleted():
             if player_map.check_completed(dest_card):
                 dest_card.complete()
                 game_globals.player_obj.add_points(dest_card.get_points())
+        """
         print(game_globals.player_obj.get_destination_cards())
         #print(game_globals.player_obj.get_destination_cards().get_uncompleted())
         #print(player_map.check_completed(cards.DestinationCard(("Boston", "Miami", 12))))

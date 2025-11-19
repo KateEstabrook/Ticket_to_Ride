@@ -18,6 +18,7 @@ Route Card Deck (30 routes) (essential, hard)
 
 import operator
 import random
+import constants as c
 #import cards
 
 STARTING_NUM_CARDS = 0
@@ -39,15 +40,40 @@ class Deck:
 
     def remove_cards(self, color, count):
         """Remove a list of cards of a color + wild cards to make up for the count"""
-        if self.has_cards(color, count):
-            discarded = []
-            i = 0
-            while i < count:
-                try:
-                    discarded.append(self.remove(self.get_card_index(color)))
-                except TypeError:
-                    discarded.append(self.remove(self.get_card_index("wild")))
-                i += 1
+        discarded = []
+        if self.has_cards(color, count): # needs to be remove normal colors according to cases in has cards, currently only removes wilds
+            if color == "colorless":
+                for color_ in c.COLORS:
+                    if self.get_count(color_) >= count:
+                        i = 0
+                        while i < count:
+                            discarded.append(self.remove(self.get_card_index(color_)))
+                            i += 1
+                        break
+                for color_ in c.COLORS:
+                    if self.get_count("wild") + self.get_count(color_) >= count \
+                    and self.get_count("wild") < count and discarded == []:
+                        i = 0
+                        while i < count:
+                            try:
+                                discarded.append(self.remove(self.get_card_index(color_)))
+                            except TypeError:
+                                discarded.append(self.remove(self.get_card_index('wild')))
+                            i += 1
+                        break
+                if self.get_count("wild") >= count and discarded == []:
+                    i = 0
+                    while i < count:
+                        discarded.append(self.remove(self.get_card_index('wild')))
+                        i += 1
+            else:
+                i = 0
+                while i < count:
+                    try:
+                        discarded.append(self.remove(self.get_card_index(color)))
+                    except TypeError:
+                        discarded.append(self.remove(self.get_card_index("wild")))
+                    i += 1
             return discarded
 
     def add(self, card):
@@ -69,11 +95,23 @@ class Deck:
 
     def has_cards(self, color, count):
         """Checks if the passed cards are in the deck including wild cards"""
-        if self.get_count(color) >= count:
-            return True
-        if self.get_count("wild") + self.get_count(color) >= count and color != "wild":
-            return True
-        return False
+        if color == "colorless":
+            for color_ in c.COLORS:
+                if self.get_count(color_) >= count:
+                    return True
+            for color_ in c.COLORS:
+                if self.get_count("wild") + self.get_count(color_) >= count \
+                and self.get_count("wild") < count:
+                    return True
+            if self.get_count("wild") >= count:
+                return True
+            return False
+        else:    
+            if self.get_count(color) >= count:
+                return True
+            if self.get_count("wild") + self.get_count(color) >= count and color != "wild":
+                return True
+            return False
 
     def sort(self):
         """Sorts the deck"""

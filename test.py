@@ -228,10 +228,11 @@ if __name__ == "__main__":
 
 import globals as game_globals
 import cards
+import constants as c
 
 game_globals.initialize_game()
 
-print(game_globals.game_map.check_completed(cards.DestinationCard(("Boston", "Miami", 12))))
+#print(game_globals.game_map.check_completed(cards.DestinationCard(("Boston", "Miami", 12))))
 
 
 import graph
@@ -253,17 +254,25 @@ dest = cards.DestinationCard(("Boston", "Miami", 12))
 
 test_player.get_destination_cards().add(dest)
 
+# currently not updating curr dest in computer.py, this is why they never do anything when you run board
 comp.set_curr_dest(dest)
 
 for _ in range(10):
     test_player.get_train_cards().add(cards.TrainCard("wild"))
 
 
-comp.play()
+#comp.play()
 
 
 print(comp.create_adjacency_list_global())
 
-comp.update_cards_routes_needed()
+
+comp.get_player().get_map().add_path(game_globals.game_map.remove_route('New York', 'Boston'))
+print(comp.get_player().get_map())
+
+print(comp.create_adjacency_list_global())
+#comp.update_cards_routes_needed()
 
 #print(test_player.get_map())
+
+
