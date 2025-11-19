@@ -94,6 +94,7 @@ class Computer:
                 removed = self.player.get_train_cards().remove_cards(route.get_color(), route.get_weight())
                 game_globals.discard_deck.add_cards(removed)
                 self.turn_finished = True
+                self.routes_needed.remove(route)
                 return True
         return False
     

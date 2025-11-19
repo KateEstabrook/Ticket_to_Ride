@@ -75,15 +75,16 @@ class Graph:
         adj = {}
 
         for route in self.paths: # add self paths with weight 0
-            cities = route.get_cities()
-            if cities[0] not in adj:
-                adj[cities[0]] = [(cities[1], 0)]
-            else:
-                adj[cities[0]].append((cities[1], 0))
-            if cities[1] not in adj:
-                adj[cities[1]] = [(cities[0], 0)]
-            else:
-                adj[cities[1]].append((cities[0], 0))
+            if route != None:
+                cities = route.get_cities()
+                if cities[0] not in adj:
+                    adj[cities[0]] = [(cities[1], 0)]
+                else:
+                    adj[cities[0]].append((cities[1], 0))
+                if cities[1] not in adj:
+                    adj[cities[1]] = [(cities[0], 0)]
+                else:
+                    adj[cities[1]].append((cities[0], 0))
 
         src = dest_card.get_city_1()
         dist, route_lists = self.djikstra(src, adj)
