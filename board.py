@@ -45,7 +45,6 @@ class BoardRenderer:
                 card.texture = arcade.load_texture(dest_card.get_sprite())
 
                 player_map = game_globals.player_obj.get_map()
-
                 if player_map.check_completed(dest_card):
                     check_sprite = arcade.Sprite()
                     check_tex = arcade.load_texture("images/green_check.png")
