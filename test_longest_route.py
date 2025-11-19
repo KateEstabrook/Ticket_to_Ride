@@ -1,67 +1,65 @@
-"""
-Testing for longest continuous route calculations
-"""
+def longest_route(player1, player2, player3, player4):
+    """Return the player with the longest continuous route."""
 
-def longest_route(routes):
-    """This function takes in four dictionaries of routes and returns
-    the player that has the longest route.
-    """
-    def dfs(city, visited, current_length, current_path):
-        """This is a depth first search algorithm that will find the longest
-        path from a starting node
-        """
+    def dfs(city, visited, current_length, current_path, routes_dict):
+        """Depth-first search exploring all paths from the starting city."""
         visited.add(city)
 
         max_length = current_length
         best_path = current_path.copy()
 
         # Explore neighbors
-        for neighbor, weight in routes.get(city, {}).items():
+        for neighbor, weight in routes_dict.get(city, {}).items():
             if neighbor not in visited:
-                # Recursively search
-                length, path = dfs(neighbor, visited, current_length + weight,
-                                   current_path + [neighbor])
+                length, path = dfs(
+                    neighbor,
+                    visited,
+                    current_length + weight,
+                    current_path + [neighbor],
+                    routes_dict
+                )
                 if length > max_length:
                     max_length = length
                     best_path = path
 
-        visited.remove(city)
+        visited.remove(city) # remove in case the city is also in other routes
         return max_length, best_path
 
-    # Try DFS from every city as starting point
-    overall_max = 0
-    best_overall_path = []
+    players = [player1, player2, player3, player4]
+    results = []
 
-    for start in routes.keys():
-        length, path = dfs(start, set(), 0, [start])
-        if length > overall_max:
-            overall_max = length
-            best_overall_path = path
+    for player in players:
+        player_map = player.get_map()
+        routes_dict = {}
 
-    return overall_max, best_overall_path
+        # Convert player's claimed routes to a dictionary
+        for route in player_map.get_paths():
+            if route:
+                city1, city2 = route.get_cities()
+                weight = route.get_weight()
 
+                # Symmetry
+                if city1 not in routes_dict:
+                    routes_dict[city1] = {}
+                routes_dict[city1][city2] = weight
 
+                if city2 not in routes_dict:
+                    routes_dict[city2] = {}
+                routes_dict[city2][city1] = weight
 
+        overall_max = 0
+        best_path = []
 
-# For each player's claimed routes
-player1_routes = {
-    "Seattle": {"Portland": 1, "Helena": 6},
-    "Portland": {"Seattle": 1, "San Francisco": 5},
-    "San Francisco": {"Portland": 5},
-    "Helena": {"Seattle": 6, "Denver": 4}
-}
+        # If player has at least one route, run DFS
+        if routes_dict:
+            for start_city in routes_dict:
+                length, path = dfs(start_city, set(), 0, [start_city], routes_dict)
+                if length > overall_max:
+                    overall_max = length
+                    best_path = path
 
-player2_routes = {
-    "Seattle": {"Portland": 1, "Helena": 6},
-    "Portland": {"Seattle": 1, "San Francisco": 5},
-    "San Francisco": {"Portland": 5},
-}
+        results.append((player, overall_max, best_path))
 
-longest_length1, longest_path1 = longest_route(player1_routes)
-print(f"Longest continuous route: {longest_length1}")
-print(f"Path: {' -> '.join(longest_path1)}")
-
-
-longest_length2, longest_path2 = longest_route(player2_routes)
-print(f"Longest continuous route: {longest_length2}")
-print(f"Path: {' -> '.join(longest_path2)}")
+    # Return only the winning player
+    winner = max(results, key=lambda x: x[1])
+    return winner[0]
