@@ -954,3 +954,112 @@ def show_info_pop_up(game_view):
         exit_rect.bottom,  # bottom
         exit_rect.bottom + exit_rect.height  # top
     )
+
+def show_dest_card_pop_up(game_view, dest_card):
+    """
+    Help menu popup
+    """
+    vw, vh = _vw(game_view), _vh(game_view)
+
+    # Popup dimensions
+    popup_width = vw * 0.5
+    popup_height = vh * 0.6
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
+
+    # Shadow under popup using cached texture
+    shadow_texture = game_view.popup_textures['shadow']
+    shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 3, popup_height * 3)
+    arcade.draw_texture_rect(shadow_texture, shadow_rect)
+
+    # Background color using cached texture
+    bg_texture = game_view.popup_textures['white_bg']
+    bg_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
+    arcade.draw_texture_rect(bg_texture, bg_rect)
+
+    # Border
+    arcade.draw_rect_outline(bg_rect, arcade.color.DARK_BROWN, border_width=3)
+
+    # Title
+    title = "View destination card"
+    arcade.draw_text(
+        title,
+        popup_x,
+        popup_y + popup_height * 0.42,
+        arcade.color.DARK_BROWN,
+        font_size=18,
+        anchor_x="center",
+        anchor_y="center",
+        bold=True
+    )
+
+    text = f"Destination ------- From {dest_card.get_city_1()} to {dest_card.get_city_2()}"
+    arcade.draw_text(
+        text,
+        popup_x * 0.55, popup_y - popup_height * 0.06,
+        arcade.color.BLACK,
+        font_size=16,
+        anchor_x="left",
+        anchor_y="center",
+        bold=True,
+        align="center"
+    )
+
+    text = f"Points ---------------- {dest_card.get_points()}"
+    arcade.draw_text(
+        text,
+        popup_x * 0.55, popup_y + popup_height * 0.04,
+        arcade.color.BLACK,
+        font_size=16,
+        anchor_x="left",
+        anchor_y="center",
+        bold=True,
+        align="center"
+    )
+
+    # Card texture (cache like the others)
+    texture_path = dest_card.get_sprite()
+    if texture_path not in game_view.destination_textures:
+        game_view.destination_textures[texture_path] = arcade.load_texture(texture_path)
+    tex = game_view.destination_textures[texture_path]
+
+    # Card size inside popup
+    card_width = popup_width * 0.25
+    aspect = tex.height / tex.width
+    card_height = card_width * aspect
+    card_rect = _centered_rect(popup_x + popup_width * 0.35, popup_y, card_width, card_height)
+
+    arcade.draw_texture_rect(tex, card_rect)
+
+    # Exit Button
+    exit_button_width = popup_width * 0.2
+    exit_button_height = popup_height * 0.1
+    exit_button_x = popup_x + popup_width * 0.38
+    exit_button_y = popup_y - popup_height * 0.41
+
+    exit_texture = game_view.popup_textures['exit_button']
+    exit_rect = _centered_rect(exit_button_x, exit_button_y, exit_button_width, exit_button_height)
+
+    arcade.draw_texture_rect(exit_texture, exit_rect)
+    arcade.draw_rect_outline(
+        exit_rect,
+        arcade.color.BLACK,
+        border_width=2
+    )
+
+    arcade.draw_text(
+        "EXIT",
+        exit_button_x, exit_button_y,
+        arcade.color.WHITE,
+        font_size=20,
+        anchor_x="center",
+        anchor_y="center",
+        bold=True
+    )
+
+    game_view.exit_button_bounds = (
+        exit_rect.left,  # left
+        exit_rect.left + exit_rect.width,  # right
+        exit_rect.bottom,  # bottom
+        exit_rect.bottom + exit_rect.height  # top
+    )

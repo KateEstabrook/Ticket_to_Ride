@@ -33,6 +33,11 @@ class BoardRenderer:
 
         check_list = arcade.SpriteList()
         dest_list = arcade.SpriteList()
+
+        # keep these available to mouse handler
+        self.game_view.dest_card_sprites = dest_list
+        self.game_view.dest_card_objects = []
+
         # Destination cards set up
         i = 0
         if game_globals.player_obj.get_destination_cards().get_len() > 0:
@@ -52,6 +57,8 @@ class BoardRenderer:
                     check_sprite.set_texture(0)
                     self.place_card(check_sprite, sx, sy, top_left=True, scale=0.045)
                     check_list.append(check_sprite)
+
+                self.game_view.dest_card_objects.append(dest_card)
                 self.place_card(card, sx, sy, top_left=True, scale=c.DEST_SCALE)
                 dest_list.append(card)
                 i += 1
@@ -88,6 +95,9 @@ class BoardRenderer:
 
         if self.game_view.showing_deck_popup:
             popups.deck_pop_up(self.game_view)
+
+        if self.game_view.showing_dest_card_popup and getattr(self.game_view, "active_dest_card", None) is not None:
+            popups.show_dest_card_pop_up(self.game_view, self.game_view.active_dest_card)
 
         if self.game_view.showing_faceup_popup:
             popups.faceup_card_popup(self.game_view, self.game_view.selected_faceup_card_index)
@@ -316,6 +326,15 @@ class MouseHandler:
             # If click is elsewhere while popup is up, just consume it
             return
 
+        if self.game_view.showing_dest_card_popup:
+            if hasattr(self.game_view, 'exit_button_bounds'):
+                left, right, bottom, top = self.game_view.exit_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    self.game_view.showing_dest_card_popup = False
+                    self.game_view.active_dest_card = None
+                    return
+            return  # consume clicks while popup open
+
         if self.game_view.showing_faceup_popup:
             # Handle take card button click
             if hasattr(self.game_view, 'take_button_bounds'):
@@ -476,6 +495,7 @@ class MouseHandler:
             # Use the actual mouse coordinates for collision detection
             hit_deck = arcade.get_sprites_at_point((x, y), self.game_view.deck_sprite)
             hit_dest_deck = arcade.get_sprites_at_point((x, y), self.game_view.dest_deck_sprite)
+            hit_dest_card_sprites = arcade.get_sprites_at_point((x, y), self.game_view.dest_card_sprites)
             hits = arcade.get_sprites_at_point((x, y), self.game_view.city_list)
             hit_faceup_cards = arcade.get_sprites_at_point((x, y), self.game_view.card_list)
 
@@ -486,6 +506,17 @@ class MouseHandler:
                     self.game_view.drawn_card = game_globals.train_deck.remove(-1)
                     self.game_view.showing_deck_popup = True
                     self.game_view.selected_color = None
+                return
+
+            # after deck check:
+            if hit_dest_card_sprites:
+                # clicked_sprite is the first sprite under the mouse
+                clicked_sprite = hit_dest_card_sprites[0]
+                idx = self.game_view.dest_card_sprites.index(clicked_sprite)
+                dest_card_obj = self.game_view.dest_card_objects[idx]
+
+                self.game_view.active_dest_card = dest_card_obj
+                self.game_view.showing_dest_card_popup = True
                 return
 
             # Show the destination deck popup
@@ -1065,6 +1096,7 @@ class GameView(arcade.View):
         self.min_dest_cards_to_keep = game_globals.num_choose
         self.max_dest_cards_to_keep = 8
         self.showing_faceup_popup = False # Don't show face up popup
+        self.showing_dest_card_popup = False # Don't show dest card popup
         self.selected_faceup_card_index = None # Face up card that was clicked
         self.take_button_bounds = None # Bounds for "take card"
 
