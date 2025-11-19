@@ -75,7 +75,7 @@ class Graph:
         adj = {}
 
         for route in self.paths: # add self paths with weight 0
-            cities = route.get_nodes()
+            cities = route.get_cities()
             if cities[0] not in adj:
                 adj[cities[0]] = [(cities[1], 0)]
             else:
