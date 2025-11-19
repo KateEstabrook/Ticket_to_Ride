@@ -993,7 +993,7 @@ def show_dest_card_pop_up(game_view, dest_card):
         bold=True
     )
 
-    text = f"Destination ------- From {dest_card.get_city_1()} to {dest_card.get_city_2()}"
+    text = f"Destination -------- From {dest_card.get_city_1()} to {dest_card.get_city_2()}"
     arcade.draw_text(
         text,
         popup_x * 0.55, popup_y - popup_height * 0.06,
