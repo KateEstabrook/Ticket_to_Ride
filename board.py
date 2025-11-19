@@ -1173,7 +1173,7 @@ class GameView(arcade.View):
                 print(comp.get_player().get_train_cards())
                 print(comp.get_player().get_destination_cards())
                 comp.play()
-                self.refresh_faceup_cards()
+                self.card_controller.refresh_faceup_cards()
                 print(f"{comp.get_map()}")
                 print(comp.get_player().get_train_cards())
                 print(f"Computer {comp.get_color()} completed its turn.")
