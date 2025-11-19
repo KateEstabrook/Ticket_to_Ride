@@ -48,7 +48,7 @@ class Computer:
         elif self.player.get_map().check_completed(self.curr_dest):
             self.curr_dest.complete()
             # Setting current destination if first dest is complete
-            if not self.player.get_destination_cards().get_uncompleted():
+            if self.player.get_destination_cards().get_uncompleted():
                     self.curr_dest = self.player.get_destination_cards().get_uncompleted()[0]
             else:
                 new_card = game_globals.dest_deck.remove(-1)
