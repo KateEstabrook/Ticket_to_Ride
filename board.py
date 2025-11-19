@@ -6,6 +6,7 @@ import platform
 import arcade
 import globals as game_globals
 import constants as c
+from graph import Graph
 import cards
 import player
 import popups
@@ -30,6 +31,7 @@ class BoardRenderer:
             self.game_view.board_rect
         )
 
+        check_list = arcade.SpriteList()
         dest_list = arcade.SpriteList()
         # Destination cards set up
         i = 0
@@ -39,10 +41,18 @@ class BoardRenderer:
                     break  # stop if there are no more cards to draw
 
                 card = arcade.Sprite()
+                dest_card = game_globals.player_obj.get_destination_cards().get_card_at_index(i)
+                card.texture = arcade.load_texture(dest_card.get_sprite())
 
-                card.texture = arcade.load_texture(game_globals.player_obj.
-                                                   get_destination_cards().get_card_at_index(i).get_sprite())
+                player_map = game_globals.player_obj.get_map()
 
+                if player_map.check_completed(dest_card):
+                    check_sprite = arcade.Sprite()
+                    check_tex = arcade.load_texture("images/green_check.png")
+                    check_sprite.append_texture(check_tex)
+                    check_sprite.set_texture(0)
+                    self.place_card(check_sprite, sx, sy, top_left=True, scale=0.045)
+                    check_list.append(check_sprite)
                 self.place_card(card, sx, sy, top_left=True, scale=c.DEST_SCALE)
                 dest_list.append(card)
                 i += 1
@@ -53,6 +63,7 @@ class BoardRenderer:
         self.game_view.card_list.draw()
         self.game_view.dest_deck_sprite.draw()
         dest_list.draw()
+        check_list.draw()
 
         # Draw sprites for beginning
         self.game_view.deck_sprite.draw()
