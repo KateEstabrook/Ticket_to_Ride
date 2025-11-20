@@ -19,7 +19,6 @@ Route Card Deck (30 routes) (essential, hard)
 import operator
 import random
 import constants as c
-#import cards
 
 STARTING_NUM_CARDS = 0
 
@@ -41,7 +40,7 @@ class Deck:
     def remove_cards(self, color, count):
         """Remove a list of cards of a color + wild cards to make up for the count"""
         discarded = []
-        if self.has_cards(color, count): # needs to be remove normal colors according to cases in has cards, currently only removes wilds
+        if self.has_cards(color, count):
             if color == "colorless":
                 for color_ in c.COLORS:
                     if self.get_count(color_) >= count:
@@ -51,8 +50,9 @@ class Deck:
                             i += 1
                         break
                 for color_ in c.COLORS:
-                    if self.get_count("wild") + self.get_count(color_) >= count \
-                    and self.get_count("wild") < count and discarded == []:
+                    if (self.get_count("wild") + self.get_count(color_) >= count
+                            and self.get_count("wild") < count
+                            and not discarded):
                         i = 0
                         while i < count:
                             try:
@@ -61,7 +61,7 @@ class Deck:
                                 discarded.append(self.remove(self.get_card_index('wild')))
                             i += 1
                         break
-                if self.get_count("wild") >= count and discarded == []:
+                if self.get_count("wild") >= count and not discarded:
                     i = 0
                     while i < count:
                         discarded.append(self.remove(self.get_card_index('wild')))
@@ -81,14 +81,17 @@ class Deck:
         self.cards.append(card)
 
     def add_cards(self, cards_list):
+        """Adds a list of cards to the deck"""
         for card in cards_list:
             self.add(card)
 
     def clear(self):
+        """Clears the deck"""
         self.num_cards = STARTING_NUM_CARDS
         self.cards = []
 
     def discard(self, discard_deck):
+        """Discards a card from the deck"""
         for card in self.get_cards():
             discard_deck.add(card)
         self.clear()
@@ -106,7 +109,7 @@ class Deck:
             if self.get_count("wild") >= count:
                 return True
             return False
-        else:    
+        else:
             if self.get_count(color) >= count:
                 return True
             if self.get_count("wild") + self.get_count(color) >= count and color != "wild":
@@ -118,6 +121,7 @@ class Deck:
         self.cards.sort(key=operator.attrgetter('color'))
 
     def refresh_deck(self, input_deck):
+        """Clear and shuffle the deck"""
         for card in input_deck.get_cards():
             self.add(card)
         input_deck.clear()
@@ -151,15 +155,17 @@ class Deck:
         for _ in self.cards:
             count += 1
         return count
-    
+
     def get_uncompleted(self):
+        """Gets the uncompleted routes"""
         rtn_lst = []
         for card in self.cards:
             if not card.get_completed():
                 rtn_lst.append(card)
         return rtn_lst
-    
+
     def get_cards(self):
+        """Returns all the cards in the deck"""
         return self.cards
 
     def __str__(self):
