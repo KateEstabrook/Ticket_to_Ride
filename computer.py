@@ -11,8 +11,9 @@ import time
 import arcade
 
 class Computer:
-    def __init__(self, player):
+    def __init__(self, player, game_view=None):
         self.player = player
+        self.game_view = game_view
         self.cards_needed = {"pink":0, "blue":0, "orange":0, "white":0, "green":0, "yellow":0, "black":0, "red":0, "colorless":0}
         self.routes_needed = []
         self.curr_dest = None
@@ -95,15 +96,21 @@ class Computer:
         """"Returns boolean whether or not comp can claim a route 
         that helps to complete a destination card"""
         for route in self.routes_needed:
-            if self.player.get_train_cards().has_cards(route.get_color(), route.get_weight()):
-                game_globals.game_map.remove_route(route.get_cities()[0], route.get_cities()[1])
-                self.player.get_map().add_route(route)
+            route_color = route.get_color()
+            cities = route.get_cities()
+            city1, city2 = cities[0], cities[1]
+            weight = route.get_weight()
+            if self.player.get_train_cards().has_cards(route_color, weight):
                 # Remove train cards
-                removed = self.player.get_train_cards().remove_cards(route.get_color(), route.get_weight())
+                removed = self.player.get_train_cards().remove_cards(route_color, weight)
                 game_globals.discard_deck.add_cards(removed)
+
+                # Claim route
+                self.game_view.claim_route_comp(city1, city2, route_color, self.player)
                 self.turn_finished = True
                 self.routes_needed.remove(route)
                 return True
+
         return False
     
     def useful_faceup(self, prev):

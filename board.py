@@ -730,6 +730,51 @@ class RouteController:
         # Print the action on the screen
         self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} claimed the route {city1} - {city2}")
 
+    def claim_route_comp(self, city1, city2, color, route_index=None):
+        """Claim the route for a computer player - similar to human version but without popup interaction"""
+        city_pair = (city1, city2)
+        reverse_pair = (city2, city1)
+
+        if city_pair in c.TRAINS:
+            routes_data = c.TRAINS[city_pair]
+            pair = city_pair
+        elif reverse_pair in c.TRAINS:
+            routes_data = c.TRAINS[reverse_pair]
+            pair = reverse_pair
+        else:
+            return
+
+        # Check if we have a specific route index selected
+        if route_index is not None:
+            # Claim the specifically selected route
+            if not self.game_view.route_taken[pair][route_index]:
+                self.game_view.route_taken[pair][route_index] = True
+                for train_sprite in self.game_view.train_map[pair][route_index]:
+                    train_sprite.set_texture(0)
+                    train_sprite.alpha = 255
+        elif color == "wild":
+            # For wild without specific selection, claim first available
+            for i, taken in enumerate(self.game_view.route_taken[pair]):
+                if not taken:
+                    self.game_view.route_taken[pair][i] = True
+                    for train_sprite in self.game_view.train_map[pair][i]:
+                        train_sprite.set_texture(0)
+                        train_sprite.alpha = 255
+                    break
+        else:
+            # Regular card
+            for i, (taken, route_data) in enumerate(zip(self.game_view.route_taken[pair], routes_data)):
+                if not taken and (route_data["color"] == color or route_data["color"] == "colorless"):
+                    self.game_view.route_taken[pair][i] = True
+                    for train_sprite in self.game_view.train_map[pair][i]:
+                        train_sprite.set_texture(0)
+                        train_sprite.alpha = 255
+                    break
+
+        # Print the action on the screen
+        self.game_view.add_log(
+            f"Computer player {game_globals.player_obj.get_color()} claimed the route {city1} - {city2}")
+
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route and checking if double colored routes are taken"""
         for city_pair in [(city1, city2), (city2, city1)]:
@@ -1299,6 +1344,50 @@ class GameView(arcade.View):
         #print(player_map.check_completed(cards.DestinationCard(("Boston", "Miami", 12))))
         #print(player_map.get_nodes())
         #print(player_map)
+
+    def claim_route_comp(self, city1, city2, color, computer_player, route_index=None):
+        """Claim route for computer player"""
+        # First claim the route visually
+        self.route_controller.claim_route_comp(city1, city2, color, route_index)
+
+        # Get route length for point calculation
+        city_pair = (city1, city2)
+        reverse_pair = (city2, city1)
+
+        if city_pair in c.TRAINS:
+            len_route = len(c.TRAINS[city_pair][0]["positions"])
+        elif reverse_pair in c.TRAINS:
+            len_route = len(c.TRAINS[reverse_pair][0]["positions"])
+        else:
+            len_route = 0
+
+        if computer_player:
+            # Remove trains and add points
+            computer_player.remove_trains(len_route)
+
+            # Point calculation
+            if len_route == 1:
+                computer_player.add_points(1)
+            elif len_route == 2:
+                computer_player.add_points(2)
+            elif len_route == 3:
+                computer_player.add_points(4)
+            elif len_route == 4:
+                computer_player.add_points(7)
+            elif len_route == 5:
+                computer_player.add_points(10)
+            elif len_route == 6:
+                computer_player.add_points(13)
+
+            # Update computer's map
+            player_map = computer_player.get_map()
+            if city1 not in player_map.get_nodes():
+                player_map.add_node(city1)
+            if city2 not in player_map.get_nodes():
+                player_map.add_node(city2)
+            player_map.add_path(game_globals.game_map.remove_route(city1, city2))
+
+        game_globals.turn_end = True
 
     def is_point_in_button(self, x, y, button_bounds):
         """Check if point is in button"""
