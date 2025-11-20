@@ -7,6 +7,7 @@ import deck
 import cards
 import globals as game_globals
 import constants as c
+import time
 
 class Computer:
     def __init__(self, player):
@@ -34,6 +35,9 @@ class Computer:
         self.curr_dest = dest
 
     def play(self):
+
+        time.sleep(1.0)
+
         # use turn finished instead of big if elif else
         self.turn_finished = False
         self.taken_card = None
@@ -82,6 +86,8 @@ class Computer:
                 self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
                 print('Drew from deck')
                 self.turn_finished = True
+
+        time.sleep(1.0)
 
     def can_claim(self):
         """"Returns boolean whether or not comp can claim a route 
@@ -158,6 +164,7 @@ class Computer:
     def update_cards_routes_needed(self):
         """"Updates the cards needed and routes needed dictionary based on current destination card"""
         self.cards_needed = {"pink":0, "blue":0, "orange":0, "white":0, "green":0, "yellow":0, "black":0, "red":0, "colorless":0}
+        self.routes_needed = []
 
         src = self.curr_dest.get_city_1()
         dest = self.curr_dest.get_city_2()
@@ -171,11 +178,13 @@ class Computer:
         for cur_city in route_lists[dest]:
             cur_city
             
-            route = game_globals.game_map.get_path_by_cities(prev_city, cur_city)
+            routes = game_globals.game_map.get_path_by_cities(prev_city, cur_city)
 
 
-            if map.has_path(prev_city, cur_city) or route == None:
-                prev_city = cur_city
-            else:
-                self.cards_needed[route.get_color()] += route.get_weight()
-                self.routes_needed.append(route)
+            for route in routes:
+                if map.has_path(prev_city, cur_city) or route == None:
+                    prev_city = cur_city
+                else:
+                    self.cards_needed[route.get_color()] += route.get_weight()
+                    if route.get_weight() > 0:
+                        self.routes_needed.append(route)

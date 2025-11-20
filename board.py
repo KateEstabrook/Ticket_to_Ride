@@ -941,7 +941,6 @@ class GameView(arcade.View):
         # Train pieces
         # One list for all train sprites (create it ONCE)
         self.train_list = arcade.SpriteList()
-        train_piece = arcade.load_texture(game_globals.player_obj.get_sprite())
 
         # Create a mapping of city pairs to train sprites
         # Structure: {(city1, city2): [[sprites for route 1], [sprites for route 2]]}
