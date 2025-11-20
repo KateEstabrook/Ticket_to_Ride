@@ -24,9 +24,12 @@ class Graph:
         return self.paths
 
     def get_path_by_cities(self, city1, city2):
+        paths = []
         for path in self.paths:
             if city1 in path.get_cities() and city2 in path.get_cities():
-                return path
+                paths.append(path)
+        return paths
+    
     # Setters
     def set_path(self, paths):
         self.paths = paths
