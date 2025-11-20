@@ -9,7 +9,6 @@ Player class:
 """
 import deck
 import graph
-import constants as c
 
 # Constants
 INIT_TRAIN_PIECES = 45
@@ -66,7 +65,7 @@ class Player:
     def get_destination_cards(self):
         """Getter for destination cards"""
         return self.destination_cards
-    
+
     def get_map(self):
         """Getter for player's claimed map"""
         return self.map
@@ -76,9 +75,11 @@ class Player:
         return self.sprite
 
     def set_color(self, color):
+        """Setter for player's color'"""
         self.color = color
 
     def set_player(self, player_):
+        """Sets player settings"""
         self.color = player_.get_color()
         self.train_pieces = player_.get_trains()
         self.points = player_.get_points()
