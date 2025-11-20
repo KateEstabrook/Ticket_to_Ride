@@ -8,7 +8,7 @@ import arcade
 import constants as c
 import player
 import computer
-import globals
+import globals as game_globals
 
 from board import GameView
 
@@ -227,19 +227,20 @@ class StartMenuView(arcade.View):
 
                         # Initalize player and computers
                         player_obj = player.Player(self.selected_color)
-                        globals.player_obj.set_player(player_obj)
+                        game_globals.player_obj.set_player(player_obj)
                         for color in c.PLAYER_COLORS:
                             if color.title() != self.selected_color:
-                                globals.players.append(player.Player(color.title()))
-                        for p in globals.players:
+                                game_globals.players.append(player.Player(color.title()))
+                        for p in game_globals.players:
                             for _ in range(c.STARTING_CARDS):
-                                p.get_train_cards().add(globals.train_deck.remove(-1))
+                                p.get_train_cards().add(game_globals.train_deck.remove(-1))
                             for _ in range(c.COMPUTER_DEST_CARDS):
-                                p.get_destination_cards().add(globals.dest_deck.remove(-1))
-                        for comp in globals.players:
-                            globals.computers.append(computer.Computer(comp))
+                                p.get_destination_cards().add(game_globals.dest_deck.remove(-1))
+                        for comp in game_globals.players:
+                            game_globals.computers.append(computer.Computer(comp))
                         for _ in range(c.STARTING_CARDS):
-                            globals.player_obj.get_train_cards().add(globals.train_deck.remove(-1))
+                            (game_globals.player_obj.get_train_cards().
+                             add(game_globals.train_deck.remove(-1)))
                         game_view = GameView()
                         game_view.reset()
                         self.window.show_view(game_view)
