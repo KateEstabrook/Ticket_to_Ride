@@ -223,25 +223,35 @@ class StartMenuView(arcade.View):
                 if self.selected_color and self.start_button_bounds:
                     left, right, bottom, top = self.start_button_bounds
                     if left <= x <= right and bottom <= y <= top:
-                        # Import GameView here to avoid circular import
-
-                        # Initalize player and computers
+                        # Initialize player and computers
                         player_obj = player.Player(self.selected_color)
                         game_globals.player_obj.set_player(player_obj)
+
+                        # Create other players (computers)
                         for color in c.PLAYER_COLORS:
                             if color.title() != self.selected_color:
                                 game_globals.players.append(player.Player(color.title()))
+
+                        # Give starting cards to all players
                         for p in game_globals.players:
                             for _ in range(c.STARTING_CARDS):
-                                p.get_train_cards().add(game_globals.train_deck.remove(-1))
+                                if game_globals.train_deck.get_len() > 0:
+                                    p.get_train_cards().add(game_globals.train_deck.remove(-1))
                             for _ in range(c.COMPUTER_DEST_CARDS):
-                                p.get_destination_cards().add(game_globals.dest_deck.remove(-1))
-                        for comp in game_globals.players:
-                            game_globals.computers.append(computer.Computer(comp))
+                                if game_globals.dest_deck.get_len() > 0:
+                                    p.get_destination_cards().add(game_globals.dest_deck.remove(-1))
+
+                        # Give starting cards to human player
                         for _ in range(c.STARTING_CARDS):
-                            (game_globals.player_obj.get_train_cards().
-                             add(game_globals.train_deck.remove(-1)))
+                            if game_globals.train_deck.get_len() > 0:
+                                game_globals.player_obj.get_train_cards().add(game_globals.train_deck.remove(-1))
+
                         game_view = GameView()
+                        game_globals.computers = []  # Clear any existing computers
+                        for comp_player in game_globals.players:
+                            game_globals.computers.append(
+                                computer.Computer(comp_player, game_view))
+
                         game_view.reset()
                         self.window.show_view(game_view)
 

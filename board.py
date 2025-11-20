@@ -6,11 +6,8 @@ import platform
 import arcade
 import globals as game_globals
 import constants as c
-from graph import Graph
-import cards
-import player
 import popups
-import computer
+
 
 
 class BoardRenderer:
@@ -95,12 +92,14 @@ class BoardRenderer:
 
         if self.game_view.showing_dest_popup:
             #popups.show_dest_popup(self.game_view, game_globals.dest_draw, game_globals.num_choose)
-            popups.show_dest_popup(self.game_view, game_globals.dest_draw, self.game_view.min_dest_cards_to_keep)
+            popups.show_dest_popup(self.game_view, game_globals.dest_draw,
+                                   self.game_view.min_dest_cards_to_keep)
 
         if self.game_view.showing_deck_popup:
             popups.deck_pop_up(self.game_view)
 
-        if self.game_view.showing_dest_card_popup and getattr(self.game_view, "active_dest_card", None) is not None:
+        if (self.game_view.showing_dest_card_popup and
+                getattr(self.game_view, "active_dest_card", None) is not None):
             popups.show_dest_card_pop_up(self.game_view, self.game_view.active_dest_card)
 
         if self.game_view.showing_faceup_popup:
@@ -214,11 +213,17 @@ class BoardRenderer:
         self.game_view.leaderboard_lines.clear()
 
         players = [
-            {"name": "You", "score": player_points, "trains": player_train_count, "color": arcade.color.WHITE},
-            {"name": "RED", "score": 245, "trains": 32, "color": arcade.color.WHITE},
-            {"name": "GREEN", "score": 189, "trains": 28, "color": arcade.color.WHITE},
-            {"name": "YELLOW", "score": 156, "trains": 35, "color": arcade.color.WHITE}
+            {"name": "You", "score": player_points, "trains": player_train_count,
+             "color": arcade.color.WHITE}
         ]
+        for comp in game_globals.computers:
+            comp_player = comp.get_player()
+            players.append({
+                "name": comp.get_color().upper(),
+                "score": comp_player.get_points(),
+                "trains": comp_player.get_trains(),
+                "color": arcade.color.WHITE
+            })
 
         # Draw each player's info in 2 columns
         for i, player_data in enumerate(players):
@@ -230,7 +235,8 @@ class BoardRenderer:
             else:  # Odd indices: right column
                 x_pos = start_x2
 
-            player_text = f"{player_data['name']} - {player_data['score']} pts - {player_data['trains']} trains"
+            player_text = (f"{player_data['name']} - {player_data['score']} pts - "
+                           f"{player_data['trains']} trains")
 
             text_obj = arcade.Text(
                 player_text,
@@ -251,11 +257,13 @@ class BoardRenderer:
         # Choose height (or width) as your canonical axis; height is fine:
         return px * (self.game_view.board_rect.height / self.game_view.background.height)
 
-    def place_ui_anchor(self, sprite: arcade.Sprite, *, anchor: str, margin_x: float, margin_y: float,
+    def place_ui_anchor(self, sprite: arcade.Sprite, *, anchor: str,
+                        margin_x: float, margin_y: float,
                         base_scale: float):
         """
         Position + scale a UI sprite relative to board_rect corners/edges.
-        anchor in {"topleft","topright","bottomleft","bottomright","topcenter","rightcenter","leftcenter","bottomcenter"}
+        anchor in {"topleft","topright","bottomleft","bottomright",
+        "topcenter","rightcenter","leftcenter","bottomcenter"}
         margin_* are in BOARD-IMAGE pixels (will be scaled with ui_scale()).
         """
         br = self.game_view.board_rect
@@ -355,7 +363,8 @@ class MouseHandler:
                         if taken_card:
                             # Add the card to player's hand
                             game_globals.player_obj.get_train_cards().add(taken_card)
-                            self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} drew a faceup card")
+                            self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} "
+                                                   f"drew a faceup card")
 
                             # Replace the taken card with a card from the train deck
                             if game_globals.train_deck.get_len() > 0:
@@ -407,8 +416,8 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    if self.game_view.selected_color == "wild" and not hasattr(self.game_view,
-                                                                                     'showing_route_selection'):
+                    if (self.game_view.selected_color == "wild"
+                            and not hasattr(self.game_view, 'showing_route_selection')):
                         # Only show second popup for double routes, not single routes
                         city_pair = (self.game_view.popup_city1, self.game_view.popup_city2)
                         reverse_pair = (self.game_view.popup_city2, self.game_view.popup_city1)
@@ -436,14 +445,16 @@ class MouseHandler:
                         else:
                             # For single available route
                             self.game_view.showing_popup = False
-                            self.game_view.claim_route(self.game_view.popup_city1, self.game_view.popup_city2)
+                            self.game_view.claim_route(self.game_view.popup_city1,
+                                                       self.game_view.popup_city2)
                             self.game_view.deselect_all_cities()
                             self.game_view.selected_color = None
                             self.game_view.update_card_counts()
                             return
                     else:
                         self.game_view.showing_popup = False
-                        self.game_view.claim_route(self.game_view.popup_city1, self.game_view.popup_city2)
+                        self.game_view.claim_route(self.game_view.popup_city1,
+                                                   self.game_view.popup_city2)
                         self.game_view.deselect_all_cities()
                         self.game_view.selected_color = None
                         # Clean up route selection state
@@ -459,7 +470,8 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    min_required = getattr(self.game_view, 'min_dest_cards_to_keep', game_globals.num_choose)
+                    min_required = getattr(self.game_view,
+                                           'min_dest_cards_to_keep', game_globals.num_choose)
                     max_allowed = getattr(self.game_view, 'max_dest_cards_to_keep', 8)
 
                     # Check if player selected the right amount
@@ -467,7 +479,8 @@ class MouseHandler:
                         # Add selected cards to player's hand
                         for card in self.game_view.selected_dests:
                             game_globals.player_obj.get_destination_cards().add(card)
-                            self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} drew a destination card from the deck")
+                            self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} "
+                                                   f"drew a destination card from the deck")
 
                         # Return unselected cards back to the deck
                         for card in game_globals.dest_draw:
@@ -480,7 +493,7 @@ class MouseHandler:
                         self.game_view.selected_dests = []
 
                         # From now on, only 1 dest required next times
-                        if self.game_view.dest_first_time == True:
+                        if self.game_view.dest_first_time:
                             self.game_view.dest_first_time = False
                             return
                         return 2
@@ -503,7 +516,8 @@ class MouseHandler:
             # Use the actual mouse coordinates for collision detection
             hit_deck = arcade.get_sprites_at_point((x, y), self.game_view.deck_sprite)
             hit_dest_deck = arcade.get_sprites_at_point((x, y), self.game_view.dest_deck_sprite)
-            hit_dest_card_sprites = arcade.get_sprites_at_point((x, y), self.game_view.dest_card_sprites)
+            hit_dest_card_sprites = arcade.get_sprites_at_point((x, y),
+                                                                self.game_view.dest_card_sprites)
             hits = arcade.get_sprites_at_point((x, y), self.game_view.city_list)
             hit_faceup_cards = arcade.get_sprites_at_point((x, y), self.game_view.card_list)
 
@@ -514,7 +528,8 @@ class MouseHandler:
                     self.game_view.drawn_card = game_globals.train_deck.remove(-1)
                     self.game_view.showing_deck_popup = True
                     self.game_view.selected_color = None
-                    self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} drew a train card from the deck")
+                    self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} "
+                                           f"drew a train card from the deck")
                 return
 
             # after deck check:
@@ -526,7 +541,10 @@ class MouseHandler:
 
                 self.game_view.active_dest_card = dest_card_obj
                 self.game_view.showing_dest_card_popup = True
-                self.game_view.add_log(f"You opened the {self.game_view.active_dest_card.get_city_1()} - {self.game_view.active_dest_card.get_city_2()} destination card info popup")
+                self.game_view.add_log(f"You opened the "
+                                       f"{self.game_view.active_dest_card.get_city_1()} - "
+                                       f"{self.game_view.active_dest_card.get_city_2()} "
+                                       f"destination card info popup")
                 return
 
             # Show the destination deck popup
@@ -545,9 +563,11 @@ class MouseHandler:
                 if len(game_globals.dest_draw) == 0:
                     for i in range(4):
                         if game_globals.dest_deck.get_len() > 0:
-                            game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
+                            game_globals.dest_draw.append(
+                                game_globals.dest_deck.remove(-1))
 
-                # Store how many cards can be kept (e.g., if player has 6, they can only keep 2 more)
+                # Store how many cards can be kept
+                # (e.g., if player has 6, they can only keep 2 more)
                 self.game_view.max_dest_cards_to_keep = remaining_slots
 
                 # First time require 2, later only 1; clamp by remaining slots
@@ -713,8 +733,10 @@ class RouteController:
                     break
         else:
             # Regular card
-            for i, (taken, route_data) in enumerate(zip(self.game_view.route_taken[pair], routes_data)):
-                if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
+            for i, (taken, route_data) in enumerate(
+                    zip(self.game_view.route_taken[pair], routes_data)):
+                if not taken and (route_data["color"] == selected_color or
+                                  route_data["color"] == "colorless"):
                     self.game_view.route_taken[pair][i] = True
                     for train_sprite in self.game_view.train_map[pair][i]:
                         train_sprite.set_texture(0)
@@ -725,10 +747,60 @@ class RouteController:
         game_globals.discard_deck.add_cards(removed)
 
         # Remove route from deck
-        game_globals.player_obj.get_map().add_path(game_globals.game_map.remove_route(city1, city2))
+        game_globals.player_obj.get_map().add_path(game_globals.
+                                                   game_map.remove_route(city1, city2))
 
         # Print the action on the screen
-        self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} claimed the route {city1} - {city2}")
+        self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} "
+                               f"claimed the route {city1} - {city2}")
+
+    def claim_route_comp(self, city1, city2, color, route_index=None):
+        """Claim the route for a computer player"""
+        city_pair = (city1, city2)
+        reverse_pair = (city2, city1)
+
+        if city_pair in c.TRAINS:
+            routes_data = c.TRAINS[city_pair]
+            pair = city_pair
+        elif reverse_pair in c.TRAINS:
+            routes_data = c.TRAINS[reverse_pair]
+            pair = reverse_pair
+        else:
+            return
+
+        # Check if we have a specific route index selected
+        if route_index is not None:
+            # Claim the specifically selected route
+            if not self.game_view.route_taken[pair][route_index]:
+                self.game_view.route_taken[pair][route_index] = True
+                for train_sprite in self.game_view.train_map[pair][route_index]:
+                    train_sprite.set_texture(0)
+                    train_sprite.alpha = 255
+        elif color == "wild":
+            # For wild without specific selection, claim first available
+            for i, taken in enumerate(self.game_view.route_taken[pair]):
+                if not taken:
+                    self.game_view.route_taken[pair][i] = True
+                    for train_sprite in self.game_view.train_map[pair][i]:
+                        train_sprite.set_texture(0)
+                        train_sprite.alpha = 255
+                    break
+        else:
+            # Regular card
+            for i, (taken, route_data) in enumerate(
+                    zip(self.game_view.route_taken[pair], routes_data)):
+                if not taken and (route_data["color"] == color or
+                                  route_data["color"] == "colorless"):
+                    self.game_view.route_taken[pair][i] = True
+                    for train_sprite in self.game_view.train_map[pair][i]:
+                        train_sprite.set_texture(0)
+                        train_sprite.alpha = 255
+                    break
+
+        # Print the action on the screen
+        self.game_view.add_log(
+            f"Computer player {game_globals.player_obj.get_color()} "
+            f"claimed the route {city1} - {city2}")
 
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route and checking if double colored routes are taken"""
@@ -743,15 +815,18 @@ class RouteController:
                     # Check if there's at least one available route
                     for taken, route_data in zip(route_taken, routes_data):
                         if not taken:
-                            if game_globals.player_obj.get_train_cards().get_count("wild") >= len_route:
+                            if (game_globals.player_obj.
+                                    get_train_cards().get_count("wild") >= len_route):
                                 return 0
                             return 1
                     return 2
                 # For regular colors, check if the color matches an available route
                 for taken, route_data in zip(route_taken, routes_data):
                     # If route is not taken and color matches (or route is colorless)
-                    if not taken and (route_data["color"] == selected_color or route_data["color"] == "colorless"):
-                        if game_globals.player_obj.get_train_cards().has_cards(selected_color, len_route):
+                    if not taken and (route_data["color"] == selected_color
+                                      or route_data["color"] == "colorless"):
+                        if (game_globals.player_obj.
+                                get_train_cards().has_cards(selected_color, len_route)):
                             return 0
                         return 1
                 # If we get here, no available route matches the selected color
@@ -849,7 +924,8 @@ class CardController:
         # Toggle visibility of the hand sprites using normalized (lowercase) color keys
         for color_key, spr in self.game_view.hand_card_sprite_by_color.items():
             # use the counts we already computed; fallback to querying the deck if missing
-            count = color_counts.get(color_key, game_globals.player_obj.get_train_cards().get_count(color_key))
+            count = color_counts.get(color_key,
+                                     game_globals.player_obj.get_train_cards().get_count(color_key))
             spr.alpha = 255 if count > 0 else 0
 
 
@@ -1178,13 +1254,13 @@ class GameView(arcade.View):
         if game_globals.discard_deck.get_len() > 0 and game_globals.train_deck.get_len() < 5:
             game_globals.train_deck.refresh_deck(game_globals.discard_deck)
             self.card_controller.refresh_faceup_cards()
-        
+
         if game_globals.faceup_deck.get_len() < 5 \
             and game_globals.train_deck.get_len() > 0:
             new_card = game_globals.train_deck.remove(-1)
             game_globals.faceup_deck.cards.insert(4, new_card)
 
-        if game_globals.turn_val != None:
+        if game_globals.turn_val is not None:
             if game_globals.turn_val >= 2:
                 game_globals.turn_end = True
                 game_globals.turn_val = None
@@ -1197,7 +1273,8 @@ class GameView(arcade.View):
             game_globals.turn_val = None
 
             for comp in game_globals.computers:
-                if game_globals.train_deck.get_len() == 0 and game_globals.discard_deck.get_len() > 0:
+                if (game_globals.train_deck.get_len() == 0 and
+                        game_globals.discard_deck.get_len() > 0):
                     game_globals.train_deck.refresh_deck(game_globals.discard_deck)
                     print("Refreshed train deck before computer turn")
 
@@ -1209,10 +1286,10 @@ class GameView(arcade.View):
                 print(f"{comp.get_map()}")
                 print(comp.get_player().get_train_cards())
                 print(f"Computer {comp.get_color()} completed its turn.")
-        
-        if game_globals.turn_end == True:
+
+        if game_globals.turn_end:
             game_globals.turn_end_comp = True
-                
+
 
     def add_log(self, message: str):
         """Add a message to the game log"""
@@ -1242,11 +1319,11 @@ class GameView(arcade.View):
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Handle mouse press"""
         return_val = self.mouse_handler.on_mouse_press(x, y, button, modifiers)
-        if game_globals.turn_val == None and return_val == None: 
+        if game_globals.turn_val is None and return_val is None:
             0
-        elif game_globals.turn_val != None and return_val != None: 
+        elif game_globals.turn_val is not None and return_val is not None:
             game_globals.turn_val += return_val
-        elif game_globals.turn_val == None and return_val > 0:
+        elif game_globals.turn_val is None and return_val > 0:
             game_globals.turn_val = return_val
 
     def on_key_press(self, symbol: int, modifiers: int):
@@ -1300,6 +1377,50 @@ class GameView(arcade.View):
         #print(player_map.get_nodes())
         #print(player_map)
 
+    def claim_route_comp(self, city1, city2, color, computer_player, route_index=None):
+        """Claim route for computer player"""
+        # First claim the route visually
+        self.route_controller.claim_route_comp(city1, city2, color, route_index)
+
+        # Get route length for point calculation
+        city_pair = (city1, city2)
+        reverse_pair = (city2, city1)
+
+        if city_pair in c.TRAINS:
+            len_route = len(c.TRAINS[city_pair][0]["positions"])
+        elif reverse_pair in c.TRAINS:
+            len_route = len(c.TRAINS[reverse_pair][0]["positions"])
+        else:
+            len_route = 0
+
+        if computer_player:
+            # Remove trains and add points
+            computer_player.remove_trains(len_route)
+
+            # Point calculation
+            if len_route == 1:
+                computer_player.add_points(1)
+            elif len_route == 2:
+                computer_player.add_points(2)
+            elif len_route == 3:
+                computer_player.add_points(4)
+            elif len_route == 4:
+                computer_player.add_points(7)
+            elif len_route == 5:
+                computer_player.add_points(10)
+            elif len_route == 6:
+                computer_player.add_points(13)
+
+            # Update computer's map
+            player_map = computer_player.get_map()
+            if city1 not in player_map.get_nodes():
+                player_map.add_node(city1)
+            if city2 not in player_map.get_nodes():
+                player_map.add_node(city2)
+            player_map.add_path(game_globals.game_map.remove_route(city1, city2))
+
+        game_globals.turn_end = True
+
     def is_point_in_button(self, x, y, button_bounds):
         """Check if point is in button"""
         return self.mouse_handler.is_point_in_button(x, y, button_bounds)
@@ -1325,19 +1446,23 @@ class GameView(arcade.View):
         self.card_controller.update_card_counts()
 
     def layout_ui(self):
-        # Example margins in board-image pixels (tweak to taste)
-        # These are distances from the board edges, not the window edges.
+        """Example margins in board-image pixels (tweak to taste)
+        # These are distances from the board edges, not the window edges."""
         self.board_renderer.place_ui_anchor(self.info_button,
-                                            anchor="topleft", margin_x=-50, margin_y=-20, base_scale=0.20)
+                                            anchor="topleft", margin_x=-50,
+                                            margin_y=-20, base_scale=0.20)
 
         self.board_renderer.place_ui_anchor(self.train_cards_banner,
-                                            anchor="bottomright", margin_x=160, margin_y=770, base_scale=1)
+                                            anchor="bottomright", margin_x=160,
+                                            margin_y=770, base_scale=1)
 
         self.board_renderer.place_ui_anchor(self.dest_cards_banner,
-                                            anchor="topright", margin_x=160, margin_y=-20, base_scale=1)
+                                            anchor="topright", margin_x=160,
+                                            margin_y=-20, base_scale=1)
 
         self.board_renderer.place_ui_anchor(self.leaderboard_banner,
-                                            anchor="topleft", margin_x=1252, margin_y=-25, base_scale=0.975)
+                                            anchor="topleft", margin_x=1252,
+                                            margin_y=-25, base_scale=0.975)
 
         # Update bounds after moving/scaling the info button
         w, h = self.info_button.width, self.info_button.height
