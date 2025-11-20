@@ -71,6 +71,10 @@ class BoardRenderer:
         dest_list.draw()
         check_list.draw()
 
+        self.game_view.write_log()
+        for line in self.game_view.log_lines:
+            line.draw()
+
         # Draw sprites for beginning
         self.game_view.deck_sprite.draw()
         tmp = arcade.SpriteList()
@@ -298,15 +302,17 @@ class MouseHandler:
             left, right, bottom, top = self.game_view.info_button_bounds
             if left <= x <= right and bottom <= y <= top:
                 self.game_view.showing_info_popup = True
+                self.game_view.add_log("You opened the info popup")
                 return
 
-            # Handle info popup exit
+        # Handle info popup exit
         if self.game_view.showing_info_popup:
             if hasattr(self.game_view, 'exit_button_bounds'):
                 left, right, bottom, top = self.game_view.exit_button_bounds
                 if left <= x <= right and bottom <= y <= top:
                     self.game_view.showing_info_popup = False
                     return
+
             # If click is elsewhere while info popup is up, just consume it
             return
 
@@ -349,6 +355,7 @@ class MouseHandler:
                         if taken_card:
                             # Add the card to player's hand
                             game_globals.player_obj.get_train_cards().add(taken_card)
+                            self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} drew a faceup card")
 
                             # Replace the taken card with a card from the train deck
                             if game_globals.train_deck.get_len() > 0:
@@ -460,6 +467,7 @@ class MouseHandler:
                         # Add selected cards to player's hand
                         for card in self.game_view.selected_dests:
                             game_globals.player_obj.get_destination_cards().add(card)
+                            self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} drew a destination card from the deck")
 
                         # Return unselected cards back to the deck
                         for card in game_globals.dest_draw:
@@ -506,6 +514,7 @@ class MouseHandler:
                     self.game_view.drawn_card = game_globals.train_deck.remove(-1)
                     self.game_view.showing_deck_popup = True
                     self.game_view.selected_color = None
+                    self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} drew a train card from the deck")
                 return
 
             # after deck check:
@@ -517,6 +526,7 @@ class MouseHandler:
 
                 self.game_view.active_dest_card = dest_card_obj
                 self.game_view.showing_dest_card_popup = True
+                self.game_view.add_log(f"You opened the {self.game_view.active_dest_card.get_city_1()} - {self.game_view.active_dest_card.get_city_2()} destination card info popup")
                 return
 
             # Show the destination deck popup
@@ -717,6 +727,8 @@ class RouteController:
         # Remove route from deck
         game_globals.player_obj.get_map().add_path(game_globals.game_map.remove_route(city1, city2))
 
+        # Print the action on the screen
+        self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} claimed the route {city1} - {city2}")
 
     def valid_route_colors(self, selected_color, city1, city2):
         """Get available colors for the route and checking if double colored routes are taken"""
@@ -1128,6 +1140,26 @@ class GameView(arcade.View):
         self.layout_ui()
         self.dest_first_time = True
 
+        self.log_messages: list[str] = []
+        self.max_log_messages = 3
+
+        self.log_lines: list[arcade.Text] = []
+
+        x = c.SCREEN_WIDTH * 0.1
+        y = c.SCREEN_HEIGHT * 0.03
+        line_size = 32
+
+        for i in range(self.max_log_messages):
+            text_obj = arcade.Text(
+                "",  # start empty
+                x,
+                y + i * line_size,
+                arcade.color.WHITE,
+                15,
+                anchor_x="left",
+            )
+            self.log_lines.append(text_obj)
+
     def reset(self):
         """Restart the game"""
         self.game_initializer.reset()
@@ -1177,8 +1209,26 @@ class GameView(arcade.View):
                 print(comp.get_player().get_train_cards())
                 print(f"Computer {comp.get_color()} completed its turn.")
 
-            
-            
+    def add_log(self, message: str):
+        """Add a message to the game log"""
+        self.log_messages.append(message)
+        if len(self.log_messages) > 50:
+            self.log_messages.pop(0)
+
+    def write_log(self):
+        """Update the log Text objects with the latest messages."""
+        visible = self.log_messages[-self.max_log_messages:]
+
+        # We want newest at the bottom, so reverse
+        visible = list(reversed(visible))
+
+        for i, text_obj in enumerate(self.log_lines):
+            if i < len(visible):
+                text_obj.text = visible[i]
+                text_obj.alpha = 255
+            else:
+                text_obj.text = ""
+                text_obj.alpha = 0
 
     def sprite_to_name(self, spr: arcade.Sprite) -> str:
         """Get city name from sprite"""
