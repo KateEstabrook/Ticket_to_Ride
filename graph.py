@@ -64,16 +64,16 @@ class Graph:
             if city1 in path.get_cities() and city2 in path.get_cities():
                 return path.get_weight(), path.get_color()
 
-    def add_route(self, route):
+    def add_route(self, route_):
         """Adds route"""
-        self.paths.append(route)
+        self.paths.append(route_)
 
     def remove_route(self, city1, city2):
         """Removes route"""
-        for route in self.paths:
-            if city1 in route.get_cities() and city2 in route.get_cities():
-                self.paths.remove(route)
-                return route
+        for route_ in self.paths:
+            if city1 in route_.get_cities() and city2 in route_.get_cities():
+                self.paths.remove(route_)
+                return route_
 
     # This is used by all players to check if they have completed a destination card
     def check_completed(self, dest_card):
@@ -82,9 +82,9 @@ class Graph:
             return False
         adj = {}
 
-        for route in self.paths: # add self paths with weight 0
-            if route is not None:
-                cities = route.get_cities()
+        for route_ in self.paths: # add self paths with weight 0
+            if route_ is not None:
+                cities = route_.get_cities()
                 if cities[0] not in adj:
                     adj[cities[0]] = [(cities[1], 0)]
                 else:
@@ -178,10 +178,10 @@ class Graph:
             routes_dict = {}
 
             # Convert player's claimed routes to a dictionary
-            for route in player_map.get_paths():
-                if route:
-                    city1, city2 = route.get_cities()
-                    weight = route.get_weight()
+            for route_ in player_map.get_paths():
+                if route_:
+                    city1, city2 = route_.get_cities()
+                    weight = route_.get_weight()
 
                     # Symmetry
                     if city1 not in routes_dict:
