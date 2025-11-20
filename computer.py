@@ -8,6 +8,7 @@ import cards
 import globals as game_globals
 import constants as c
 import time
+import arcade
 
 class Computer:
     def __init__(self, player):
@@ -36,7 +37,7 @@ class Computer:
 
     def play(self):
 
-        time.sleep(1.0)
+        time.sleep(0.5)
 
         # use turn finished instead of big if elif else
         self.turn_finished = False
@@ -69,8 +70,8 @@ class Computer:
             if self.can_claim():
                 self.turn_finished = True
 
-        if not self.turn_finished and self.useful_faceup(): # Sees a useful faceup card, draw it
-            if not self.turn_finished and self.useful_faceup(): # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
+        if not self.turn_finished and self.useful_faceup(0): # Sees a useful faceup card, draw it
+            if not self.turn_finished and self.useful_faceup(1): # Sees a useful faceup card (and it didn't draw a faceup rainbow), draw it
                 self.turn_finished = True
             elif not self.turn_finished: # Draw from the deck
                 self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
@@ -80,14 +81,15 @@ class Computer:
         elif not self.turn_finished: # Draw from the train card deck if no better options
             self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
             print('Drew from deck')
-            if self.useful_faceup(): # Sees a useful faceup card (and it isn't a faceup rainbow), draw it
+            if self.useful_faceup(1): # Sees a useful faceup card (and it isn't a faceup rainbow), draw it
                 self.turn_finished = True
             else: # Draw from the deck
                 self.player.add_card(self.player.get_train_cards(), game_globals.train_deck.remove(-1))
                 print('Drew from deck')
                 self.turn_finished = True
 
-        time.sleep(1.0)
+        time.sleep(0.5)
+
 
     def can_claim(self):
         """"Returns boolean whether or not comp can claim a route 
@@ -104,23 +106,32 @@ class Computer:
                 return True
         return False
     
-    def useful_faceup(self):
+    def useful_faceup(self, prev):
         """"Returns boolean for if it successfully drew a useful faceup card"""
         for i in range(game_globals.faceup_deck.get_len()):
             color = game_globals.faceup_deck.cards[i].get_color()
-            if color == 'wild':
-                color = 'colorless'
+            # If any faceup card is wild, take it
+            if color == 'wild' and prev == 0:
+                self.turn_finished = True
+                self.taken_card = game_globals.faceup_deck.remove(i)
+                self.player.get_train_cards().add(self.taken_card)
+                # Replenish the face-up deck
+                if game_globals.train_deck.get_len() > 0:
+                    new_card = game_globals.train_deck.remove(-1)  # Draw from top
+                    # Insert the new card at the same position we removed from
+                    game_globals.faceup_deck.cards.insert(i, new_card)
+                print('took wild faceup card')
+                return True
+            elif prev == 1 and color == 'wild':
+                continue
+            
+            # All other colors, check if it's needed
             if self.cards_needed[color] > 0:
                 # Remove the card from face-up deck
                 self.taken_card = game_globals.faceup_deck.get_card_at_index(i)
-                if self.taken_card:
-                    if color == "colorless":
-                        break
                 # Remove the card from face-up deck
                 self.taken_card = game_globals.faceup_deck.remove(i)
                 self.player.get_train_cards().add(self.taken_card)
-                if self.taken_card.get_color() == "wild":
-                    self.turn_finished = True
                 # Replenish the face-up deck
                 if game_globals.train_deck.get_len() > 0:
                     new_card = game_globals.train_deck.remove(-1)  # Draw from top

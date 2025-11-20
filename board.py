@@ -1189,10 +1189,11 @@ class GameView(arcade.View):
                 game_globals.turn_end = True
                 game_globals.turn_val = None
 
-        if game_globals.turn_end == True:
+        if game_globals.turn_end and game_globals.turn_end_comp:
             # set curr player_obj to next player
             print("Turn ended")
             game_globals.turn_end = False
+            game_globals.turn_end_comp = False
             game_globals.turn_val = None
 
             for comp in game_globals.computers:
@@ -1208,6 +1209,10 @@ class GameView(arcade.View):
                 print(f"{comp.get_map()}")
                 print(comp.get_player().get_train_cards())
                 print(f"Computer {comp.get_color()} completed its turn.")
+        
+        if game_globals.turn_end == True:
+            game_globals.turn_end_comp = True
+                
 
     def add_log(self, message: str):
         """Add a message to the game log"""
