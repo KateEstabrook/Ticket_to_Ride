@@ -4,11 +4,12 @@ Graph class:
 - List of paths (routes)
 """
 
-import route
-import constants as c
 import heapq
+import route
+
 
 class Graph:
+    """Class for graphing"""
     # Constructor
     def __init__(self, city_list, route_list):
         self.nodes = city_list
@@ -18,65 +19,71 @@ class Graph:
 
     # Getters
     def get_nodes(self):
+        """Getter for cities"""
         return self.nodes
 
     def get_paths(self):
+        """Getter for paths"""
         return self.paths
 
     def get_path_by_cities(self, city1, city2):
+        """Getter for paths between two cities"""
         paths = []
         for path in self.paths:
             if city1 in path.get_cities() and city2 in path.get_cities():
                 paths.append(path)
         return paths
-    
+
     # Setters
     def set_path(self, paths):
+        """Setter for paths"""
         self.paths = paths
 
     def set_nodes(self, nodes):
+        """Setter for nodes"""
         self.nodes = nodes
 
     def add_node(self, city):
+        """Add city"""
         self.nodes.append(city)
 
     def add_path(self, path):
+        """Add path"""
         self.paths.append(path)
 
     def has_path(self, city1, city2):
+        """Finds if there is a path or not"""
         for path in self.paths:
             if city1 in path.get_cities() and city2 in path.get_cities():
                 return True
         return False
-    def get_nodes(self):
-        return self.nodes
 
-    def get_paths(self):
-        return self.paths
-    
     def get_path_reqs(self, city1, city2):
+        """Gets path settings"""
         for path in self.paths:
             if city1 in path.get_cities() and city2 in path.get_cities():
                 return path.get_weight(), path.get_color()
 
     def add_route(self, route):
+        """Adds route"""
         self.paths.append(route)
 
     def remove_route(self, city1, city2):
+        """Removes route"""
         for route in self.paths:
             if city1 in route.get_cities() and city2 in route.get_cities():
                 self.paths.remove(route)
                 return route
-        
+
     # This is used by all players to check if they have completed a destination card
     def check_completed(self, dest_card):
         """"Check if a graph contains the routes required to complete a dest card"""
-        if dest_card == None:
+        if dest_card is not None:
             return False
         adj = {}
 
         for route in self.paths: # add self paths with weight 0
-            if route != None:
+            if route is not None:
                 cities = route.get_cities()
                 if cities[0] not in adj:
                     adj[cities[0]] = [(cities[1], 0)]
