@@ -21,8 +21,9 @@ player_obj = player.Player("none")
 game_map = graph.Graph(c.CITIES_KEYS, c.ROUTES_LST)
 
 def initialize_game():
-    global faceup_deck, train_deck, dest_deck, routes, players, player_obj, \
-    dest_draw, discard_deck, num_choose, turn_end, turn_val
+    """Initialize game settings"""
+    global faceup_deck, train_deck, dest_deck, routes, players, player_obj
+    global dest_draw, discard_deck, num_choose, turn_end, turn_val
     # Initailize Train Card Deck
     train_deck = deck.Deck('Draw')
     faceup_deck = deck.Deck('Faceup')
