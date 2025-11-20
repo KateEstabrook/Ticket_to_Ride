@@ -36,7 +36,6 @@ class Computer:
         self.curr_dest = dest
 
     def play(self):
-
         time.sleep(0.5)
 
         # use turn finished instead of big if elif else
@@ -47,7 +46,6 @@ class Computer:
         if self.curr_dest == None:
             self.curr_dest = self.player.get_destination_cards().get_cards()[0]
         
-
         # Player turn decision logic
         # Update whether comp's dest card is completed and draw new card
         elif self.player.get_map().check_completed(self.curr_dest):
@@ -89,7 +87,6 @@ class Computer:
                 self.turn_finished = True
 
         time.sleep(0.5)
-
 
     def can_claim(self):
         """"Returns boolean whether or not comp can claim a route 
