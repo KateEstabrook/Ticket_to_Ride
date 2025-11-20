@@ -2,9 +2,10 @@
 Win Screen for Ticket to Ride
 """
 
+import platform
 import arcade
 import constants as c
-import platform
+
 
 class WinScreenView(arcade.View):
     """Win screen showing final results"""
@@ -67,14 +68,12 @@ class WinScreenView(arcade.View):
         arcade.draw_texture_rect(tex, rect)
 
         # Title section
-        self.draw_title_section(width, height, container_w, container_h, cx, cy)
+        self.draw_title_section(container_w, container_h, cx, cy)
 
         # Player results section
-        self.draw_player_results(width, height, container_w,
-                                 container_h, cx, cy)
+        self.draw_player_results(container_w, container_h, cx, cy)
 
-    def draw_title_section(self, width, height, container_w, container_h,
-                           container_cx, container_cy):
+    def draw_title_section(self, container_w, container_h, container_cx, container_cy):
         """Draw the title section with styled background"""
         title_w = container_w * 0.9
         title_h = container_h * 0.2
@@ -87,15 +86,14 @@ class WinScreenView(arcade.View):
         arcade.draw_rect_outline(title_rect, arcade.color.WHITE, border_width=3)
 
         # Title text
-        title_font_size = max(24, int(height * 0.04))
+        title_font_size = max(24, int(self.sh() * 0.04))
         arcade.draw_text("JOURNEY COMPLETE!",
                         title_cx, title_cy,
                         arcade.color.GOLD, title_font_size,
                         anchor_x="center", anchor_y="center",
                         bold=True)
 
-    def draw_player_results(self, width, height, container_w, container_h,
-                            container_cx, container_cy):
+    def draw_player_results(self, container_w, container_h, container_cx, container_cy):
         """Draw player results with styled entries"""
         # Sort players by points
         sorted_players = sorted(self.players, key=lambda x: x["points"], reverse=True)
@@ -113,11 +111,11 @@ class WinScreenView(arcade.View):
             if i == 0:  # 1st place
                 entry_color = (251, 238, 204)
                 border_color = arcade.color.GOLD
-                border_width = max(4, int(height * 0.01))
+                border_width = max(4, int(self.sh() * 0.01))
             else:
                 entry_color = (251, 238, 204)
                 border_color = arcade.color.DARK_BROWN
-                border_width = max(2, int(height * 0.005))
+                border_width = max(2, int(self.sh() * 0.005))
 
             entry_tex = arcade.make_soft_square_texture(2, entry_color, outer_alpha=255)
             entry_rect = self._centered_rect(container_cx, entry_y, entry_w, entry_h)
@@ -125,7 +123,7 @@ class WinScreenView(arcade.View):
             arcade.draw_rect_outline(entry_rect, border_color, border_width=border_width)
 
             # Player rank and name
-            name_font_size = max(18, int(height * 0.025))
+            name_font_size = max(18, int(self.sh() * 0.025))
             rank_text = f"{i + 1}. {player['name']}"
             arcade.draw_text(rank_text,
                              entry_rect.left + entry_w * 0.05, entry_y,
@@ -142,38 +140,41 @@ class WinScreenView(arcade.View):
 
             # Longest path indicator
             if player["longest_path"]:
-                # Position badge to the right of the player entry
-                badge_w = max(120, int(width * 0.1))
-                badge_h = max(60, int(height * 0.08))
-                badge_x = entry_rect.right + badge_w * 0.6
-                badge_y = entry_y
+                self._draw_longest_path_badge(entry_rect, entry_y)
 
-                # Draw the badge
-                badge_tex = arcade.make_soft_square_texture(
-                    2,arcade.color.FOREST_GREEN, outer_alpha=255)
-                badge_rect = self._centered_rect(badge_x, badge_y, badge_w, badge_h)
-                arcade.draw_texture_rect(badge_tex, badge_rect)
-                arcade.draw_rect_outline(badge_rect, arcade.color.WHITE, border_width=2)
+    def _draw_longest_path_badge(self, entry_rect, entry_y):
+        """Draw the longest path badge"""
+        badge_w = max(120, int(self.sw() * 0.1))
+        badge_h = max(60, int(self.sh() * 0.08))
+        badge_x = entry_rect.right + badge_w * 0.6
+        badge_y = entry_y
 
-                # Draw text on multiple lines
-                badge_font_size = max(10, int(height * 0.015))
-                line_height = badge_font_size * 1.2
+        # Draw the badge
+        badge_tex = arcade.make_soft_square_texture(
+            2, arcade.color.FOREST_GREEN, outer_alpha=255)
+        badge_rect = self._centered_rect(badge_x, badge_y, badge_w, badge_h)
+        arcade.draw_texture_rect(badge_tex, badge_rect)
+        arcade.draw_rect_outline(badge_rect, arcade.color.WHITE, border_width=2)
 
-                # Split the text into words
-                words = ["Longest", "Continuous", "Route!"]
+        # Draw text on multiple lines
+        badge_font_size = max(10, int(self.sh() * 0.015))
+        line_height = badge_font_size * 1.2
 
-                # Calculate starting Y position to center the text block vertically
-                total_text_height = len(words) * line_height
-                start_text_y = badge_y + total_text_height / 2 - line_height / 2
+        # Split the text into words
+        words = ["Longest", "Continuous", "Route!"]
 
-                # Draw each word on its own line
-                for j, word in enumerate(words):
-                    text_y = start_text_y - (j * line_height)
-                    arcade.draw_text(word,
-                                     badge_x, text_y,
-                                     arcade.color.WHITE, badge_font_size,
-                                     anchor_x="center", anchor_y="center",
-                                     bold=True)
+        # Calculate starting Y position to center the text block vertically
+        total_text_height = len(words) * line_height
+        start_text_y = badge_y + total_text_height / 2 - line_height / 2
+
+        # Draw each word on its own line
+        for j, word in enumerate(words):
+            text_y = start_text_y - (j * line_height)
+            arcade.draw_text(word,
+                             badge_x, text_y,
+                             arcade.color.WHITE, badge_font_size,
+                             anchor_x="center", anchor_y="center",
+                             bold=True)
 
     def draw_instructions(self, width, height):
         """Draw instructions at bottom with styled rectangle"""

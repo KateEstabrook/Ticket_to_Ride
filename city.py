@@ -4,26 +4,16 @@ City class:
 - Sprite (not yet?)
 """
 
-# You found the city file :)
-
-# Good job!
-
 
 class City:
+    """Class for city nodes"""
     def __init__(self, name):
         self.name = name
 
     def set_name(self, name):
+        """Set the name"""
         self.name = name
 
     def get_name(self):
+        """Returns the city name"""
         return self.name
-
-
-
-# We like the city file
-
-
-
-
-# If you have problems with the city file you have problems with me

@@ -74,7 +74,7 @@ CITIES = {
     "Montreal": {"CITY_IMG_X": 2189, "CITY_IMG_Y": 200}
 }
 
-CITIES_KEYS = ['Calgary', 'Vancouver', 'Seattle', 'Portland', 
+CITIES_KEYS = ['Calgary', 'Vancouver', 'Seattle', 'Portland',
                'San Francisco', 'Los Angeles', 'Helena', 'Salt Lake City', 
                'Las Vegas', 'Phoenix', 'Winnipeg', 'Denver', 'Santa Fe', 
                'El Paso', 'Duluth', 'Omaha', 'Kansas City', 'Oklahoma City', 
