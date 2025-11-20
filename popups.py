@@ -3,7 +3,7 @@ Stores all of the pop ups during game play
 """
 import arcade
 import constants as c
-import globals
+import globals as game_globals
 #import cards
 #import board
 
@@ -135,7 +135,7 @@ def faceup_card_popup(game_view, card_index):
     )
 
     # Get the selected face up card
-    selected_card = globals.faceup_deck.get_card_at_index(card_index)
+    selected_card = game_globals.faceup_deck.get_card_at_index(card_index)
 
     if selected_card is not None:
         # Use cached texture for face-up card
@@ -170,7 +170,7 @@ def faceup_card_popup(game_view, card_index):
             bold=True
         )
 
-    if globals.turn_val == 1 and selected_card.get_color() == "wild":
+    if game_globals.turn_val == 1 and selected_card.get_color() == "wild":
         0
     else:
         # Add take button
@@ -533,7 +533,7 @@ def route_popup(game_view, city1, city2):
     if is_second_popup:
         # Second popup
         selected_route_index = getattr(game_view, 'selected_route_index', None)
-        can_save = (selected_route_index is not None)
+        can_save = selected_route_index is not None
     else:
         # First popup
         if game_view.selected_color:
@@ -545,14 +545,16 @@ def route_popup(game_view, city1, city2):
                 route_taken = game_view.route_taken[city_pair]
 
                 # For wild, we just need any available route
-                if game_view.selected_color == "wild" and globals.player_obj.get_train_cards().has_cards("wild", len_route):
+                if (game_view.selected_color == "wild" and
+                        game_globals.player_obj.
+                                get_train_cards().has_cards("wild", len_route)):
                     can_save = any(
                         not taken for taken, route_data in zip(route_taken, routes_data))
                 else:
                     # For regular colors, check if there's an available route with this color
                     can_save = any(not taken and (route_data["color"] == game_view.selected_color or
                                                   route_data["color"] == "colorless")
-                                                  and globals.player_obj.get_train_cards().\
+                                                  and game_globals.player_obj.get_train_cards().\
                                                     has_cards(game_view.selected_color, len_route)
                                    for taken, route_data in zip(route_taken, routes_data))
             else:
@@ -762,7 +764,8 @@ def show_dest_popup(self, dest_list, num):
         save_button_y = popup_y - popup_height * 0.42
 
         save_texture = self.popup_textures['save_button']
-        save_rect = _centered_rect(save_button_x, save_button_y, save_button_width, save_button_height)
+        save_rect = _centered_rect(save_button_x, save_button_y,
+                                   save_button_width, save_button_height)
 
         arcade.draw_texture_rect(save_texture, save_rect)
         arcade.draw_rect_outline(
@@ -831,7 +834,7 @@ def show_info_pop_up(game_view):
         bold=True
     )
 
-    # Formating 
+    # Formats
     left_margin = popup_x - popup_width * 0.45
     text_width = popup_width * 0.85
     current_y = popup_y + popup_height * 0.36
@@ -871,7 +874,8 @@ def show_info_pop_up(game_view):
 
     # Content Sections
     draw_section_title("Goal:")
-    draw_paragraph("Score the most points by claiming train routes and completing Destination Tickets.")
+    draw_paragraph("Score the most points by claiming train routes and "
+                   "completing Destination Tickets.")
 
     draw_section_title("Starting Setup:")
     draw_paragraph("Each player starts with:\n• 45 train pieces\n• 4" \
