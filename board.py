@@ -363,8 +363,7 @@ class MouseHandler:
                         if taken_card:
                             # Add the card to player's hand
                             game_globals.player_obj.get_train_cards().add(taken_card)
-                            self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} "
-                                                   f"drew a faceup card")
+                            self.game_view.add_log(f"You drew a faceup card")
 
                             # Replace the taken card with a card from the train deck
                             if game_globals.train_deck.get_len() > 0:
@@ -479,8 +478,7 @@ class MouseHandler:
                         # Add selected cards to player's hand
                         for card in self.game_view.selected_dests:
                             game_globals.player_obj.get_destination_cards().add(card)
-                            self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} "
-                                                   f"drew a destination card from the deck")
+                            self.game_view.add_log(f"You drew a destination card from the deck")
 
                         # Return unselected cards back to the deck
                         for card in game_globals.dest_draw:
@@ -528,8 +526,7 @@ class MouseHandler:
                     self.game_view.drawn_card = game_globals.train_deck.remove(-1)
                     self.game_view.showing_deck_popup = True
                     self.game_view.selected_color = None
-                    self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} "
-                                           f"drew a train card from the deck")
+                    self.game_view.add_log(f"You drew a train card from the deck")
                 return
 
             # after deck check:
@@ -759,8 +756,7 @@ class RouteController:
                                                    game_map.remove_route(city1, city2))
 
         # Print the action on the screen
-        self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} "
-                               f"claimed the route {city1} - {city2}")
+        self.game_view.add_log(f"You claimed the route {city1} - {city2}")
 
     def claim_route_comp(self, city1, city2, color, computer_player, route_index=None):
         """Claim the route for a computer player"""
@@ -874,6 +870,7 @@ class CardController:
 
         if wild_card_count >= 3:
             print(f"Refreshing face-up cards due to {wild_card_count} wild cards")
+            self.game_view.add_log(f"Face-up deck refreshed (3+ wild cards)")
 
             # Move current face-up cards to discard deck
             game_globals.faceup_deck.discard(game_globals.discard_deck)
@@ -1295,13 +1292,29 @@ class GameView(arcade.View):
                     print("Refreshed train deck before computer turn")
 
                 print(f"Computer {comp.get_color()} playing.")
+                self.add_log(f"Computer {comp.get_color()} is playing.")
+                train_cards_before = comp.get_player().get_train_cards().get_len()
+                dest_cards_before = comp.get_player().get_destination_cards().get_len()
+
                 print(comp.get_player().get_train_cards())
                 print(comp.get_player().get_destination_cards())
                 comp.play()
+                # Detect what cards were taken and log accordingly
+                train_cards_after = comp.get_player().get_train_cards().get_len()
+                dest_cards_after = comp.get_player().get_destination_cards().get_len()
+
+                train_cards_taken = train_cards_after - train_cards_before
+                dest_cards_taken = dest_cards_after - dest_cards_before
+
+                if train_cards_taken > 0:
+                    self.add_log(f"Computer {comp.get_color()} took train cards.")
+                if dest_cards_taken > 0:
+                    self.add_log(f"Computer {comp.get_color()} drew from Destination Card Deck")
                 self.card_controller.refresh_faceup_cards()
                 print(f"{comp.get_map()}")
                 print(comp.get_player().get_train_cards())
                 print(f"Computer {comp.get_color()} completed its turn.")
+                self.add_log(f"Computer {comp.get_color()} finished their turn.")
 
         if game_globals.turn_end:
             game_globals.turn_end_comp = True
