@@ -712,13 +712,19 @@ class RouteController:
         # Check if we have a specific route index selected
         selected_route_index = getattr(self.game_view, 'selected_route_index', None)
 
+        # Get the human player's color
+        player_tex = arcade.load_texture(
+            game_globals.player_obj.get_sprite()
+        )
+
         if selected_route_index is not None:
             # Claim the specifically selected route
             if not self.game_view.route_taken[pair][selected_route_index]:
                 self.game_view.route_taken[pair][selected_route_index] = True
                 for train_sprite in self.game_view.train_map[pair][selected_route_index]:
-                    train_sprite.set_texture(0)
+                    train_sprite.texture = player_tex
                     train_sprite.alpha = 255
+                    train_sprite.claimed_by = game_globals.player_obj.get_color()
             # Clear the selected route index
             self.game_view.selected_route_index = None
 
@@ -728,8 +734,9 @@ class RouteController:
                 if not taken:
                     self.game_view.route_taken[pair][i] = True
                     for train_sprite in self.game_view.train_map[pair][i]:
-                        train_sprite.set_texture(0)
+                        train_sprite.texture = player_tex
                         train_sprite.alpha = 255
+                        train_sprite.claimed_by = game_globals.player_obj.get_color()
                     break
         else:
             # Regular card
@@ -739,8 +746,9 @@ class RouteController:
                                   route_data["color"] == "colorless"):
                     self.game_view.route_taken[pair][i] = True
                     for train_sprite in self.game_view.train_map[pair][i]:
-                        train_sprite.set_texture(0)
+                        train_sprite.texture = player_tex
                         train_sprite.alpha = 255
+                        train_sprite.claimed_by = game_globals.player_obj.get_color()
                     break
         # Remove train cards
         removed = game_globals.player_obj.get_train_cards().remove_cards(selected_color, len_route)
@@ -754,7 +762,7 @@ class RouteController:
         self.game_view.add_log(f"Player {game_globals.player_obj.get_color()} "
                                f"claimed the route {city1} - {city2}")
 
-    def claim_route_comp(self, city1, city2, color, route_index=None):
+    def claim_route_comp(self, city1, city2, color, computer_player, route_index=None):
         """Claim the route for a computer player"""
         city_pair = (city1, city2)
         reverse_pair = (city2, city1)
@@ -768,22 +776,28 @@ class RouteController:
         else:
             return
 
+        comp_tex = arcade.load_texture(
+            computer_player.get_sprite()
+        )
+
         # Check if we have a specific route index selected
         if route_index is not None:
             # Claim the specifically selected route
             if not self.game_view.route_taken[pair][route_index]:
                 self.game_view.route_taken[pair][route_index] = True
                 for train_sprite in self.game_view.train_map[pair][route_index]:
-                    train_sprite.set_texture(0)
+                    train_sprite.texture = comp_tex
                     train_sprite.alpha = 255
+                    train_sprite.claimed_by = computer_player.get_color()
         elif color == "wild":
             # For wild without specific selection, claim first available
             for i, taken in enumerate(self.game_view.route_taken[pair]):
                 if not taken:
                     self.game_view.route_taken[pair][i] = True
                     for train_sprite in self.game_view.train_map[pair][i]:
-                        train_sprite.set_texture(0)
+                        train_sprite.texture = comp_tex
                         train_sprite.alpha = 255
+                        train_sprite.claimed_by = computer_player.get_color()
                     break
         else:
             # Regular card
@@ -793,13 +807,14 @@ class RouteController:
                                   route_data["color"] == "colorless"):
                     self.game_view.route_taken[pair][i] = True
                     for train_sprite in self.game_view.train_map[pair][i]:
-                        train_sprite.set_texture(0)
+                        train_sprite.texture = comp_tex
                         train_sprite.alpha = 255
+                        train_sprite.claimed_by = computer_player.get_color()
                     break
 
         # Print the action on the screen
         self.game_view.add_log(
-            f"Computer player {game_globals.player_obj.get_color()} "
+            f"Computer player {computer_player.get_color()} "
             f"claimed the route {city1} - {city2}")
 
     def valid_route_colors(self, selected_color, city1, city2):
@@ -1063,6 +1078,7 @@ class GameView(arcade.View):
                         # Store route information with the sprite
                         train_sprite.route_color = color
                         train_sprite.route_name = train
+                        train_sprite.claimed_by = None # track who claimed the route
                         self.board_renderer.place_train_sprite(ix, iy, train_sprite, top_left=True)
 
                         self.train_list.append(train_sprite)
@@ -1380,7 +1396,7 @@ class GameView(arcade.View):
     def claim_route_comp(self, city1, city2, color, computer_player, route_index=None):
         """Claim route for computer player"""
         # First claim the route visually
-        self.route_controller.claim_route_comp(city1, city2, color, route_index)
+        self.route_controller.claim_route_comp(city1, city2, color, computer_player, route_index)
 
         # Get route length for point calculation
         city_pair = (city1, city2)
