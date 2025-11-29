@@ -6,7 +6,7 @@
 - Last round logic
 - Win screen logic (must pass in scores and who has the longest continuous route)
 - Turn logic (can only do 1 of 3 things)
-- Fix green check mark for destination cards
+- Fix green check mark for destination cards (fixed I think)
 
 
 ## Project Description
