@@ -2,5 +2,6 @@
 <project version="4">
   <component name="PylintConfigService">
     <option name="customPylintPath" value="/opt/anaconda3/bin/pylint" />
+    <option name="pylintrcPath" value="C:\Users\matbo\PycharmProjects\Ticket_to_Ride\.pylintrc" />
   </component>
 </project>
