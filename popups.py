@@ -540,8 +540,8 @@ def route_popup(game_view, city1, city2):
         selected_route_index = getattr(game_view, 'selected_route_index', None)
         can_save = selected_route_index is not None
     else:
-        # First popup
-        if game_view.selected_color:
+        # First popup - check if player has enough trains
+        if game_view.selected_color and game_globals.player_obj.get_trains() >= game_view.popup_route_length:
             # make sure the specific colored route isn't already taken
             city_pair = (city1, city2) if (city1, city2) in c.TRAINS else (city2, city1)
             len_route = len(c.TRAINS[city_pair][0]["positions"])
@@ -559,11 +559,13 @@ def route_popup(game_view, city1, city2):
                     # For regular colors, check if there's an available route with this color
                     can_save = any(not taken and (route_data["color"] == game_view.selected_color or
                                                   route_data["color"] == "colorless")
-                                                  and game_globals.player_obj.get_train_cards().\
-                                                    has_cards(game_view.selected_color, len_route)
+                                   and game_globals.player_obj.get_train_cards(). \
+                                   has_cards(game_view.selected_color, len_route)
                                    for taken, route_data in zip(route_taken, routes_data))
             else:
                 can_save = False
+        else:
+            can_save = False  # Not enough trains or no color selected
 
     if can_save:
         save_button_width = popup_width * 0.2
@@ -649,10 +651,14 @@ def route_popup(game_view, city1, city2):
     if (game_view.selected_color and
             game_view.valid_route_colors(game_view.selected_color, city1, city2) != 0 and
             not is_second_popup):
-        if game_view.valid_route_colors(game_view.selected_color, city1, city2) == 2:
+        error_code = game_view.valid_route_colors(game_view.selected_color, city1, city2)
+        if error_code == 2: # Wrong color
             error_text = f"Cannot use {game_view.selected_color.upper()} card on this route!"
-        else:
+        elif error_code == 3:  # Not enough trains
+            error_text = f"Not enough trains for this {game_view.popup_route_length}-length route!"
+        else: # Not enough cards
             error_text = f"Not enough {game_view.selected_color.upper()} cards for this route!"
+
         arcade.draw_text(
             error_text,
             popup_x - popup_width * 0.4,
