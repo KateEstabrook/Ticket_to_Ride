@@ -78,7 +78,7 @@ class Graph:
     # This is used by all players to check if they have completed a destination card
     def check_completed(self, dest_card):
         """"Check if a graph contains the routes required to complete a dest card"""
-        if dest_card is not None:
+        if dest_card is None:
             return False
         adj = {}
 
