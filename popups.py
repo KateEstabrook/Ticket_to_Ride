@@ -675,7 +675,7 @@ def show_dest_popup(self, dest_list, num):
     Destination popup
     """
     if game_globals.card_drawn:
-            return
+        return
     vw, vh = _vw(self), _vh(self)
 
     # Popup dimensions
