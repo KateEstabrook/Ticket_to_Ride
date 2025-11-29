@@ -519,6 +519,9 @@ class MouseHandler:
                             if card not in self.game_view.selected_dests:
                                 game_globals.dest_deck.cards.append(card)
 
+                        # Shuffle the destination deck so cards are randomized
+                        game_globals.dest_deck.shuffle()
+
                         # Clear dest_draw so next time we draw 4 new cards
                         game_globals.dest_draw.clear()
                         self.game_view.showing_dest_popup = False
