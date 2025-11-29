@@ -1278,49 +1278,52 @@ class GameView(arcade.View):
                 game_globals.turn_end = True
                 game_globals.turn_val = None
 
-        if game_globals.turn_end and game_globals.turn_end_comp and not game_globals.computers_locked:
+        if game_globals.turn_end:
             # set curr player_obj to next player
             print("Turn ended")
-            game_globals.turn_end = False
-            game_globals.turn_end_comp = False
             game_globals.turn_val = None
-            game_globals.computers_locked = True
 
-            for comp in game_globals.computers:
-                if (game_globals.train_deck.get_len() == 0 and
-                        game_globals.discard_deck.get_len() > 0):
-                    game_globals.train_deck.refresh_deck(game_globals.discard_deck)
-                    print("Refreshed train deck before computer turn")
+            counter = 0
+            if game_globals.turn_end_comp:
+                for comp in game_globals.computers:
+                    if (game_globals.train_deck.get_len() == 0 and
+                            game_globals.discard_deck.get_len() > 0):
+                        game_globals.train_deck.refresh_deck(game_globals.discard_deck)
+                        print("Refreshed train deck before computer turn")
 
-                print(f"Computer {comp.get_color()} playing.")
-                self.add_log(f"Computer {comp.get_color()} is playing.")
-                train_cards_before = comp.get_player().get_train_cards().get_len()
-                dest_cards_before = comp.get_player().get_destination_cards().get_len()
+                    print(f"Computer {comp.get_color()} playing.")
+                    self.add_log(f"Computer {comp.get_color()} is playing.")
+                    train_cards_before = comp.get_player().get_train_cards().get_len()
+                    dest_cards_before = comp.get_player().get_destination_cards().get_len()
 
-                print(comp.get_player().get_train_cards())
-                print(comp.get_player().get_destination_cards())
-                comp.play()
+                    print(comp.get_player().get_train_cards())
+                    print(comp.get_player().get_destination_cards())
+                    comp.play()
+                    counter += 1
 
-                train_cards_after = comp.get_player().get_train_cards().get_len()
-                dest_cards_after = comp.get_player().get_destination_cards().get_len()
+                    train_cards_after = comp.get_player().get_train_cards().get_len()
+                    dest_cards_after = comp.get_player().get_destination_cards().get_len()
 
-                train_cards_taken = train_cards_after - train_cards_before
-                dest_cards_taken = dest_cards_after - dest_cards_before
+                    train_cards_taken = train_cards_after - train_cards_before
+                    dest_cards_taken = dest_cards_after - dest_cards_before
 
-                if train_cards_taken > 0:
-                    self.add_log(f"Computer {comp.get_color()} took train cards.")
-                if dest_cards_taken > 0:
-                    self.add_log(f"Computer {comp.get_color()} drew from Destination Card Deck")
+                    if train_cards_taken > 0:
+                        self.add_log(f"Computer {comp.get_color()} took train cards.")
+                    if dest_cards_taken > 0:
+                        self.add_log(f"Computer {comp.get_color()} drew from Destination Card Deck")
 
-                self.card_controller.refresh_faceup_cards()
-                print(f"{comp.get_map()}")
-                print(comp.get_player().get_train_cards())
-                print(f"Computer {comp.get_color()} completed its turn.")
-                self.add_log(f"Computer {comp.get_color()} finished their turn.")
+                    self.card_controller.refresh_faceup_cards()
+                    print(f"{comp.get_map()}")
+                    print(comp.get_player().get_train_cards())
+                    print(f"Computer {comp.get_color()} completed its turn.")
+                    self.add_log(f"Computer {comp.get_color()} finished their turn.")
+                    if counter == len(game_globals.players):
+                        game_globals.turn_end_comp = False
+                        game_globals.turn_end = False
+                        break
 
         if game_globals.turn_end:
             game_globals.turn_end_comp = True
-            game_globals.computers_locked = False
 
 
     def add_log(self, message: str):
@@ -1387,7 +1390,7 @@ class GameView(arcade.View):
             game_globals.player_obj.add_points(10)
 
         elif self.popup_route_length == 6:
-            game_globals.player_obj.add_points(13)
+            game_globals.player_obj.add_points(15)
 
         player_map = game_globals.player_obj.get_map()
         if city1 not in player_map.get_nodes():
