@@ -23,10 +23,6 @@ def deck_pop_up(game_view):
     """
     Show a white rectangle pop-up with color selection buttons using card images
     """
-    if game_globals.card_drawn > 0:
-        game_globals.card_drawn = 0
-    else:
-        game_globals.card_drawn += 1
     vw, vh = _vw(game_view), _vh(game_view)
 
     # Calculate dimensions and positions
@@ -37,6 +33,11 @@ def deck_pop_up(game_view):
 
     deck_rect = _centered_rect(popup_x, popup_y, popup_width, popup_height)
 
+    # Draw shadow rectangle using cached texture
+    shadow_tex = game_view.popup_textures['shadow']
+    shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 3, popup_height * 3)
+    arcade.draw_texture_rect(shadow_tex, shadow_rect)
+    
     # Draw white rectangle using cached texture
     white_texture = game_view.popup_textures['white_bg']
     arcade.draw_texture_rect(
@@ -117,10 +118,6 @@ def faceup_card_popup(game_view, card_index):
     """
     Show a white rectangle pop-up when a face-up card is clicked
     """
-    if game_globals.card_drawn > 0:
-        game_globals.card_drawn = 0
-    else:
-        game_globals.card_drawn += 1
     vw, vh = _vw(game_view), _vh(game_view)
 
     # Calculate dimensions and positions
@@ -815,10 +812,8 @@ def show_info_pop_up(game_view):
     popup_x = vw * 0.5
     popup_y = vh * 0.5
 
-    # Shadow under popup using cached texture
     shadow_texture = game_view.popup_textures['shadow']
-    shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 1.5, popup_height * 1.5)
-
+    shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 3, popup_height * 3)
     arcade.draw_texture_rect(shadow_texture, shadow_rect)
 
     # Background color using cached texture
@@ -1074,4 +1069,96 @@ def show_dest_card_pop_up(game_view, dest_card):
         exit_rect.left + exit_rect.width,  # right
         exit_rect.bottom,  # bottom
         exit_rect.bottom + exit_rect.height  # top
+    )
+
+def not_allowed_popup(game_view):
+    """
+    Show a white rectangle pop-up when an invalid action is attempted
+    """
+    vw, vh = _vw(game_view), _vh(game_view)
+
+    # Calculate dimensions and positions
+    popup_width = vw * 0.3
+    popup_height = vh * 0.3
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
+
+    # Draw shadow rectangle
+    shadow_tex = game_view.popup_textures['shadow']
+    shadow_rect = _centered_rect(
+        popup_x,
+        popup_y,
+        popup_width * 3,
+        popup_height * 3
+    )
+    arcade.draw_texture_rect(shadow_tex, shadow_rect)
+
+    # Draw white rectangle
+    white_texture = game_view.popup_textures['white_bg']
+    faceup_rect = _centered_rect(
+        popup_x,
+        popup_y,
+        popup_width,
+        popup_height
+    )
+    arcade.draw_texture_rect(white_texture, faceup_rect)
+
+    # Popup message (CENTERED)
+    message = (
+        "You've already drawn a card.\n\n"
+        "You cannot claim a route or draw "
+        "new destination cards right now."
+    )
+
+    arcade.draw_text(
+        message,
+        popup_x,
+        popup_y,
+        arcade.color.BLACK,
+        font_size=14,
+        width=popup_width * 0.8,
+        align="center",
+        anchor_x="center",
+        anchor_y="center",
+        multiline=True
+    )
+
+    # Exit button in lower-right corner
+    exit_button_width = popup_width * 0.2
+    exit_button_height = popup_height * 0.1
+    exit_button_x = popup_x + popup_width * 0.38
+    exit_button_y = popup_y - popup_height * 0.42
+
+    exit_texture = game_view.popup_textures['exit_button']
+    exit_rect = _centered_rect(
+        exit_button_x,
+        exit_button_y,
+        exit_button_width,
+        exit_button_height
+    )
+
+    arcade.draw_texture_rect(exit_texture, exit_rect)
+    arcade.draw_rect_outline(
+        exit_rect,
+        arcade.color.BLACK,
+        border_width=2
+    )
+
+    arcade.draw_text(
+        "EXIT",
+        exit_button_x,
+        exit_button_y,
+        arcade.color.WHITE,
+        font_size=12,
+        anchor_x="center",
+        anchor_y="center",
+        bold=True
+    )
+
+    # Save exit button bounds for click detection
+    game_view.exit_button_bounds = (
+        exit_rect.left,
+        exit_rect.left + exit_rect.width,
+        exit_rect.bottom,
+        exit_rect.bottom + exit_rect.height
     )

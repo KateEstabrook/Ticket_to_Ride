@@ -88,11 +88,15 @@ class BoardRenderer:
                                self.game_view.popup_city2)
             else:
                 print("NOT ALLOWED")
+                self.game_view.showing_allowed_popup = True
                 self.game_view.showing_popup = False
 
         if len(game_globals.dest_draw) == 0:
             for _ in range(4):
                 game_globals.dest_draw.append(game_globals.dest_deck.remove(-1))
+
+        if self.game_view.showing_allowed_popup:
+            popups.not_allowed_popup(self.game_view)
 
         if self.game_view.showing_dest_popup:
             #popups.show_dest_popup(self.game_view, game_globals.dest_draw, game_globals.num_choose)
@@ -101,17 +105,28 @@ class BoardRenderer:
                                    self.game_view.min_dest_cards_to_keep)
             else:
                 print("NOT ALLOWED")
+                self.game_view.showing_allowed_popup = True
                 self.game_view.showing_dest_popup = False
 
         if self.game_view.showing_deck_popup:
-            popups.deck_pop_up(self.game_view)
+            if game_globals.card_drawn == 0:
+                popups.deck_pop_up(self.game_view)
+                game_globals.card_drawn += 1
+            else:
+                popups.deck_pop_up(self.game_view)
+                game_globals.card_drawn == 0
 
         if (self.game_view.showing_dest_card_popup and
                 getattr(self.game_view, "active_dest_card", None) is not None):
             popups.show_dest_card_pop_up(self.game_view, self.game_view.active_dest_card)
 
         if self.game_view.showing_faceup_popup:
-            popups.faceup_card_popup(self.game_view, self.game_view.selected_faceup_card_index)
+            if game_globals.card_drawn == 0:
+                popups.faceup_card_popup(self.game_view, self.game_view.selected_faceup_card_index)
+                game_globals.card_drawn += 1
+            else:
+                popups.faceup_card_popup(self.game_view, self.game_view.selected_faceup_card_index)
+                game_globals.card_drawn == 0
             
 
 
@@ -399,6 +414,16 @@ class MouseHandler:
                     return
             # If click is elsewhere while popup is up, just consume it
             return
+
+        if self.game_view.showing_allowed_popup:
+            # Check if exit button was clicked
+            if hasattr(self.game_view, 'exit_button_bounds'):
+                left, right, bottom, top = self.game_view.exit_button_bounds
+                if left <= x <= right and bottom <= y <= top:
+                    self.game_view.showing_allowed_popup = False
+                    self.game_view.deselect_all_cities()
+                    game_globals.card_drawn = 1
+                    return
 
         if self.game_view.showing_popup:
             # Check if exit button was clicked
@@ -1197,6 +1222,7 @@ class GameView(arcade.View):
         self.dest_deck_sprite.append(self.dest_deck)
         self.showing_popup = False
         self.showing_dest_popup = True
+        self.showing_allowed_popup = False
         self.popup_city1 = None
         self.popup_city2 = None
         self.popup_route_length = 0
@@ -1291,7 +1317,6 @@ class GameView(arcade.View):
             # set curr player_obj to next player
             print("Turn ended")
             game_globals.turn_val = None
-
             counter = 0
             if game_globals.turn_end_comp:
                 for comp in game_globals.computers:
@@ -1301,7 +1326,6 @@ class GameView(arcade.View):
                         print("Refreshed train deck before computer turn")
 
                     print(f"Computer {comp.get_color()} playing.")
-                    self.add_log(f"Computer {comp.get_color()} is playing.")
                     train_cards_before = comp.get_player().get_train_cards().get_len()
                     dest_cards_before = comp.get_player().get_destination_cards().get_len()
 
@@ -1325,10 +1349,10 @@ class GameView(arcade.View):
                     print(f"{comp.get_map()}")
                     print(comp.get_player().get_train_cards())
                     print(f"Computer {comp.get_color()} completed its turn.")
-                    self.add_log(f"Computer {comp.get_color()} finished their turn.")
                     if counter == len(game_globals.players):
                         game_globals.turn_end_comp = False
                         game_globals.turn_end = False
+                        game_globals.card_drawn = 0
                         break
 
         if game_globals.turn_end:
