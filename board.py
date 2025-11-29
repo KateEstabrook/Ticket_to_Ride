@@ -447,6 +447,11 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
+                    if game_globals.player_obj.get_trains() < self.game_view.popup_route_length:
+                        # Show error or just return without claiming
+                        self.game_view.add_log(
+                            f"Not enough trains for {self.game_view.popup_route_length}-length route!")
+                        return
                     if (self.game_view.selected_color == "wild"
                             and not hasattr(self.game_view, 'showing_route_selection')):
                         # Only show second popup for double routes, not single routes
@@ -847,6 +852,10 @@ class RouteController:
                 len_route = len(c.TRAINS[city_pair][0]["positions"])
                 route_taken = self.game_view.route_taken[city_pair]
 
+                # Make sure they have enough trains
+                if game_globals.player_obj.get_trains() < len_route:
+                    return 3
+
                 # Check if this is a wild
                 if selected_color == "wild":
                     # Check if there's at least one available route
@@ -942,15 +951,15 @@ class CardController:
         """Update the displayed card counts for each color"""
         # Count cards in player's hand by color
         color_counts = {
-            "orange": game_globals.player_obj.get_train_cards().get_count("orange"), 
-            "black": game_globals.player_obj.get_train_cards().get_count("black"),  
-            "blue": game_globals.player_obj.get_train_cards().get_count("blue"), 
-            "green": game_globals.player_obj.get_train_cards().get_count("green"), 
-            "pink": game_globals.player_obj.get_train_cards().get_count("pink"),  
-            "red": game_globals.player_obj.get_train_cards().get_count("red"),  
-            "white": game_globals.player_obj.get_train_cards().get_count("white"), 
-            "yellow": game_globals.player_obj.get_train_cards().get_count("yellow"),  
-            "wild": game_globals.player_obj.get_train_cards().get_count("wild"), 
+            "orange": game_globals.player_obj.get_train_cards().get_count("orange"),
+            "black": game_globals.player_obj.get_train_cards().get_count("black"),
+            "blue": game_globals.player_obj.get_train_cards().get_count("blue"),
+            "green": game_globals.player_obj.get_train_cards().get_count("green"),
+            "pink": game_globals.player_obj.get_train_cards().get_count("pink"),
+            "red": game_globals.player_obj.get_train_cards().get_count("red"),
+            "white": game_globals.player_obj.get_train_cards().get_count("white"),
+            "yellow": game_globals.player_obj.get_train_cards().get_count("yellow"),
+            "wild": game_globals.player_obj.get_train_cards().get_count("wild"),
         }
 
         # Update the display text
@@ -1299,19 +1308,12 @@ class GameView(arcade.View):
         self.mouse_handler.on_mouse_motion(x, y, dx, dy)
 
     def on_update(self, delta_time):
-        """Update game state"""  
+        """Update game state"""
 
         # Check if its the last turn
-        if game_globals.last_turn == True:
-            win_view = WinScreenView()
-            self.window.show_view(win_view)
-        
-        # Check if any player has 3 or less trains.
-        if game_globals.player_obj.get_trains() <= 3:
-            game_globals.last_turn = True
-        for comp in game_globals.players:
-            if comp.get_trains() <= 3:
-                game_globals.last_turn = True
+        if self.win_conditions():
+            self.win_screen()
+            return
 
         game_globals.train_deck.shuffle()
         if game_globals.discard_deck.get_len() > 0 and game_globals.train_deck.get_len() < 5:
@@ -1319,7 +1321,7 @@ class GameView(arcade.View):
             self.card_controller.refresh_faceup_cards()
 
         if game_globals.faceup_deck.get_len() < 5 \
-            and game_globals.train_deck.get_len() > 0:
+                and game_globals.train_deck.get_len() > 0:
             new_card = game_globals.train_deck.remove(-1)
             game_globals.faceup_deck.cards.insert(4, new_card)
 
@@ -1327,6 +1329,15 @@ class GameView(arcade.View):
             if game_globals.turn_val >= 2:
                 game_globals.turn_end = True
                 game_globals.turn_val = None
+
+        # Track when a human player completes their turn
+        if game_globals.turn_end and not game_globals.turn_end_comp:
+            # Human player just finished their turn
+            if hasattr(self, 'final_round_active') and self.final_round_active:
+                self.final_round_turns_completed += 1
+                print(f"Human turn completed in final round. Total turns: {self.final_round_turns_completed}")
+
+            game_globals.turn_end_comp = True
 
         # initialize computer-turn popup and state once
         if game_globals.turn_end and game_globals.turn_end_comp and not self.computer_turn_active:
@@ -1337,7 +1348,7 @@ class GameView(arcade.View):
             self.computer_turn_index = 0
             self.computer_turn_timer = 0.0
 
-            return  # allow popup to draw before computers act
+            return
 
         # process computer turns one per frame
         if self.computer_turn_active:
@@ -1356,9 +1367,15 @@ class GameView(arcade.View):
                 self.computer_turn_active = False
                 self.show_computers_playing_popup = False
 
+                # Count computer turns for final round
+                if hasattr(self, 'final_round_active') and self.final_round_active:
+                    self.final_round_turns_completed += len(game_globals.computers)
+                    print(f"Computer turns completed in final round. Total turns: {self.final_round_turns_completed}")
+
                 game_globals.turn_end_comp = False
                 game_globals.turn_end = False
                 game_globals.card_drawn = 0
+
                 return
 
             # play exactly one computer turn
@@ -1389,9 +1406,6 @@ class GameView(arcade.View):
 
             self.computer_turn_index += 1
             return
-        
-        if game_globals.turn_end:
-            game_globals.turn_end_comp = True
 
     def add_log(self, message: str):
         """Add a message to the game log"""
@@ -1575,6 +1589,107 @@ class GameView(arcade.View):
             self.info_button.center_y + h / 2
         )
 
+    def win_conditions(self):
+        """Check if it is the last turn"""
+        if hasattr(self, 'game_ended') and self.game_ended:
+            return True
+
+        players = [game_globals.player_obj]
+        for comp in game_globals.computers:
+            players.append(comp.get_player())
+
+        # Check if last round
+        if not hasattr(self, 'final_round_active'):
+            for player in players:
+                if player.get_trains() <= 2:
+                    self.final_round_active = True
+                    self.final_round_turns_completed = 0
+                    self.final_round_triggered = True
+                    self.add_log("Final round! Each player gets one more turn.")
+                    break
+
+        # If we're in final round, check if all players have taken their final turn
+        if hasattr(self, 'final_round_active') and self.final_round_active:
+            # Count how many players have taken their final turn
+            total_players = len(players)
+
+            # The game ends when all players (including the one who triggered it) have taken one final turn
+            if self.final_round_turns_completed >= total_players:
+                self.game_ended = True
+                self.add_log("Game ended! Calculating scores...")
+                return True
+
+        return False
+
+    def calculate_scores(self):
+        """Calculate scores for all players"""
+        players = [game_globals.player_obj]
+        for comp in game_globals.computers:
+            players.append(comp.get_player())
+
+        for player in players:
+            dest_cards = player.get_destination_cards().get_cards()
+            player_map = player.get_map()
+            completed_cards = 0
+            not_completed_cards = 0
+            for card in dest_cards:
+                if player_map.check_completed(card):
+                    player.add_points(card.get_points())
+                    completed_cards += 1
+                    self.add_log(
+                        f"{player.get_color()} completed {card.get_city_1()}-{card.get_city_2()}: +{card.get_points()} points")
+                else:
+                    player.remove_points(card.get_points())
+                    not_completed_cards += 1
+                    self.add_log(
+                        f"{player.get_color()} failed {card.get_city_1()}-{card.get_city_2()}: -{card.get_points()} points")
+
+
+        longest_route_player = game_globals.game_map.longest_route(*players)
+        if longest_route_player:
+            longest_route_player.add_points(10)
+            self.add_log(f"{longest_route_player.get_color()} has longest continuous route: +10 points")
+
+        return players
+
+    def win_screen(self):
+        """Prepare and call win screen"""
+        players = self.calculate_scores()
+
+        # Prepare player data for win screen
+        player_data = []
+        for player in players:
+            # Convert color to RGB for display
+            color_map = {
+                "red": (171, 38, 2),
+                "blue": (10, 85, 161),
+                "green": (115, 143, 43),
+                "yellow": (241, 193, 19),
+                "black": (0, 0, 0),
+                "white": (255, 255, 255),
+                "orange": (255, 165, 0),
+                "pink": (255, 192, 203)
+            }
+
+            player_color = color_map.get(player.get_color().lower(), (255, 255, 255))
+            # Determine if this player has the longest route
+            has_longest_route = (game_globals.game_map.longest_route(*players) == player)
+
+            player_data.append({
+                "name": "You" if player == game_globals.player_obj else player.get_color().capitalize(),
+                "color": player_color,
+                "points": player.get_points(),
+                "longest_path": has_longest_route
+            })
+
+            # Sort by points
+        player_data.sort(key=lambda x: x["points"], reverse=True)
+        win_view = WinScreenView()
+        win_view.players = player_data
+        self.window.show_view(win_view)
+
+
+
 def main(self):
     """Main function to initialize and run the game."""
     if platform.system() == "Darwin":  # macOS
@@ -1596,3 +1711,5 @@ def main(self):
 
 if __name__ == "__main__":
     main(GameView)
+
+
