@@ -8,6 +8,7 @@ import globals as game_globals
 import constants as c
 import popups
 
+from win_screen import WinScreenView
 
 
 class BoardRenderer:
@@ -1296,6 +1297,18 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time):
         """Update game state"""  
+
+        # Check if its the last turn
+        if game_globals.last_turn == True:
+            win_view = WinScreenView()
+            self.window.show_view(win_view)
+        
+        # Check if any player has 3 or less trains.
+        if game_globals.player_obj.get_trains() <= 3:
+            game_globals.last_turn = True
+        for comp in game_globals.players:
+            if comp.get_trains() <= 3:
+                game_globals.last_turn = True
 
         game_globals.train_deck.shuffle()
         if game_globals.discard_deck.get_len() > 0 and game_globals.train_deck.get_len() < 5:

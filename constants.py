@@ -10,6 +10,9 @@ BOARD_SCALE = 0.8
 DEST_SCALE = 0.38
 CARD_SCALE = 0.37
 
+INIT_TRAIN_PIECES = 10
+STARTING_POINTS = 0
+
 SCREEN_WIDTH, SCREEN_HEIGHT = arcade.get_display_size()
 WINDOW_TITLE = "Ticket to Ride"
 if platform.system() == "Darwin":  # macOS
