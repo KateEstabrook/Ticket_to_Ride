@@ -32,9 +32,8 @@ def initialize_game():
     num_choose = 2
     turn_end = False
     turn_end_comp = False
-    computers_locked = False
     turn_val = None
-    card_drawn = False
+    card_drawn = 0
     # Add color cards
     for color in c.COLORS:
         i = 0

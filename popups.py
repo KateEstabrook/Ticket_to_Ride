@@ -23,10 +23,10 @@ def deck_pop_up(game_view):
     """
     Show a white rectangle pop-up with color selection buttons using card images
     """
-    if game_globals.card_drawn == False:
-        game_globals.card_drawn = True
+    if game_globals.card_drawn > 0:
+        game_globals.card_drawn = 0
     else:
-        game_globals.card_drawn = False
+        game_globals.card_drawn += 1
     vw, vh = _vw(game_view), _vh(game_view)
 
     # Calculate dimensions and positions
@@ -117,10 +117,10 @@ def faceup_card_popup(game_view, card_index):
     """
     Show a white rectangle pop-up when a face-up card is clicked
     """
-    if game_globals.card_drawn == False:
-        game_globals.card_drawn = True
+    if game_globals.card_drawn > 0:
+        game_globals.card_drawn = 0
     else:
-        game_globals.card_drawn = False
+        game_globals.card_drawn += 1
     vw, vh = _vw(game_view), _vh(game_view)
 
     # Calculate dimensions and positions
@@ -275,8 +275,6 @@ def route_popup(game_view, city1, city2):
     """
     Show a white rectangle pop-up with color selection buttons using card images
     """
-    if game_globals.card_drawn:
-            return
     vw, vh = _vw(game_view), _vh(game_view)
 
     # Calculate dimensions and positions
@@ -674,8 +672,6 @@ def show_dest_popup(self, dest_list, num):
     """
     Destination popup
     """
-    if game_globals.card_drawn:
-        return
     vw, vh = _vw(self), _vh(self)
 
     # Popup dimensions

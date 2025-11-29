@@ -83,8 +83,12 @@ class BoardRenderer:
 
         # draw popups
         if self.game_view.showing_popup:
-            popups.route_popup(self.game_view, self.game_view.popup_city1,
+            if game_globals.card_drawn == 0:
+                popups.route_popup(self.game_view, self.game_view.popup_city1,
                                self.game_view.popup_city2)
+            else:
+                print("NOT ALLOWED")
+                self.game_view.showing_popup = False
 
         if len(game_globals.dest_draw) == 0:
             for _ in range(4):
@@ -92,8 +96,12 @@ class BoardRenderer:
 
         if self.game_view.showing_dest_popup:
             #popups.show_dest_popup(self.game_view, game_globals.dest_draw, game_globals.num_choose)
-            popups.show_dest_popup(self.game_view, game_globals.dest_draw,
+            if game_globals.card_drawn == 0:
+                popups.show_dest_popup(self.game_view, game_globals.dest_draw,
                                    self.game_view.min_dest_cards_to_keep)
+            else:
+                print("NOT ALLOWED")
+                self.game_view.showing_dest_popup = False
 
         if self.game_view.showing_deck_popup:
             popups.deck_pop_up(self.game_view)
@@ -104,6 +112,7 @@ class BoardRenderer:
 
         if self.game_view.showing_faceup_popup:
             popups.faceup_card_popup(self.game_view, self.game_view.selected_faceup_card_index)
+            
 
 
         self.draw_leaderboard()
