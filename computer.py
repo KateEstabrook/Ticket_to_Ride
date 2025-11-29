@@ -235,7 +235,7 @@ class Computer:
 
             prev_city = cur_city
 
-        # switch destination if no viable routes remain to prevent draw-only deadlock
+        # switch destination if no viable routes remain to prevent draw-only
         if not self.routes_needed:
             uncompleted = self.player.get_destination_cards().get_uncompleted()
             if uncompleted:
