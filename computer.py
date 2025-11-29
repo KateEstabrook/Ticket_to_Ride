@@ -37,7 +37,7 @@ class Computer:
         self.curr_dest = dest
 
     def play(self):
-        time.sleep(0.5)
+        #time.sleep(0.5)
 
         # use turn finished instead of big if elif else
         self.turn_finished = False
@@ -87,7 +87,7 @@ class Computer:
                 print('Drew from deck')
                 self.turn_finished = True
 
-        time.sleep(0.5)
+        #time.sleep(0.5)
 
     def can_claim(self):
         """"Returns boolean whether or not comp can claim a route 

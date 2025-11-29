@@ -9,18 +9,15 @@ Player class:
 """
 import deck
 import graph
-
-# Constants
-INIT_TRAIN_PIECES = 45
-STARTING_POINTS = 0
+import constants as c
 
 class Player:
     """Player class"""
     # Constructor
     def __init__(self, color):
         self.color = color
-        self.train_pieces = INIT_TRAIN_PIECES
-        self.points = STARTING_POINTS
+        self.train_pieces = c.INIT_TRAIN_PIECES
+        self.points = c.STARTING_POINTS
         self.train_cards = deck.Deck('train_cards')
         self.destination_cards = deck.Deck('destination_cards')
         self.sprite = f"images/train_piece_{color}.png"

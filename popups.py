@@ -1162,3 +1162,53 @@ def not_allowed_popup(game_view):
         exit_rect.bottom,
         exit_rect.bottom + exit_rect.height
     )
+
+def computers_playing(game_view):
+    """
+    Show a white rectangle pop-up when an invalid action is attempted
+    """
+    vw, vh = _vw(game_view), _vh(game_view)
+
+    # Calculate dimensions and positions
+    popup_width = vw * 0.3
+    popup_height = vh * 0.3
+    popup_x = vw * 0.5
+    popup_y = vh * 0.5
+
+    # Draw shadow rectangle
+    shadow_tex = game_view.popup_textures['shadow']
+    shadow_rect = _centered_rect(
+        popup_x,
+        popup_y,
+        popup_width * 3,
+        popup_height * 3
+    )
+    arcade.draw_texture_rect(shadow_tex, shadow_rect)
+
+    # Draw white rectangle
+    white_texture = game_view.popup_textures['white_bg']
+    faceup_rect = _centered_rect(
+        popup_x,
+        popup_y,
+        popup_width,
+        popup_height
+    )
+    arcade.draw_texture_rect(white_texture, faceup_rect)
+
+    # Popup message (CENTERED)
+    message = (
+        "Other players are playing..."
+    )
+
+    arcade.draw_text(
+        message,
+        popup_x,
+        popup_y,
+        arcade.color.BLACK,
+        font_size=14,
+        width=popup_width * 0.8,
+        align="center",
+        anchor_x="center",
+        anchor_y="center",
+        multiline=True
+    )
