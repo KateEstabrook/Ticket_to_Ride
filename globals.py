@@ -22,7 +22,8 @@ game_map = graph.Graph(c.CITIES_KEYS, c.ROUTES_LST)
 
 def initialize_game():
     global faceup_deck, train_deck, dest_deck, routes, players, player_obj, \
-    dest_draw, discard_deck, num_choose, turn_end, turn_end_comp, turn_val
+    dest_draw, discard_deck, num_choose, turn_end, turn_end_comp, turn_val, \
+    computers_locked, card_drawn
     # Initailize Train Card Deck
     train_deck = deck.Deck('Draw')
     faceup_deck = deck.Deck('Faceup')
@@ -31,7 +32,9 @@ def initialize_game():
     num_choose = 2
     turn_end = False
     turn_end_comp = False
+    computers_locked = False
     turn_val = None
+    card_drawn = False
     # Add color cards
     for color in c.COLORS:
         i = 0

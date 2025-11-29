@@ -1278,12 +1278,13 @@ class GameView(arcade.View):
                 game_globals.turn_end = True
                 game_globals.turn_val = None
 
-        if game_globals.turn_end and game_globals.turn_end_comp:
+        if game_globals.turn_end and game_globals.turn_end_comp and not game_globals.computers_locked:
             # set curr player_obj to next player
             print("Turn ended")
             game_globals.turn_end = False
             game_globals.turn_end_comp = False
             game_globals.turn_val = None
+            game_globals.computers_locked = True
 
             for comp in game_globals.computers:
                 if (game_globals.train_deck.get_len() == 0 and
@@ -1299,7 +1300,7 @@ class GameView(arcade.View):
                 print(comp.get_player().get_train_cards())
                 print(comp.get_player().get_destination_cards())
                 comp.play()
-                # Detect what cards were taken and log accordingly
+
                 train_cards_after = comp.get_player().get_train_cards().get_len()
                 dest_cards_after = comp.get_player().get_destination_cards().get_len()
 
@@ -1310,6 +1311,7 @@ class GameView(arcade.View):
                     self.add_log(f"Computer {comp.get_color()} took train cards.")
                 if dest_cards_taken > 0:
                     self.add_log(f"Computer {comp.get_color()} drew from Destination Card Deck")
+
                 self.card_controller.refresh_faceup_cards()
                 print(f"{comp.get_map()}")
                 print(comp.get_player().get_train_cards())
@@ -1318,6 +1320,7 @@ class GameView(arcade.View):
 
         if game_globals.turn_end:
             game_globals.turn_end_comp = True
+            game_globals.computers_locked = False
 
 
     def add_log(self, message: str):
