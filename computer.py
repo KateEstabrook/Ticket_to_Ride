@@ -214,8 +214,13 @@ class Computer:
         dest = self.curr_dest.get_city_2()
         _, route_lists = self.player.get_map().djikstra(src, self.create_adjacency_list_global())
 
+        # destination may be unreachable if routes are blocked
+        if dest not in route_lists:
+            self.routes_needed = []
+            return
+        
         map = self.player.get_map() # pylint: disable=redefined-builtin
-
+        
         # iterate through route lists at dest to find cities in path
         prev_city = src
         for cur_city in route_lists[dest]:
@@ -235,7 +240,7 @@ class Computer:
 
             prev_city = cur_city
 
-        # switch destination if no viable routes remain to prevent draw-only
+        # switch destination if no viable routes remain to prevent computers just drawing
         if not self.routes_needed:
             uncompleted = self.player.get_destination_cards().get_uncompleted()
             if uncompleted:
