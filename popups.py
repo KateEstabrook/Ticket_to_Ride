@@ -45,6 +45,9 @@ def deck_pop_up(game_view):
         deck_rect
     )
 
+    # Border
+    arcade.draw_rect_outline(deck_rect, arcade.color.DARK_BROWN, border_width=3)
+
     if game_view.drawn_card is not None:
         # Use cached texture for drawn card
         sprite_path = game_view.drawn_card.get_sprite()
@@ -113,7 +116,6 @@ def deck_pop_up(game_view):
         exit_rect.bottom + exit_rect.height  # top
     )
 
-
 def faceup_card_popup(game_view, card_index):
     """
     Show a white rectangle pop-up when a face-up card is clicked
@@ -138,6 +140,9 @@ def faceup_card_popup(game_view, card_index):
         white_texture,
         faceup_rect
     )
+
+    # Border
+    arcade.draw_rect_outline(faceup_rect, arcade.color.DARK_BROWN, border_width=3)
 
     # Get the selected face up card
     selected_card = game_globals.faceup_deck.get_card_at_index(card_index)
@@ -1094,8 +1099,8 @@ def not_allowed_popup(game_view):
     shadow_rect = _centered_rect(
         popup_x,
         popup_y,
-        popup_width * 3,
-        popup_height * 3
+        popup_width * 5,
+        popup_height * 5
     )
     arcade.draw_texture_rect(shadow_tex, shadow_rect)
 
@@ -1109,10 +1114,13 @@ def not_allowed_popup(game_view):
     )
     arcade.draw_texture_rect(white_texture, faceup_rect)
 
+    # Border
+    arcade.draw_rect_outline(faceup_rect, arcade.color.DARK_BROWN, border_width=3)
+
     # Popup message (CENTERED)
     message = (
         "You've already drawn a card.\n\n"
-        "You cannot claim a route or draw "
+        "You cannot claim a route or draw\n"
         "new destination cards right now."
     )
 
@@ -1186,8 +1194,8 @@ def computers_playing(game_view):
     shadow_rect = _centered_rect(
         popup_x,
         popup_y,
-        popup_width * 3,
-        popup_height * 3
+        popup_width * 5,
+        popup_height * 5
     )
     arcade.draw_texture_rect(shadow_tex, shadow_rect)
 
@@ -1200,6 +1208,9 @@ def computers_playing(game_view):
         popup_height
     )
     arcade.draw_texture_rect(white_texture, faceup_rect)
+
+    # Border
+    arcade.draw_rect_outline(faceup_rect, arcade.color.DARK_BROWN, border_width=3)
 
     # Popup message (CENTERED)
     message = (

@@ -841,7 +841,7 @@ class RouteController:
 
         # Print the action on the screen
         self.game_view.add_log(
-            f"Computer player {computer_player.get_color()} "
+            f"Computer {computer_player.get_color()} "
             f"claimed the route {city1} - {city2}")
 
     def valid_route_colors(self, selected_color, city1, city2):
@@ -1333,6 +1333,7 @@ class GameView(arcade.View):
         # Track when a human player completes their turn
         if game_globals.turn_end and not game_globals.turn_end_comp:
             # Human player just finished their turn
+            self.add_log(f"You finished your turn")
             if hasattr(self, 'final_round_active') and self.final_round_active:
                 self.final_round_turns_completed += 1
                 print(f"Human turn completed in final round. Total turns: {self.final_round_turns_completed}")
