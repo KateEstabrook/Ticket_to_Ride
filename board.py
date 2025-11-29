@@ -1601,7 +1601,7 @@ class GameView(arcade.View):
         # Check if last round
         if not hasattr(self, 'final_round_active'):
             for player in players:
-                if player.get_trains() <= 2:
+                if player.get_trains() <= 3:
                     self.final_round_active = True
                     self.final_round_turns_completed = 0
                     self.final_round_triggered = True
