@@ -2,7 +2,6 @@
 Computer players
 """
 
-
 import globals as game_globals
 
 
@@ -100,11 +99,13 @@ class Computer:
                 print('Drew from deck')
                 self.turn_finished = True
 
-        #time.sleep(0.5)
-
     def can_claim(self):
         """"Returns boolean whether or not comp can claim a route 
         that helps to complete a destination card"""
+
+        # prioritize shortest routes so one blocked route doesn't stop all claims
+        self.routes_needed.sort(key=lambda r: r.get_weight())
+
         for route in self.routes_needed:
             route_color = route.get_color()
             cities = route.get_cities()
@@ -119,6 +120,10 @@ class Computer:
                 self.game_view.claim_route_comp(city1, city2, route_color, self.player)
                 self.turn_finished = True
                 self.routes_needed.remove(route)
+
+                # recalculate routes after claiming to avoid stale path data
+                self.update_cards_routes_needed()
+
                 return True
 
         return False
@@ -212,16 +217,26 @@ class Computer:
         map = self.player.get_map() # pylint: disable=redefined-builtin
 
         # iterate through route lists at dest to find cities in path
-
         prev_city = src
         for cur_city in route_lists[dest]:
             routes = game_globals.game_map.get_path_by_cities(prev_city, cur_city)
 
-
+            # only advance path once per city, selecting first unclaimed route
+            route_chosen = None
             for route in routes:
-                if map.has_path(prev_city, cur_city) or route is None:
-                    prev_city = cur_city
-                else:
-                    self.cards_needed[route.get_color()] += route.get_weight()
-                    if route.get_weight() > 0:
-                        self.routes_needed.append(route)
+                if not map.has_path(prev_city, cur_city) and route is not None:
+                    route_chosen = route
+                    break
+
+            if route_chosen:
+                self.cards_needed[route_chosen.get_color()] += route_chosen.get_weight()
+                if route_chosen.get_weight() > 0:
+                    self.routes_needed.append(route_chosen)
+
+            prev_city = cur_city
+
+        # switch destination if no viable routes remain to prevent draw-only deadlock
+        if not self.routes_needed:
+            uncompleted = self.player.get_destination_cards().get_uncompleted()
+            if uncompleted:
+                self.curr_dest = uncompleted[0]
