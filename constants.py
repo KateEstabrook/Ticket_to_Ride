@@ -2,6 +2,8 @@
 Constants for project
 """
 
+# pylint: disable=import-error
+
 import platform
 import arcade
 

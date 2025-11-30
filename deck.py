@@ -16,6 +16,12 @@ Route Card Deck (30 routes) (essential, hard)
 - Deck sprites (not yet)
 """
 
+# pylint: disable=too-many-nested-blocks
+# pylint: disable=too-many-branches
+# pylint: disable=inconsistent-return-statements
+# pylint: disable=no-else-return
+# pylint: disable=too-many-return-statements
+
 import operator
 import random
 import constants as c
@@ -50,9 +56,8 @@ class Deck:
                             i += 1
                         break
                 for color_ in c.COLORS:
-                    if (self.get_count("wild") + self.get_count(color_) >= count
-                            and self.get_count("wild") < count
-                            and not discarded):
+                    if (self.get_count("wild") + self.get_count(color_) >=
+                            count > self.get_count("wild") and not discarded):
                         i = 0
                         while i < count:
                             try:
@@ -103,8 +108,8 @@ class Deck:
                 if self.get_count(color_) >= count:
                     return True
             for color_ in c.COLORS:
-                if self.get_count("wild") + self.get_count(color_) >= count \
-                and self.get_count("wild") < count:
+                if (self.get_count("wild") + self.get_count(color_) >=
+                        count > self.get_count("wild")):
                     return True
             if self.get_count("wild") >= count:
                 return True
