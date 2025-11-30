@@ -59,8 +59,8 @@ One each turn, choose **ONE** of these actions:
   - 6 trains = 15 points
 
 3. Draw Destination Cards
-- Draw 3 destination tickets
-- Keep at least 1 (you may keep 2 or all 3)
+- Select the destination card deck to draw 4 destination tickets
+- Keep at least 1
 - Destination cards show two cities you need to connect with your trains
 - Completed destinations score points at game end
 - Uncompleted destinations deduct points
