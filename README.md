@@ -45,13 +45,13 @@ You will start with 4 random train cards and 45 train pieces.
 ### Gameplay
 One each turn, choose **ONE** of these actions:
 1. Draw Train Cards
-- Take 2 train cards from the face-up deck or draw pile
+- Take 2 train cards from the face-up deck or draw pile (click the deck or the card you want)
 - If you take a face-up locomotive (wild) card, it counts as one of your two cards
 - You may draw destination cards instead (see below)
 
 2. Claim a Route
 - Spend train cards matching the color and quantity needed for a route
-- Place your colored trains on the claimed route
+- Place your colored trains on the claimed route by selecting the two adjacent cities
 - Score points based on route length:
   - 1 train = 1 point
   - 2 trains = 2 points
