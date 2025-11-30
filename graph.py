@@ -4,6 +4,9 @@ Graph class:
 - List of paths (routes)
 """
 
+# pylint: disable=too-many-locals
+# pylint: disable=inconsistent-return-statements
+
 import heapq
 import route
 
@@ -95,7 +98,7 @@ class Graph:
                     adj[cities[1]].append((cities[0], 0))
 
         src = dest_card.get_city_1()
-        dist, route_lists = self.djikstra(src, adj)
+        dist, _ = self.djikstra(src, adj)
 
         if dest_card.get_city_2() not in dist:
             return False

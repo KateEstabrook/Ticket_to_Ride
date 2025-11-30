@@ -2,6 +2,9 @@
 Globals
 """
 
+# pylint: disable=global-variable-not-assigned
+# pylint: disable=global-variable-undefined
+
 import deck
 import cards
 import route
@@ -21,6 +24,7 @@ player_obj = player.Player("none")
 game_map = graph.Graph(c.CITIES_KEYS, c.ROUTES_LST)
 
 def initialize_game():
+    """Initialize global decks, players, routes and game state variables"""
     global faceup_deck, train_deck, dest_deck, routes, players, player_obj, \
     dest_draw, discard_deck, num_choose, turn_end, turn_end_comp, turn_val, \
     card_drawn
@@ -34,7 +38,6 @@ def initialize_game():
     turn_end_comp = False
     turn_val = None
     card_drawn = 0
-    last_turn = False
     # Add color cards
     for color in c.COLORS:
         i = 0
