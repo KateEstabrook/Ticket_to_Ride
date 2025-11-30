@@ -58,7 +58,7 @@ One each turn, choose **ONE** of these actions:
   - 3 trains = 4 points
   - 4 trains = 7 points
   - 5 trains = 10 points
-  - 6 trains = 13 points
+  - 6 trains = 15 points
 
 3. Draw Destination Cards
 - Select the destination card deck to draw 4 destination tickets
@@ -86,6 +86,3 @@ One each turn, choose **ONE** of these actions:
 - Press ESC to exit the win screen
 
 Enjoy your journey across the country!
-
-
-
