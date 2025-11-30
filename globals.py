@@ -56,21 +56,6 @@ def initialize_game():
     # Initailize players
     players = []
 
-    # for color in c.PLAYER_COLORS:
-    #     if color != player_color:
-    #         players.append(player.Player(color))
-
-    # red = player.Player("Red")
-    # players.append(red)
-    # yellow = player.Player("Yellow")
-    # players.append(yellow)
-    # green = player.Player("Green")
-    # players.append(green)
-    # blue = player.Player("Blue")
-    # players.append(blue)
-
-    # TO DO Have player choose color
-
     # Initialize Destination Card Deck
     dest_deck = deck.Deck("destination")
 
@@ -91,9 +76,7 @@ def initialize_game():
     for rt in c.ROUTES_LST:
         routes.append(route.Route((rt)))
 
-    # Initalize graph
-    #map = graph.Graph("", c.ROUTES_LST)
-
+    # Initalialize faceup deck
     faceup_deck = deck.Deck("faceup")
     while faceup_deck.get_len() < 5:
         card_ = train_deck.remove(-1)
