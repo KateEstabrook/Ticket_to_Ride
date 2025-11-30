@@ -18,5 +18,6 @@ Run board.py.
 - An instruction menu will pop up. If you know how to play, click "Exit"
 - Choose your destination cards
 - Remember, that in each turn you can either choose a destination card (or more), place a route, or draw a card.
+- When a player has 3 or fewer trains left, everyone *besides* that player will get one more turn. After that you will be sent to the win screen. To exit the win screen, just press escape.
 
 Enjoy!
