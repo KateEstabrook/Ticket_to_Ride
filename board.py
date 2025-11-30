@@ -2,6 +2,29 @@
 Ticket to Ride Board
 """
 
+# pylint: disable=too-many-nested-blocks
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-public-methods
+# pylint: disable=too-many-statements
+# pylint: disable=too-many-return-statements
+# pylint: disable=too-many-positional-arguments
+# pylint: disable=unused-argument
+# pylint: disable=no-value-for-parameter
+# pylint: disable=access-member-before-definition
+# pylint: disable=attribute-defined-outside-init
+# pylint: disable=import-outside-toplevel
+# pylint: disable=too-few-public-methods
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-lines
+# pylint: disable=import-error
+# pylint: disable=possibly-used-before-assignment
+# pylint: disable=used-before-assignment
+# pylint: disable=inconsistent-return-statements
+# pylint: disable=superfluous-parens
+# pylint: disable=no-else-return
+# pylint: disable=pointless-statement
+
 import platform
 import arcade
 import globals as game_globals
@@ -39,7 +62,7 @@ class BoardRenderer:
         # Destination cards set up
         i = 0
         if game_globals.player_obj.get_destination_cards().get_len() > 0:
-            for number, (sx, sy) in c.DEST_CARDS.items():
+            for _, (sx, sy) in c.DEST_CARDS.items():
                 if i >= game_globals.player_obj.get_destination_cards().get_len():
                     break  # stop if there are no more cards to draw
 
@@ -447,10 +470,12 @@ class MouseHandler:
             if hasattr(self.game_view, 'save_button_bounds') and self.game_view.save_button_bounds:
                 left, right, bottom, top = self.game_view.save_button_bounds
                 if left <= x <= right and bottom <= y <= top:
-                    if game_globals.player_obj.get_trains() < self.game_view.popup_route_length:
+                    if (game_globals.player_obj.get_trains() <
+                            self.game_view.popup_route_length):
                         # Show error or just return without claiming
                         self.game_view.add_log(
-                            f"Not enough trains for {self.game_view.popup_route_length}-length route!")
+                            f"Not enough trains for "
+                            f"{self.game_view.popup_route_length}-length route!")
                         return
                     if (self.game_view.selected_color == "wild"
                             and not hasattr(self.game_view, 'showing_route_selection')):
@@ -905,7 +930,7 @@ class CardController:
 
         if wild_card_count >= 3:
             print(f"Refreshing face-up cards due to {wild_card_count} wild cards")
-            self.game_view.add_log(f"Face-up deck refreshed (3+ wild cards)")
+            self.game_view.add_log("Face-up deck refreshed (3+ wild cards)")
 
             # Move current face-up cards to discard deck
             game_globals.faceup_deck.discard(game_globals.discard_deck)
@@ -1333,15 +1358,18 @@ class GameView(arcade.View):
         # Track when a human player completes their turn
         if game_globals.turn_end and not game_globals.turn_end_comp:
             # Human player just finished their turn
-            self.add_log(f"You finished your turn")
+            self.add_log("You finished your turn")
             if hasattr(self, 'final_round_active') and self.final_round_active:
                 self.final_round_turns_completed += 1
-                print(f"Human turn completed in final round. Total turns: {self.final_round_turns_completed}")
+                print(f"Human turn completed in final round. "
+                      f"Total turns: {self.final_round_turns_completed}")
 
             game_globals.turn_end_comp = True
 
         # initialize computer-turn popup and state once
-        if game_globals.turn_end and game_globals.turn_end_comp and not self.computer_turn_active:
+        if (game_globals.turn_end and
+                game_globals.turn_end_comp and not
+                self.computer_turn_active):
             print("Starting computer turns")
 
             self.computer_turn_active = True
@@ -1371,7 +1399,8 @@ class GameView(arcade.View):
                 # Count computer turns for final round
                 if hasattr(self, 'final_round_active') and self.final_round_active:
                     self.final_round_turns_completed += len(game_globals.computers)
-                    print(f"Computer turns completed in final round. Total turns: {self.final_round_turns_completed}")
+                    print(f"Computer turns completed in final round. "
+                          f"Total turns: {self.final_round_turns_completed}")
 
                 game_globals.turn_end_comp = False
                 game_globals.turn_end = False
@@ -1437,7 +1466,7 @@ class GameView(arcade.View):
         """Handle mouse press"""
         return_val = self.mouse_handler.on_mouse_press(x, y, button, modifiers)
         if game_globals.turn_val is None and return_val is None:
-            0
+            pass
         elif game_globals.turn_val is not None and return_val is not None:
             game_globals.turn_val += return_val
         elif game_globals.turn_val is None and return_val > 0:
@@ -1481,18 +1510,8 @@ class GameView(arcade.View):
             player_map.add_node(city2)
         player_map.add_path(game_globals.game_map.remove_route(city1, city2))
         game_globals.turn_end = True
-        """
-        # THIS IS FOR FINDING PLAYER POINTS AND UPSATING COMPLETED ROUTES
-        for dest_card in game_globals.player_obj.get_destination_cards().get_uncompleted():
-            if player_map.check_completed(dest_card):
-                dest_card.complete()
-                game_globals.player_obj.add_points(dest_card.get_points())
-        """
+
         print(game_globals.player_obj.get_destination_cards())
-        #print(game_globals.player_obj.get_destination_cards().get_uncompleted())
-        #print(player_map.check_completed(cards.DestinationCard(("Boston", "Miami", 12))))
-        #print(player_map.get_nodes())
-        #print(player_map)
 
     def claim_route_comp(self, city1, city2, color, computer_player, route_index=None):
         """Claim route for computer player"""
@@ -1614,7 +1633,8 @@ class GameView(arcade.View):
             # Count how many players have taken their final turn
             total_players = len(players)
 
-            # The game ends when all players (including the one who triggered it) have taken one final turn
+            # The game ends when all players (including the one who triggered it)
+            # have taken one final turn
             if self.final_round_turns_completed >= total_players:
                 self.game_ended = True
                 self.add_log("Game ended! Calculating scores...")
@@ -1638,18 +1658,23 @@ class GameView(arcade.View):
                     player.add_points(card.get_points())
                     completed_cards += 1
                     self.add_log(
-                        f"{player.get_color()} completed {card.get_city_1()}-{card.get_city_2()}: +{card.get_points()} points")
+                        f"{player.get_color()} completed "
+                        f"{card.get_city_1()}-{card.get_city_2()}:"
+                        f" +{card.get_points()} points")
                 else:
                     player.remove_points(card.get_points())
                     not_completed_cards += 1
                     self.add_log(
-                        f"{player.get_color()} failed {card.get_city_1()}-{card.get_city_2()}: -{card.get_points()} points")
+                        f"{player.get_color()} failed "
+                        f"{card.get_city_1()}-{card.get_city_2()}:"
+                        f" -{card.get_points()} points")
 
 
         longest_route_player = game_globals.game_map.longest_route(*players)
         if longest_route_player:
             longest_route_player.add_points(10)
-            self.add_log(f"{longest_route_player.get_color()} has longest continuous route: +10 points")
+            self.add_log(f"{longest_route_player.get_color()}"
+                         f" has longest continuous route: +10 points")
 
         return players
 
@@ -1677,7 +1702,8 @@ class GameView(arcade.View):
             has_longest_route = (game_globals.game_map.longest_route(*players) == player)
 
             player_data.append({
-                "name": "You" if player == game_globals.player_obj else player.get_color().capitalize(),
+                "name": "You" if player == game_globals.player_obj else
+                player.get_color().capitalize(),
                 "color": player_color,
                 "points": player.get_points(),
                 "longest_path": has_longest_route
@@ -1712,4 +1738,3 @@ def main(self):
 
 if __name__ == "__main__":
     main(GameView)
-
