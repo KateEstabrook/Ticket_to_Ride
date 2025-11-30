@@ -2,11 +2,6 @@
 ### CS 3050 (Software Engineering) Final Project
 ### Group #1 - Elisabeth, Kate, Mateo, Oliver
 
-### TO DO
-- Last round logic
-- Win screen logic (must pass in scores and who has the longest continuous route)
-
-
 
 ## Project Description
 We created the classic board game, Ticket to Ride, using Python Arcade. It is a 4 player game with 1 human player and 3 computer players.
