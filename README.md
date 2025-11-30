@@ -40,6 +40,8 @@ Score the most points by:
 2. Instruction Menu: Review game rules or click "Exit" if familiar
 3. Destination Cards: Select your initial destination tickets
 
+You will start with 4 random train cards and 45 train pieces. 
+
 ### Gameplay
 One each turn, choose **ONE** of these actions:
 1. Draw Train Cards
