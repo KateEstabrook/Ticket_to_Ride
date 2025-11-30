@@ -144,7 +144,8 @@ class Computer:
                     game_globals.faceup_deck.cards.insert(i, new_card)
                 print('took wild faceup card')
                 return True
-            elif prev == 1 and color == 'wild':
+
+            if prev == 1 and color == 'wild':
                 continue
 
             # All other colors, check if it's needed
@@ -218,9 +219,9 @@ class Computer:
         if dest not in route_lists:
             self.routes_needed = []
             return
-        
+
         map = self.player.get_map() # pylint: disable=redefined-builtin
-        
+
         # iterate through route lists at dest to find cities in path
         prev_city = src
         for cur_city in route_lists[dest]:
