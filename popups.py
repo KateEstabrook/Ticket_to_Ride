@@ -1,11 +1,16 @@
 """
 Stores all of the pop ups during game play
 """
+
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
+# pylint: disable=too-many-locals
+# pylint: disable=import-error
+# pylint: disable=too-many-lines
+
 import arcade
 import constants as c
 import globals as game_globals
-#import cards
-#import board
 
 def _vw(game_view) -> float:
     """Window width (falls back to constants if needed)."""
@@ -37,7 +42,7 @@ def deck_pop_up(game_view):
     shadow_tex = game_view.popup_textures['shadow']
     shadow_rect = _centered_rect(popup_x, popup_y, popup_width * 3, popup_height * 3)
     arcade.draw_texture_rect(shadow_tex, shadow_rect)
-    
+
     # Draw white rectangle using cached texture
     white_texture = game_view.popup_textures['white_bg']
     arcade.draw_texture_rect(
@@ -181,7 +186,7 @@ def faceup_card_popup(game_view, card_index):
         )
 
     if game_globals.turn_val == 1 and selected_card.get_color() == "wild":
-        0
+        pass
     else:
         # Add take button
         take_button_width = popup_width * 0.2
@@ -546,7 +551,8 @@ def route_popup(game_view, city1, city2):
         can_save = selected_route_index is not None
     else:
         # First popup - check if player has enough trains
-        if game_view.selected_color and game_globals.player_obj.get_trains() >= game_view.popup_route_length:
+        if (game_view.selected_color and
+                game_globals.player_obj.get_trains() >= game_view.popup_route_length):
             # make sure the specific colored route isn't already taken
             city_pair = (city1, city2) if (city1, city2) in c.TRAINS else (city2, city1)
             len_route = len(c.TRAINS[city_pair][0]["positions"])

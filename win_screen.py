@@ -2,10 +2,13 @@
 Win Screen for Ticket to Ride
 """
 
+# pylint: disable=too-many-locals
+# pylint: disable=import-error
+# pylint: disable=unused-argument
+
 import platform
 import arcade
 import constants as c
-
 
 class WinScreenView(arcade.View):
     """Win screen showing final results"""

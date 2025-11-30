@@ -3,8 +3,14 @@ Start Menu View for Ticket to Ride
 Add this class to your main game file, before the GameView class
 """
 
+# pylint: disable=too-many-nested-blocks
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=import-error
+# pylint: disable=unused-argument
+
 import arcade
-#from arcade import SpriteList
 import constants as c
 import player
 import computer
@@ -244,7 +250,9 @@ class StartMenuView(arcade.View):
                         # Give starting cards to human player
                         for _ in range(c.STARTING_CARDS):
                             if game_globals.train_deck.get_len() > 0:
-                                game_globals.player_obj.get_train_cards().add(game_globals.train_deck.remove(-1))
+                                game_globals.player_obj.get_train_cards().add(
+                                    game_globals.train_deck.remove(-1)
+                                )
 
                         game_view = GameView()
                         game_globals.computers = []  # Clear any existing computers
