@@ -51,7 +51,6 @@ One each turn, choose **ONE** of these actions:
 - Spend train cards matching the color and quantity needed for a route
 - Place your colored trains on the claimed route
 - Score points based on route length:
-
   - 1 train = 1 point
   - 2 trains = 2 points
   - 3 trains = 4 points
