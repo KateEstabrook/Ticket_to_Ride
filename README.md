@@ -7,6 +7,12 @@
 We created the classic board game, Ticket to Ride, using Python Arcade. It is a 4 player game with 1 human player and 3 computer players.
 
 ## Instructions for playing
+
+Packages needed: 
+- platform
+- arcade
+- heapq
+
 Run board.py.
 - You will be instructed to choose a color. There will be AIs for the other three colors.
 - An instruction menu will pop up. If you know how to play, click "Exit"
